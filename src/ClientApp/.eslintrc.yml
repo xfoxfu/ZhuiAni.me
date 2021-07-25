@@ -1,0 +1,15 @@
+root: true
+parser: "@typescript-eslint/parser"
+plugins:
+  - "@typescript-eslint"
+  - "prettier"
+parserOptions:
+  tsconfigRootDir: "."
+  project: ["./tsconfig.json"]
+
+extends:
+  - "eslint:recommended"
+  - "plugin:@typescript-eslint/recommended"
+  - "plugin:@typescript-eslint/recommended-requiring-type-checking"
+  - "prettier"
+  - "plugin:prettier/recommended"
