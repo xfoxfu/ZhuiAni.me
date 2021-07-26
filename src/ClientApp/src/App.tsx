@@ -15,28 +15,18 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-const anime = [
-  ["名侦探柯南", "https://mikanani.me/images/Bangumi/201310/91d95f43.jpg"],
-  ["海贼王", "https://mikanani.me/images/Bangumi/201310/0aa598c7.jpg"],
-  ["火影忍者 博人传之火影次世代", "https://mikanani.me/images/Bangumi/201704/e46ad033.jpg"],
-  ["宝可梦 旅途‎", "https://mikanani.me/images/Bangumi/201911/0b25e1cd.jpg"],
-  ["数码兽大冒险：", "https://mikanani.me/images/Bangumi/202004/2e66e770.jpg"],
-  ["王者天下 第三季", "https://mikanani.me/images/Bangumi/202004/5988c4af.jpg"],
-  ["舞伎家的料理人", "https://mikanani.me/images/Bangumi/202102/d74196db.jpg"],
-  ["Tropical-Rouge！光之美少女", "https://mikanani.me/images/Bangumi/202102/f3a3a47c.jpg"],
-  ["致不灭的你", "https://mikanani.me/images/Bangumi/202104/98a02bea.jpg"],
-  ["甜梦猫 MIX!", "https://mikanani.me/images/Bangumi/202104/8418c9a0.jpg"],
-  ["指尖传出的真挚热情2-恋人是消防员-", "https://mikanani.me/images/Bangumi/202106/efe4ab77.jpg"],
-  ["死神少爷与黑女仆", "https://mikanani.me/images/Bangumi/202107/cbc5d713.jpg"],
-];
-const subscriptions = [
-  { n: "现实主义勇者的王国再建记", e: "04", g: "NC-Raws", r: "1080p", s: "WebDL", t: "MKV", l: "zh-Hans" },
-  { n: "现实主义勇者的王国再建记", e: "04", g: "NC-Raws", r: "1080p", s: "WebDL", t: "MKV", l: "zh-Hans" },
-  { n: "现实主义勇者的王国再建记", e: "04", g: "NC-Raws", r: "1080p", s: "WebDL", t: "MKV", l: "zh-Hans" },
-  { n: "现实主义勇者的王国再建记", e: "04", g: "NC-Raws", r: "1080p", s: "WebDL", t: "MKV", l: "zh-Hans" },
-];
+type Anime = [string, string];
+type Subscription = { n: string, e: string, g: string, r: string, s: string, t: string, l: string; };
 
 const App: React.FunctionComponent = () => {
+  const [subscriptions, setSubscriptions] = React.useState<Subscription[]>();
+  const [anime, setAnime] = React.useState<Anime[]>();
+
+  React.useEffect(() => {
+    fetch("/api/subscriptions", { headers: { "Content-Type": "application/json" } }).then(res => res.json()).then(setSubscriptions);
+    fetch("/api/anime", { headers: { "Content-Type": "application/json" } }).then(res => res.json()).then(setAnime);
+  }, []);
+
   return (
     <Flex>
       <Stack flex="1" bg="green.500" minH="100vh" paddingX="6" paddingY="4" color="white" spacing="4">
@@ -67,7 +57,7 @@ const App: React.FunctionComponent = () => {
         <Stack spacing="1">
           {
             // background-image:url()
-            subscriptions.map((s) => (
+            subscriptions?.map((s) => (
               <HStack px="3" py="2" borderWidth="1px" rounded="md" bg="white">
                 <Image src="https://mikanani.me/images/Bangumi/202107/97dda452.jpg" alt={s.n} maxH="3em" />
                 <Stack spacing="1">
@@ -104,7 +94,7 @@ const App: React.FunctionComponent = () => {
             <Button size="sm">3 Days</Button>
           </HStack>
           <SimpleGrid spacingX="3" spacingY="2" minChildWidth="18ch">
-            {anime.map((a) => (
+            {anime?.map((a) => (
               <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
                 <Image src={a[1]} alt={a[0]} />
                 <Spacer />

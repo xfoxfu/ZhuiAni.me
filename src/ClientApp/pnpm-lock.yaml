@@ -5,6 +5,7 @@ specifiers:
   '@chakra-ui/react': ^1.6.5
   '@emotion/react': ^11
   '@emotion/styled': ^11
+  '@types/node': ^16.4.2
   '@types/react': ^17.0.0
   '@types/react-dom': ^17.0.0
   '@types/react-router-dom': ^5.1.8
@@ -33,6 +34,7 @@ dependencies:
 
 devDependencies:
   '@babel/core': 7.14.8
+  '@types/node': 16.4.2
   '@types/react': 17.0.15
   '@types/react-dom': 17.0.9
   '@types/react-router-dom': 5.1.8
@@ -1304,6 +1306,10 @@ packages:
   /@types/lodash/4.14.171:
     resolution: {integrity: sha512-7eQ2xYLLI/LsicL2nejW9Wyko3lcpN6O/z0ZLHrEQsg280zIdCv1t/0m6UtBjUHokCGBQ3gYTbHzDkZ1xOBwwg==}
     dev: false
+
+  /@types/node/16.4.2:
+    resolution: {integrity: sha512-vxyhOzFCm+jC/T5KugbVsYy1DbQM0h3NCFUrVbu0+pYa/nr+heeucpqxpa8j4pUmIGLPYzboY9zIdOF0niFAjQ==}
+    dev: true
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}

@@ -2,7 +2,7 @@
   "name": "zhui-anime-client",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --port 5002 --https",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@types/node": "^16.4.2",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.8",

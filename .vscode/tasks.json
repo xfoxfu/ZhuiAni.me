@@ -21,6 +21,8 @@
                 "publish",
                 "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj",
                 "/property:GenerateFullPaths=true",
+                "/property:PublishTrimmed=true",
+                "/property:TrimMode=Link",
                 "/consoleloggerparameters:NoSummary"
             ],
             "problemMatcher": "$msCompile"
@@ -31,11 +33,15 @@
             "type": "process",
             "args": [
                 "watch",
-                "run",
-                "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "--project",
+                "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj"
             ],
+            "options": {
+                "env": {
+                    "ASPNETCORE_ENVIRONMENT": "Development",
+                    "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
+                }
+            },
             "problemMatcher": "$msCompile"
         }
     ]
