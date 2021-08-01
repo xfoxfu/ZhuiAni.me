@@ -10,7 +10,7 @@
     <IsPackable>false</IsPackable>
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-    <SpaProxyServerUrl>https://localhost:5002</SpaProxyServerUrl>
+    <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
   </PropertyGroup>
   

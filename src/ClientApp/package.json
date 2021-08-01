@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "vite --port 5002 --https",
+    "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "lint": "eslint 'src/**/*.{ts,tsx}'"
