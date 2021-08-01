@@ -1,10 +1,12 @@
 {
   "name": "zhui-anime-client",
   "version": "0.0.0",
+  "license": "MIT",
   "scripts": {
     "dev": "vite --port 5002 --https",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "lint": "eslint 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@chakra-ui/react": "^1.6.5",

@@ -16,15 +16,19 @@ import {
 import React from "react";
 
 type Anime = [string, string];
-type Subscription = { n: string, e: string, g: string, r: string, s: string, t: string, l: string; };
+type Subscription = { n: string; e: string; g: string; r: string; s: string; t: string; l: string };
 
 const App: React.FunctionComponent = () => {
   const [subscriptions, setSubscriptions] = React.useState<Subscription[]>();
   const [anime, setAnime] = React.useState<Anime[]>();
 
   React.useEffect(() => {
-    fetch("/api/subscriptions", { headers: { "Content-Type": "application/json" } }).then(res => res.json()).then(setSubscriptions);
-    fetch("/api/anime", { headers: { "Content-Type": "application/json" } }).then(res => res.json()).then(setAnime);
+    fetch("/api/subscriptions", { headers: { "Content-Type": "application/json" } })
+      .then((res) => res.json())
+      .then(setSubscriptions, console.error);
+    fetch("/api/anime", { headers: { "Content-Type": "application/json" } })
+      .then((res) => res.json())
+      .then(setAnime, console.error);
   }, []);
 
   return (
