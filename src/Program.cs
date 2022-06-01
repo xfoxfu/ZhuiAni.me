@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -12,11 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<ZAContext>(opt =>
-    opt.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ZAContext))));
+{
+    opt.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ZAContext)));
+    opt.UseSnakeCaseNamingConvention();
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "TodoApi", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "ZhuiAni.me API", Version = "v1" });
 });
 
 var app = builder.Build();
@@ -26,9 +30,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
     app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentName}/swagger.json");
-    app.UseSwaggerUI(c =>
+    app.UseReDoc(c =>
     {
-        c.SwaggerEndpoint("/api/swagger/v1/swagger.json", "TodoApi v1");
+        c.SpecUrl("/api/swagger/v1/swagger.json");
         c.RoutePrefix = "api/swagger";
     });
 }
