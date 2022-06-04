@@ -1,14 +1,26 @@
-using System;
-using System.Linq;
+using Me.Xfox.ZhuiAnime;
+using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Me.Xfox.ZhuiAnime;
-using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureAppConfiguration((ctx, builder) =>
+{
+    var json1 = builder.Sources.IndexOf(builder.Sources.FirstOrDefault(
+        s => s is JsonConfigurationSource j && j.Path.Contains("appsettings.json")));
+    builder.AddTomlFile("appsettings.toml", optional: true, index: json1);
+
+    var json2 = builder.Sources.IndexOf(builder.Sources.FirstOrDefault(
+        s => s is JsonConfigurationSource j && j.Path.Contains($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json")));
+    builder.AddTomlFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.toml", optional: true, index: json2);
+});
 
 builder.Services.AddControllersWithViews();
 
