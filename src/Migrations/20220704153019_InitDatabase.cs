@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -16,7 +17,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     title = table.Column<string>(type: "text", nullable: false),
-                    image = table.Column<string>(type: "text", nullable: false),
+                    image = table.Column<byte[]>(type: "bytea", nullable: true),
                     bangumi_link = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -73,9 +74,21 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "ix_anime_bangumi_link",
+                table: "anime",
+                column: "bangumi_link",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_episode_anime_id",
                 table: "episode",
                 column: "anime_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_episode_bangumi_link",
+                table: "episode",
+                column: "bangumi_link",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_link_anime_id",

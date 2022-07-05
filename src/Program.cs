@@ -1,4 +1,5 @@
 using Me.Xfox.ZhuiAnime;
+using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,7 +23,12 @@ builder.WebHost.ConfigureAppConfiguration((ctx, builder) =>
     builder.AddTomlFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.toml", optional: true, index: json2);
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
+    });
 
 builder.Services.AddDbContext<ZAContext>(opt =>
 {
@@ -30,10 +36,15 @@ builder.Services.AddDbContext<ZAContext>(opt =>
     opt.UseSnakeCaseNamingConvention();
 });
 
+Me.Xfox.ZhuiAnime.Services.BangumiData.Option.ConfigureOn(builder);
+Me.Xfox.ZhuiAnime.Services.BangumiClient.Option.ConfigureOn(builder);
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new() { Title = "ZhuiAni.me API", Version = "v1" });
 });
+
+builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Services.BangumiData>();
 
 var app = builder.Build();
 

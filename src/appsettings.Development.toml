@@ -2,3 +2,4 @@
 Default = "Information"
 Microsoft = "Warning"
 "Microsoft.Hosting.Lifetime" = "Information"
+# "Me.Xfox" = "Trace"

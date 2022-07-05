@@ -99,7 +99,8 @@ internal class TomlConfigurationFileParser : Tomlyn.Syntax.SyntaxVisitor
     {
         foreach (var (key, val) in value)
         {
-            Convert($"{prefix}:{key}", val);
+            if (string.IsNullOrWhiteSpace(prefix)) Convert(key, val);
+            else Convert($"{prefix}:{key}", val);
         }
     }
 
@@ -107,7 +108,8 @@ internal class TomlConfigurationFileParser : Tomlyn.Syntax.SyntaxVisitor
     {
         for (var i = 0; i < value.Count; i++)
         {
-            Convert($"{prefix}:{i}", value[i]);
+            if (string.IsNullOrWhiteSpace(prefix)) Convert(i.ToString(), value[i]);
+            else Convert($"{prefix}:{i}", value[i]);
         }
     }
 
@@ -115,7 +117,8 @@ internal class TomlConfigurationFileParser : Tomlyn.Syntax.SyntaxVisitor
     {
         for (var i = 0; i < value.Count; i++)
         {
-            Convert($"{prefix}:{i}", value[i]);
+            if (string.IsNullOrWhiteSpace(prefix)) Convert(i.ToString(), value[i]);
+            else Convert($"{prefix}:{i}", value[i]);
         }
     }
 

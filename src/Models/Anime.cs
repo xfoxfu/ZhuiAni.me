@@ -9,7 +9,7 @@ public class Anime
 {
     public uint Id { get; set; }
     public string Title { get; set; } = string.Empty;
-    public string Image { get; set; } = string.Empty;
+    public byte[]? Image { get; set; } = null;
     public Uri BangumiLink { get; set; } = new Uri("invalid://");
     public IEnumerable<Episode>? Episodes { get; set; }
     public IEnumerable<AnimeLink>? Links { get; set; }
@@ -18,6 +18,8 @@ public class Anime
     {
         public void Configure(EntityTypeBuilder<Anime> builder)
         {
+            builder.HasIndex(a => a.BangumiLink)
+                .IsUnique();
         }
     }
 }

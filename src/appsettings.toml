@@ -6,4 +6,22 @@ Microsoft = "Warning"
 "Microsoft.Hosting.Lifetime" = "Information"
 
 [ConnectionStrings]
-ZAContext = "Host=localhost;Database=zhuianime"
+ZAContext = "Host=localhost;Database=zhuianime;Include Error Detail=true"
+
+[Bangumi.Client]
+UserAgent = "xfoxfu/zhuianime (https://github.com/xfoxfu/ZhuiAni.me)"
+# AppId = ""
+# AppSecret = ""
+
+[Bangumi.Data]
+Character = "Data/bangumi/character.jsonlines"
+Episodes = "Data/bangumi/episodes.jsonlines"
+PersonCharacters = "Data/bangumi/person-characters.jsonlines"
+Person = "Data/bangumi/person.jsonlines"
+SubjectCharacters = "Data/bangumi/subject-characters.jsonlines"
+SubjectPersons = "Data/bangumi/subject-persons.jsonlines"
+SubjectRelations = "Data/bangumi/subject-relations.jsonlines"
+Subject = "Data/bangumi/subject.jsonlines"
+
+[Storage]
+Path = "Storage"
