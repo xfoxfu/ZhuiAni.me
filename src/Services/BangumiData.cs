@@ -58,20 +58,20 @@ public class BangumiData : BackgroundService
         using var scope = Scope.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
 
-        // Logger.LogInformation("Reading subjects from {}", Options.CurrentValue.Subject);
-        // using var subjectReader = new StreamReader(Options.CurrentValue.Subject);
-        // await JsonForEach<BangumiSubject>(subjectReader, async subject =>
-        //     {
-        //         var link = new Uri($"https://bgm.tv/subject/{subject.Id}");
+        Logger.LogInformation("Reading subjects from {}", Options.CurrentValue.Subject);
+        using var subjectReader = new StreamReader(Options.CurrentValue.Subject);
+        await JsonForEach<BangumiSubject>(subjectReader, async subject =>
+            {
+                var link = new Uri($"https://bgm.tv/subject/{subject.Id}");
 
-        //         var anime = await dbContext.Anime.Where(a => a.BangumiLink == link).FirstOrDefaultAsync(st);
-        //         if (anime == null) { anime = new(); dbContext.Anime.Add(anime); }
+                var anime = await dbContext.Anime.Where(a => a.BangumiLink == link).FirstOrDefaultAsync(st);
+                if (anime == null) { anime = new(); dbContext.Anime.Add(anime); }
 
-        //         anime.Title = subject.Name;
-        //         anime.BangumiLink = link;
-        //     }, st);
-        // await dbContext.SaveChangesAsync(st);
-        // Logger.LogInformation("Subjects synchronized");
+                anime.Title = subject.Name;
+                anime.BangumiLink = link;
+            }, st);
+        await dbContext.SaveChangesAsync(st);
+        Logger.LogInformation("Subjects synchronized");
 
         Logger.LogInformation("Reading episodes from {}", Options.CurrentValue.Episodes);
         using var episodeReader = new StreamReader(Options.CurrentValue.Episodes);

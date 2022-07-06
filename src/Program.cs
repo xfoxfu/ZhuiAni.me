@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +29,7 @@ builder.Services.AddControllersWithViews()
     {
         options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
         options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
 builder.Services.AddDbContext<ZAContext>(opt =>
@@ -39,24 +41,31 @@ builder.Services.AddDbContext<ZAContext>(opt =>
 Me.Xfox.ZhuiAnime.Services.BangumiData.Option.ConfigureOn(builder);
 Me.Xfox.ZhuiAnime.Services.BangumiClient.Option.ConfigureOn(builder);
 
-builder.Services.AddSwaggerGen(c =>
+builder.Services.AddOpenApiDocument(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "ZhuiAni.me API", Version = "v1" });
+    c.Title = "ZhuiAni.me API";
+    c.Version = "v1";
 });
 
-builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Services.BangumiData>();
+builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
+// builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Services.BangumiData>();
 
 var app = builder.Build();
+
+var c = app.Services.GetService<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
+await c.SubjectImportToAnimeAsync(334498);
+await c.SubjectImportToAnimeAsync(364450);
+await c.SubjectImportToAnimeAsync(375817);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseSwagger(c => c.RouteTemplate = "api/swagger/{documentName}/swagger.json");
+    app.UseOpenApi(c => c.Path = "/api/swagger/{documentName}/swagger.json");
     app.UseReDoc(c =>
     {
-        c.SpecUrl("/api/swagger/v1/swagger.json");
-        c.RoutePrefix = "api/swagger";
+        c.DocumentPath = "/api/swagger/{documentName}/swagger.json";
+        c.Path = "/api/swagger";
     });
 }
 else
