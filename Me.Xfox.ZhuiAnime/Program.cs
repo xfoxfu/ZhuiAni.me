@@ -53,9 +53,12 @@ builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
 var app = builder.Build();
 
 var c = app.Services.GetService<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
-await c.SubjectImportToAnimeAsync(334498);
-await c.SubjectImportToAnimeAsync(364450);
-await c.SubjectImportToAnimeAsync(375817);
+if (c != null)
+{
+    await c.SubjectImportToAnimeAsync(334498);
+    await c.SubjectImportToAnimeAsync(364450);
+    await c.SubjectImportToAnimeAsync(375817);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

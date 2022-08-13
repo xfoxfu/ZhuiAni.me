@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Me.Xfox.ZhuiAnime", "src\Me.Xfox.ZhuiAnime.csproj", "{2A262C3A-75DD-4A65-BF76-E4C8368470B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Me.Xfox.ZhuiAnime", "Me.Xfox.ZhuiAnime\Me.Xfox.ZhuiAnime.csproj", "{2A262C3A-75DD-4A65-BF76-E4C8368470B2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
