@@ -1,6 +1,4 @@
-using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
 using System.Text.Json;
-using FluentAssertions;
 
 namespace Me.Xfox.ZhuiAnime.External.Bangumi.Test.Models;
 
