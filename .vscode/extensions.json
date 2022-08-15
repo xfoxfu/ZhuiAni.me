@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "dennismaxjung.vscode-dotnet-auto-attach",
+    "ms-dotnettools.csharp",
+    "humao.rest-client"
+  ]
+}

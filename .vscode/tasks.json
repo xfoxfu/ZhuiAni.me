@@ -1,48 +1,48 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "build",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "publish",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "publish",
-                "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj",
-                "/property:GenerateFullPaths=true",
-                "/property:PublishTrimmed=true",
-                "/property:TrimMode=Link",
-                "/consoleloggerparameters:NoSummary"
-            ],
-            "problemMatcher": "$msCompile"
-        },
-        {
-            "label": "watch",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "watch",
-                "--project",
-                "${workspaceFolder}/src/Me.Xfox.ZhuiAnime.csproj"
-            ],
-            "options": {
-                "env": {
-                    "ASPNETCORE_ENVIRONMENT": "Development",
-                    "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
-                }
-            },
-            "problemMatcher": "$msCompile"
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "publish",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "publish",
+        "${workspaceFolder}/Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj",
+        "/property:GenerateFullPaths=true",
+        "/property:PublishTrimmed=true",
+        "/property:TrimMode=Link",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "--project",
+        "${workspaceFolder}/Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj"
+      ],
+      "options": {
+        "env": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
         }
-    ]
+      },
+      "problemMatcher": "$msCompile"
+    }
+  ]
 }
