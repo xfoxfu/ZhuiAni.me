@@ -8,281 +8,282 @@ public class SubjectTest
     [TestMethod]
     public void TestDeserialize()
     {
-        JsonSerializer.Deserialize<Subject>(@"
+        JsonSerializer.Deserialize<Subject>("""
 {
-    ""date"": ""2022-07-02"",
-    ""platform"": ""TV"",
-    ""images"": {
-        ""small"": ""https://lain.bgm.tv/pic/cover/s/65/19/364450_xx2zx.jpg"",
-        ""grid"": ""https://lain.bgm.tv/pic/cover/g/65/19/364450_xx2zx.jpg"",
-        ""large"": ""https://lain.bgm.tv/pic/cover/l/65/19/364450_xx2zx.jpg"",
-        ""medium"": ""https://lain.bgm.tv/pic/cover/m/65/19/364450_xx2zx.jpg"",
-        ""common"": ""https://lain.bgm.tv/pic/cover/c/65/19/364450_xx2zx.jpg""
+    "date": "2022-07-02",
+    "platform": "TV",
+    "images": {
+        "small": "https://lain.bgm.tv/pic/cover/s/65/19/364450_xx2zx.jpg",
+        "grid": "https://lain.bgm.tv/pic/cover/g/65/19/364450_xx2zx.jpg",
+        "large": "https://lain.bgm.tv/pic/cover/l/65/19/364450_xx2zx.jpg",
+        "medium": "https://lain.bgm.tv/pic/cover/m/65/19/364450_xx2zx.jpg",
+        "common": "https://lain.bgm.tv/pic/cover/c/65/19/364450_xx2zx.jpg"
     },
-    ""summary"": ""平稳的日子――其实暗藏着秘密防范犯罪的秘密组织――“DA（Direct Attack）”。作为特工的少女们“LYCORIS”。有着历代最强的LYCORIS之称的・锦木千束、优秀的LYCORIS・井之上泷奈，在咖啡厅“LycoReco”支部工作。这里接受的订单从订购咖啡和甜点，到照顾小孩、代购、面向外国人的日语老师等请放心交给“LycoReco”自由自在的乐天派、和平主义的千束与沉着冷静系、效率主义的泷奈二人跌宕起伏的混乱日常正式上演！"",
-    ""name"": ""リコリス・リコイル"",
-    ""name_cn"": ""莉可丽丝"",
-    ""tags"": [
+    "summary": "平稳的日子――其实暗藏着秘密防范犯罪的秘密组织――“DA（Direct Attack）”。作为特工的少女们“LYCORIS”。有着历代最强的LYCORIS之称的・锦木千束、优秀的LYCORIS・井之上泷奈，在咖啡厅“LycoReco”支部工作。这里接受的订单从订购咖啡和甜点，到照顾小孩、代购、面向外国人的日语老师等请放心交给“LycoReco”自由自在的乐天派、和平主义的千束与沉着冷静系、效率主义的泷奈二人跌宕起伏的混乱日常正式上演！",
+    "name": "リコリス・リコイル",
+    "name_cn": "莉可丽丝",
+    "tags": [
         {
-            ""name"": ""A-1Pictures"",
-            ""count"": 1228
+            "name": "A-1Pictures",
+            "count": 1228
         },
         {
-            ""name"": ""原创"",
-            ""count"": 1173
+            "name": "原创",
+            "count": 1173
         },
         {
-            ""name"": ""百合"",
-            ""count"": 1078
+            "name": "百合",
+            "count": 1078
         },
         {
-            ""name"": ""2022年7月"",
-            ""count"": 831
+            "name": "2022年7月",
+            "count": 831
         },
         {
-            ""name"": ""战斗"",
-            ""count"": 549
+            "name": "战斗",
+            "count": 549
         },
         {
-            ""name"": ""TV"",
-            ""count"": 525
+            "name": "TV",
+            "count": 525
         },
         {
-            ""name"": ""足立慎吾"",
-            ""count"": 329
+            "name": "足立慎吾",
+            "count": 329
         },
         {
-            ""name"": ""日常"",
-            ""count"": 313
+            "name": "日常",
+            "count": 313
         },
         {
-            ""name"": ""2022"",
-            ""count"": 304
+            "name": "2022",
+            "count": 304
         },
         {
-            ""name"": ""安済知佳"",
-            ""count"": 171
+            "name": "安済知佳",
+            "count": 171
         },
         {
-            ""name"": ""无法预测的命运之舞台"",
-            ""count"": 125
+            "name": "无法预测的命运之舞台",
+            "count": 125
         },
         {
-            ""name"": ""若山詩音"",
-            ""count"": 97
+            "name": "若山詩音",
+            "count": 97
         },
         {
-            ""name"": ""A-1_Pictures"",
-            ""count"": 41
+            "name": "A-1_Pictures",
+            "count": 41
         },
         {
-            ""name"": ""轻百合"",
-            ""count"": 18
+            "name": "轻百合",
+            "count": 18
         },
         {
-            ""name"": ""2022年"",
-            ""count"": 15
+            "name": "2022年",
+            "count": 15
         },
         {
-            ""name"": ""日本动画"",
-            ""count"": 14
+            "name": "日本动画",
+            "count": 14
         },
         {
-            ""name"": ""枪战"",
-            ""count"": 13
+            "name": "枪战",
+            "count": 13
         },
         {
-            ""name"": ""搞笑"",
-            ""count"": 13
+            "name": "搞笑",
+            "count": 13
         },
         {
-            ""name"": ""石蒜物语"",
-            ""count"": 11
+            "name": "石蒜物语",
+            "count": 11
         },
         {
-            ""name"": ""冒险"",
-            ""count"": 10
+            "name": "冒险",
+            "count": 10
         },
         {
-            ""name"": ""JK"",
-            ""count"": 8
+            "name": "JK",
+            "count": 8
         },
         {
-            ""name"": ""枪械"",
-            ""count"": 7
+            "name": "枪械",
+            "count": 7
         },
         {
-            ""name"": ""日本"",
-            ""count"": 7
+            "name": "日本",
+            "count": 7
         },
         {
-            ""name"": ""贴贴"",
-            ""count"": 6
+            "name": "贴贴",
+            "count": 6
         },
         {
-            ""name"": ""美少女"",
-            ""count"": 6
+            "name": "美少女",
+            "count": 6
         },
         {
-            ""name"": ""奇幻"",
-            ""count"": 6
+            "name": "奇幻",
+            "count": 6
         },
         {
-            ""name"": ""季番"",
-            ""count"": 5
+            "name": "季番",
+            "count": 5
         },
         {
-            ""name"": ""lycoris"",
-            ""count"": 5
+            "name": "lycoris",
+            "count": 5
         },
         {
-            ""name"": ""TVA"",
-            ""count"": 4
+            "name": "TVA",
+            "count": 4
         },
         {
-            ""name"": ""小清水亜美"",
-            ""count"": 4
+            "name": "小清水亜美",
+            "count": 4
         }
     ],
-    ""infobox"": [
+    "infobox": [
         {
-            ""key"": ""中文名"",
-            ""value"": ""莉可丽丝""
+            "key": "中文名",
+            "value": "莉可丽丝"
         },
         {
-            ""key"": ""别名"",
-            ""value"": [
+            "key": "别名",
+            "value": [
                 {
-                    ""v"": ""铳动彼岸花""
+                    "v": "铳动彼岸花"
                 },
                 {
-                    ""v"": ""彼岸花咖啡厅""
+                    "v": "彼岸花咖啡厅"
                 },
                 {
-                    ""v"": ""彼岸花的后坐力""
+                    "v": "彼岸花的后坐力"
                 },
                 {
-                    ""v"": ""リコリス リコイル""
+                    "v": "リコリス リコイル"
                 },
                 {
-                    ""v"": ""Lycoris Recoil""
+                    "v": "Lycoris Recoil"
                 }
             ]
         },
         {
-            ""key"": ""话数"",
-            ""value"": ""13""
+            "key": "话数",
+            "value": "13"
         },
         {
-            ""key"": ""放送开始"",
-            ""value"": ""2022年7月2日""
+            "key": "放送开始",
+            "value": "2022年7月2日"
         },
         {
-            ""key"": ""放送星期"",
-            ""value"": ""星期六""
+            "key": "放送星期",
+            "value": "星期六"
         },
         {
-            ""key"": ""官方网站"",
-            ""value"": ""https://lycoris-recoil.com/""
+            "key": "官方网站",
+            "value": "https://lycoris-recoil.com/"
         },
         {
-            ""key"": ""播放电视台"",
-            ""value"": ""TOKYO MX""
+            "key": "播放电视台",
+            "value": "TOKYO MX"
         },
         {
-            ""key"": ""其他电视台"",
-            ""value"": ""BS11 / 群馬テレビ / とちぎテレビ""
+            "key": "其他电视台",
+            "value": "BS11 / 群馬テレビ / とちぎテレビ"
         },
         {
-            ""key"": ""Copyright"",
-            ""value"": ""©Spider Lily／アニプレックス・ABCアニメーション・BS11""
+            "key": "Copyright",
+            "value": "©Spider Lily／アニプレックス・ABCアニメーション・BS11"
         },
         {
-            ""key"": ""原作"",
-            ""value"": ""Spider Lily""
+            "key": "原作",
+            "value": "Spider Lily"
         },
         {
-            ""key"": ""导演"",
-            ""value"": ""足立慎吾""
+            "key": "导演",
+            "value": "足立慎吾"
         },
         {
-            ""key"": ""人物设定"",
-            ""value"": ""いみぎむる，辅助人设：山本由美子""
+            "key": "人物设定",
+            "value": "いみぎむる，辅助人设：山本由美子"
         },
         {
-            ""key"": ""原画"",
-            ""value"": ""【主动画师：沢田犬二(澤田謙治)】""
+            "key": "原画",
+            "value": "【主动画师：沢田犬二(澤田謙治)】"
         },
         {
-            ""key"": ""美术监督"",
-            ""value"": ""冈本穗高、池田真依子""
+            "key": "美术监督",
+            "value": "冈本穗高、池田真依子"
         },
         {
-            ""key"": ""企画"",
-            ""value"": ""岩上敦宏、西出将之、田﨑勝也""
+            "key": "企画",
+            "value": "岩上敦宏、西出将之、田﨑勝也"
         },
         {
-            ""key"": ""总制片"",
-            ""value"": ""三宅将典；制作统括：柏田真一郎、加藤淳""
+            "key": "总制片",
+            "value": "三宅将典；制作统括：柏田真一郎、加藤淳"
         },
         {
-            ""key"": ""制片人"",
-            ""value"": ""神宮司学、吉田佳弘、大和田智之；动画制片人：中柄裕二""
+            "key": "制片人",
+            "value": "神宮司学、吉田佳弘、大和田智之；动画制片人：中柄裕二"
         },
         {
-            ""key"": ""脚本"",
-            ""value"": ""足立慎吾(1-2)、枦山大(3,7)、神林裕介(4)、鹿間貴裕(5-6)""
+            "key": "脚本",
+            "value": "足立慎吾(1-2)、枦山大(3,7)、神林裕介(4)、鹿間貴裕(5-6)"
         },
         {
-            ""key"": ""分镜"",
-            ""value"": ""足立慎吾(1,3)、三浦貴博(2)、丸山裕介(3)、竹内哲也(4)、鹿間貴裕(5-6)、柴田裕介(7)""
+            "key": "分镜",
+            "value": "足立慎吾(1,3)、三浦貴博(2)、丸山裕介(3)、竹内哲也(4)、鹿間貴裕(5-6)、柴田裕介(7)"
         },
         {
-            ""key"": ""演出"",
-            ""value"": ""柴田裕介(1,7)、尾之上知久(2)、丸山裕介(3)、竹内哲也(4)、関暁子(5)、佐久間貴史(6)""
+            "key": "演出",
+            "value": "柴田裕介(1,7)、尾之上知久(2)、丸山裕介(3)、竹内哲也(4)、関暁子(5)、佐久間貴史(6)"
         },
         {
-            ""key"": ""总作画监督"",
-            ""value"": ""山本由美子(1,6)、竹内由香里(2,5)、鈴木豪(3-4)、晶貴孝二(3-4,7)、森田莉奈(7)""
+            "key": "总作画监督",
+            "value": "山本由美子(1,6)、竹内由香里(2,5)、鈴木豪(3-4)、晶貴孝二(3-4,7)、森田莉奈(7)"
         },
         {
-            ""key"": ""文芸協力"",
-            ""value"": ""枦山大、神林裕介""
+            "key": "文芸協力",
+            "value": "枦山大、神林裕介"
         }
     ],
-    ""rating"": {
-        ""rank"": 482,
-        ""total"": 2833,
-        ""count"": {
-            ""1"": 32,
-            ""2"": 5,
-            ""3"": 17,
-            ""4"": 22,
-            ""5"": 69,
-            ""6"": 199,
-            ""7"": 611,
-            ""8"": 1251,
-            ""9"": 347,
-            ""10"": 280
+    "rating": {
+        "rank": 482,
+        "total": 2833,
+        "count": {
+            "1": 32,
+            "2": 5,
+            "3": 17,
+            "4": 22,
+            "5": 69,
+            "6": 199,
+            "7": 611,
+            "8": 1251,
+            "9": 347,
+            "10": 280
         },
-        ""score"": 7.7
+        "score": 7.7
     },
-    ""total_episodes"": 14,
-    ""collection"": {
-        ""on_hold"": 78,
-        ""dropped"": 118,
-        ""wish"": 1464,
-        ""collect"": 283,
-        ""doing"": 7670
+    "total_episodes": 14,
+    "collection": {
+        "on_hold": 78,
+        "dropped": 118,
+        "wish": 1464,
+        "collect": 283,
+        "doing": 7670
     },
-    ""id"": 364450,
-    ""eps"": 13,
-    ""volumes"": 0,
-    ""locked"": false,
-    ""nsfw"": false,
-    ""type"": 2
+    "id": 364450,
+    "eps": 13,
+    "volumes": 0,
+    "locked": false,
+    "nsfw": false,
+    "type": 2
 }
-        ").Should().BeEquivalentTo(new Subject
+""")
+        .Should().BeEquivalentTo(new Subject
         (
             Id: 364450,
             Type: SubjectType.Anime,

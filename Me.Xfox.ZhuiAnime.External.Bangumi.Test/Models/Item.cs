@@ -8,32 +8,32 @@ public class ItemTest
     [TestMethod]
     public void TestDeserialize()
     {
-        JsonSerializer.Deserialize<ICollection<Item>>(@"
+        JsonSerializer.Deserialize<ICollection<Item>>("""
   [
-    { ""key"": ""简体中文名"", ""value"": ""鲁路修·兰佩路基"" },
+    { "key": "简体中文名", "value": "鲁路修·兰佩路基" },
     {
-      ""key"": ""别名"",
-      ""value"":
+      "key": "别名",
+      "value":
         [
-          { ""v"": ""L.L."" },
-          { ""v"": ""勒鲁什"" },
-          { ""v"": ""鲁鲁修"" },
-          { ""v"": ""ゼロ"" },
-          { ""v"": ""Zero"" },
-          { ""k"": ""英文名"", ""v"": ""Lelouch Lamperouge"" },
-          { ""k"": ""第二中文名"", ""v"": ""鲁路修·冯·布里塔尼亚"" },
-          { ""k"": ""英文名二"", ""v"": ""Lelouch Vie Britannia"" },
-          { ""k"": ""日文名"", ""v"": ""ルルーシュ・ヴィ・ブリタニア"" }
+          { "v": "L.L." },
+          { "v": "勒鲁什" },
+          { "v": "鲁鲁修" },
+          { "v": "ゼロ" },
+          { "v": "Zero" },
+          { "k": "英文名", "v": "Lelouch Lamperouge" },
+          { "k": "第二中文名", "v": "鲁路修·冯·布里塔尼亚" },
+          { "k": "英文名二", "v": "Lelouch Vie Britannia" },
+          { "k": "日文名", "v": "ルルーシュ・ヴィ・ブリタニア" }
         ]
     },
-    { ""key"": ""性别"", ""value"": ""男"" },
-    { ""key"": ""生日"", ""value"": ""12月5日"" },
-    { ""key"": ""血型"", ""value"": ""A型"" },
-    { ""key"": ""身高"", ""value"": ""178cm→181cm"" },
-    { ""key"": ""体重"", ""value"": ""54kg"" },
-    { ""key"": ""引用来源"", ""value"": ""Wikipedia"" }
+    { "key": "性别", "value": "男" },
+    { "key": "生日", "value": "12月5日" },
+    { "key": "血型", "value": "A型" },
+    { "key": "身高", "value": "178cm→181cm" },
+    { "key": "体重", "value": "54kg" },
+    { "key": "引用来源", "value": "Wikipedia" }
   ]
-")!
+""")!
         .ToList().Should().BeEquivalentTo(new List<Item>
         {
             new Item("简体中文名", new Item.StringItemValue("鲁路修·兰佩路基" )),
