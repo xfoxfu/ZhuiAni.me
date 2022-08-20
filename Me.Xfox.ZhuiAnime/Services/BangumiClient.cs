@@ -11,13 +11,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Me.Xfox.ZhuiAnime.External.Bangumi;
 
 namespace Me.Xfox.ZhuiAnime.Services;
 
 public class BangumiClient
 {
     protected const string BANGUMI_API_HOST = "https://api.bgm.tv/";
-    protected BangumiApi BgmApi { get; init; }
+    protected External.Bangumi.BangumiClient BgmApi { get; init; }
     protected HttpClient Client { get; init; }
     protected IOptionsMonitor<Option> Options { get; set; }
     protected ILogger<BangumiClient> Logger { get; set; }

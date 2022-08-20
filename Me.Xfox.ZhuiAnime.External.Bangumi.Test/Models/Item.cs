@@ -36,26 +36,25 @@ public class ItemTest
 ")!
         .ToList().Should().BeEquivalentTo(new List<Item>
         {
-            new Item { Key = "简体中文名", Value = new Item.StringItemValue { Value = "鲁路修·兰佩路基" } },
-            new Item { Key = "别名", Value = new Item.KVListItemValue {
-                Value = new List<Item.KVItem> {
-                new Item.KVItem { Value = "L.L." },
-                new Item.KVItem { Value = "勒鲁什" },
-                new Item.KVItem { Value = "鲁鲁修" },
-                new Item.KVItem { Value = "ゼロ" },
-                new Item.KVItem { Value = "Zero" },
-                new Item.KVItem { Key = "英文名", Value = "Lelouch Lamperouge" },
-                new Item.KVItem { Key = "第二中文名", Value = "鲁路修·冯·布里塔尼亚" },
-                new Item.KVItem { Key = "英文名二", Value = "Lelouch Vie Britannia" },
-                new Item.KVItem { Key = "日文名", Value = "ルルーシュ・ヴィ・ブリタニア" },
-                }
-            }},
-            new Item { Key = "性别", Value = new Item.StringItemValue { Value = "男"} },
-            new Item { Key = "生日", Value = new Item.StringItemValue { Value = "12月5日"} },
-            new Item { Key = "血型", Value = new Item.StringItemValue { Value = "A型"} },
-            new Item { Key = "身高", Value = new Item.StringItemValue { Value = "178cm→181cm"} },
-            new Item { Key = "体重", Value = new Item.StringItemValue { Value = "54kg"} },
-            new Item { Key = "引用来源", Value = new Item.StringItemValue { Value = "Wikipedia"} },
+            new Item("简体中文名", new Item.StringItemValue("鲁路修·兰佩路基" )),
+            new Item("别名", new Item.KVListItemValue(new List<Item.KVItem>
+            {
+                    new Item.KVItem("L.L."),
+                    new Item.KVItem("勒鲁什"),
+                    new Item.KVItem("鲁鲁修"),
+                    new Item.KVItem("ゼロ"),
+                    new Item.KVItem("Zero"),
+                    new Item.KVItem("英文名", "Lelouch Lamperouge"),
+                    new Item.KVItem("第二中文名", "鲁路修·冯·布里塔尼亚"),
+                    new Item.KVItem("英文名二", "Lelouch Vie Britannia"),
+                    new Item.KVItem("日文名", "ルルーシュ・ヴィ・ブリタニア"),
+            })),
+            new Item("性别", new Item.StringItemValue("男")),
+            new Item("生日", new Item.StringItemValue("12月5日")),
+            new Item("血型", new Item.StringItemValue("A型")),
+            new Item("身高", new Item.StringItemValue("178cm→181cm")),
+            new Item("体重", new Item.StringItemValue("54kg")),
+            new Item("引用来源", new Item.StringItemValue("Wikipedia")),
         });
     }
 }

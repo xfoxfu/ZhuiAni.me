@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsing>enable</ImplicitUsing>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
@@ -29,40 +29,14 @@
     </PackageReference>
     <PackageReference Include="Tomlyn" Version="0.14.3" />
   </ItemGroup>
-  <UsingTask TaskName="YamlToJson"     TaskFactory="RoslynCodeTaskFactory"
-    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
-    <ParameterGroup>
-      <Input Required="true" />
-      <Output Required="true" />
-    </ParameterGroup>
-    <Task>
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-          using var client = new System.Net.Http.HttpClient();
-          using var fin = new System.IO.StreamReader("Services/bangumi-api.yaml");
-          var yaml = fin.ReadToEnd();
-          var content = new System.Net.Http.StringContent(yaml);
-          content.Headers.Add("X-Args", "-o=json");
-          var res = client.PostAsync("https://xbin.io/yq", content).Result;
-          var json = res.Content.ReadAsStringAsync().Result;
-          using var fout = new System.IO.StreamWriter("Services/bangumi-api.json");
-          fout.Write(json);
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-  <Target Name="NSwag" AfterTargets="Restore">
-    <DownloadFile SourceUrl="https://github.com/bangumi/api/raw/master/open-api/v0.yaml" DestinationFolder="Services\" DestinationFileName="bangumi-api.yaml">
-      <Output TaskParameter="DownloadedFile" ItemName="Content" />
-    </DownloadFile>
-    <YamlToJson Input="Services\bangumi-api.yaml" Output="Services\bangumi-api.json" />
-    <Exec Command="$(NSwagExe_Net60) openapi2csclient /input:Services/bangumi-api.json /output:Services/BangumiApi.cs /namespace:Me.Xfox.ZhuiAnime.Services /classname:BangumiApi" />
-  </Target>
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
     <Content Remove="$(SpaRoot)**" />
     <None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Me.Xfox.ZhuiAnime.External.Bangumi\Me.Xfox.ZhuiAnime.External.Bangumi.csproj" />
   </ItemGroup>
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
