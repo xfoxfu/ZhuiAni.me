@@ -6,8 +6,34 @@ public class BangumiClientTest
     [TestMethod]
     public async Task TestGetSubject()
     {
-        var client = new BangumiClient();
+        var client = new BangumiApi();
         var subject = await client.GetSubjectAsync(364450);
         subject.Id.Should().Be(364450);
+    }
+
+    [TestMethod]
+    public async Task TestErrorHandling()
+    {
+        var client = new BangumiApi();
+        var op = async () => await client.GetSubjectAsync(53397657);
+        await op.Should().ThrowAsync<BangumiException>()
+            .Where(e => e.Error != null
+            && e.Error.Title == "Not Found"
+            && e.Error.Description == "resource can't be found in the database or has been removed");
+
+        var o2 = async () => await client.GetSubjectAsync(-1);
+        await o2.Should().ThrowAsync<BangumiException>()
+            .Where(e => e.Error != null
+            && e.Error.Title == "Bad Request"
+            && e.Error.Description == "\"-1\" is not valid subject ID");
+    }
+
+    [TestMethod]
+    public async Task TestErrorHandlingNetworkError()
+    {
+        var client = new BangumiApi("https://localhost:53");
+        var op = async () => await client.GetSubjectAsync(53397657);
+        await op.Should().ThrowAsync<BangumiException>()
+            .Where(e => e.Error == null && e.StatusCode == 0 && e.IsNetworkError);
     }
 }
