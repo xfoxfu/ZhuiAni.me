@@ -21,12 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
-    <PackageReference Include="NSwag.ApiDescription.Client" Version="13.0.5" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.16.1" />
-    <PackageReference Include="NSwag.MSBuild" Version="13.16.1">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Tomlyn" Version="0.14.3" />
   </ItemGroup>
   <ItemGroup>

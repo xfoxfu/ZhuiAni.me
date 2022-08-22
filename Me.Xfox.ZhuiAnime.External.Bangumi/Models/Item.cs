@@ -44,7 +44,6 @@ public record Item(
             {
                 return new StringItemValue(obj.GetString()!);
             }
-            Console.WriteLine("{0}", obj);
             var list = obj.Deserialize<ICollection<KVItem>>()!;
             return new KVListItemValue(list);
         }
