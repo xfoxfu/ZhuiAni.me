@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,44 +36,28 @@ public class BangumiClient
     }
 
     #region Subject
-    public enum SubjectImageType
-    {
-        small,
-        grid,
-        large,
-        medium,
-        common,
-    }
-
     public async Task<Models.Anime> SubjectImportToAnimeAsync(int subjectId, CancellationToken ct = default)
     {
-        try
+        using var scope = Scope.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
+
+        var bgmAnime = await BgmApi.GetSubjectAsync(subjectId, ct);
+        if (bgmAnime.Type != SubjectType.Anime) throw new Exception($"subject {subjectId} is not anime");
+
+        var link = new Uri($"https://bgm.tv/subject/{subjectId}");
+        var anime = await dbContext.Anime.Where(a => a.BangumiLink == link).FirstOrDefaultAsync(ct);
+        if (anime == null)
         {
-            using var scope = Scope.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
-
-            var bgmAnime = await BgmApi.GetSubjectAsync(subjectId, ct);
-            if (bgmAnime.Type != SubjectType.Anime) throw new Exception($"subject {subjectId} is not anime");
-
-            var link = new Uri($"https://bgm.tv/subject/{subjectId}");
-            var anime = await dbContext.Anime.Where(a => a.BangumiLink == link).FirstOrDefaultAsync(ct);
-            if (anime == null)
-            {
-                anime = new();
-                dbContext.Anime.Add(anime);
-            }
-
-            anime.Title = bgmAnime.Name;
-            anime.BangumiLink = link;
-            anime.Image = await BgmApi.GetBytesAsync(bgmAnime.Images.Common, ct);
-
-            await dbContext.SaveChangesAsync(ct);
-            return anime;
+            anime = new();
+            dbContext.Anime.Add(anime);
         }
-        catch (Exception e)
-        {
-            throw new BangumiException();
-        }
+
+        anime.Title = bgmAnime.Name;
+        anime.BangumiLink = link;
+        anime.Image = await BgmApi.GetBytesAsync(bgmAnime.Images.Common, ct);
+
+        await dbContext.SaveChangesAsync(ct);
+        return anime;
     }
     #endregion
 
@@ -91,13 +74,6 @@ public class BangumiClient
             builder.Services.Configure<Option>(
                 builder.Configuration.GetSection(LOCATION));
             return builder;
-        }
-    }
-
-    public class BangumiException : Exception
-    {
-        public BangumiException(Exception cause)
-        {
         }
     }
 }

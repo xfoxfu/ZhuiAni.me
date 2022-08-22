@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Tomlyn;
 using Tomlyn.Model;
 
@@ -31,7 +31,7 @@ public class TomlConfigurationProvider : FileConfigurationProvider
     /// <param name="stream">The toml <see cref="Stream"/> to load configuration data from.</param>
     public override void Load(Stream stream)
     {
-        Data = TomlConfigurationFileParser.Parse(stream);
+        Data = TomlConfigurationFileParser.Parse(stream)!;
     }
 }
 
@@ -152,31 +152,27 @@ public static class TomlConfigurationExtensions
 {
     public static IConfigurationBuilder AddTomlFile(
         this IConfigurationBuilder builder,
-        string path,
-        int index = -1)
+        string path)
     {
         return AddTomlFile(
             builder,
             provider: null,
             path: path,
             optional: false,
-            reloadOnChange: false,
-            index: index);
+            reloadOnChange: false);
     }
 
     public static IConfigurationBuilder AddTomlFile(
         this IConfigurationBuilder builder,
         string path,
-        bool optional,
-        int index = -1)
+        bool optional)
     {
         return AddTomlFile(
             builder,
             provider: null,
             path: path,
             optional: optional,
-            reloadOnChange: false,
-            index: index);
+            reloadOnChange: false);
     }
 
     public static IConfigurationBuilder AddTomlFile(
@@ -184,8 +180,7 @@ public static class TomlConfigurationExtensions
         Microsoft.Extensions.FileProviders.IFileProvider? provider,
         string path,
         bool optional,
-        bool reloadOnChange,
-        int index = -1)
+        bool reloadOnChange)
     {
         if (builder is null) throw new ArgumentNullException(nameof(builder));
         if (string.IsNullOrEmpty(path)) throw new ArgumentException("Invalid file path.", nameof(path));
@@ -197,20 +192,35 @@ public static class TomlConfigurationExtensions
             s.Optional = optional;
             s.ReloadOnChange = reloadOnChange;
             s.ResolveFileProvider();
-        }, index);
+        });
     }
 
     public static IConfigurationBuilder AddTomlFile(
         this IConfigurationBuilder builder,
-        Action<TomlConfigurationSource>? configureSource,
-        int index = -1)
+        Action<TomlConfigurationSource>? configureSource)
     {
-        if (index == -1) { builder.Add(configureSource); }
-        else
+        builder.Add(configureSource);
+        return builder;
+    }
+
+    public static IConfigurationBuilder ReplaceJsonWithToml(this IConfigurationBuilder builder)
+    {
+        for (var i = 0; i < builder.Sources.Count; i++)
         {
-            var source = new TomlConfigurationSource();
-            configureSource?.Invoke(source);
-            builder.Sources.Insert(index, source);
+            if (builder.Sources[i] is JsonConfigurationSource j)
+            {
+                var s = new TomlConfigurationSource
+                {
+                    FileProvider = j.FileProvider,
+                    OnLoadException = j.OnLoadException,
+                    Optional = j.Optional,
+                    ReloadDelay = j.ReloadDelay,
+                    ReloadOnChange = j.ReloadOnChange,
+                };
+                if (j.Path != null) s.Path = Path.ChangeExtension(j.Path, "toml");
+                s.ResolveFileProvider();
+                builder.Sources[i] = s;
+            }
         }
         return builder;
     }

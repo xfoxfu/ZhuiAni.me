@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
@@ -5,25 +6,12 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Linq;
-using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureAppConfiguration((ctx, builder) =>
-{
-    var json1 = builder.Sources.IndexOf(builder.Sources.FirstOrDefault(
-        s => s is JsonConfigurationSource j && j.Path.Contains("appsettings.json")));
-    builder.AddTomlFile("appsettings.toml", optional: true, index: json1);
-
-    var json2 = builder.Sources.IndexOf(builder.Sources.FirstOrDefault(
-        s => s is JsonConfigurationSource j && j.Path.Contains($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json")));
-    builder.AddTomlFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.toml", optional: true, index: json2);
-});
-
+builder.Configuration.ReplaceJsonWithToml();
 builder.Services.AddControllersWithViews()
     .AddJsonOptions(options =>
     {
@@ -34,7 +22,12 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddDbContext<ZAContext>(opt =>
 {
-    opt.UseNpgsql(builder.Configuration.GetConnectionString(nameof(ZAContext)));
+    var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext));
+    if (connectionString == null)
+    {
+        throw new System.Exception("Connection string for ZAContext cannot be null");
+    }
+    opt.UseNpgsql(connectionString);
     opt.UseSnakeCaseNamingConvention();
 });
 
@@ -48,17 +41,8 @@ builder.Services.AddOpenApiDocument(c =>
 });
 
 builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
-// builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Services.BangumiData>();
 
 var app = builder.Build();
-
-var c = app.Services.GetService<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
-if (c != null)
-{
-    await c.SubjectImportToAnimeAsync(334498);
-    await c.SubjectImportToAnimeAsync(364450);
-    await c.SubjectImportToAnimeAsync(375817);
-}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
