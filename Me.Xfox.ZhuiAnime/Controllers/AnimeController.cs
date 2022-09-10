@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime.Controllers
 {
-    [ApiController, Route("api/anime")]
+    [ApiController, Route("api/animes")]
     public class AnimeController : ControllerBase
     {
         private ZAContext DbContext { get; init; }
@@ -56,6 +56,20 @@ namespace Me.Xfox.ZhuiAnime.Controllers
                     a.BangumiLink,
                     a.Image != null ? Convert.ToBase64String(a.Image) : null))
                 .SingleAsync();
+        }
+
+        public record Episode(
+            uint Id,
+            string Title
+        );
+
+        [HttpGet("{id}/episodes")]
+        public async Task<IEnumerable<Episode>> GetEpisodesAsync([FromRoute] uint id)
+        {
+            return await DbContext.Episode
+                .Where(e => e.AnimeId == id)
+                .Select(e => new Episode(e.Id, e.Title))
+                .ToListAsync();
         }
 
         public record ImportRequest(int Id);
