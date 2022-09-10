@@ -11,33 +11,38 @@
 
 export interface Anime {
   /** @format int32 */
-  id?: number;
-  title?: string | null;
+  id: number;
+  title: string;
 
   /** @format uri */
-  bangumi_link?: string | null;
+  bangumi_link: string;
 }
 
 export interface AnimeDetailed {
   /** @format int32 */
-  id?: number;
-  title?: string | null;
+  id: number;
+  title: string;
 
   /** @format uri */
-  bangumi_link?: string | null;
+  bangumi_link: string;
   image?: string | null;
 }
 
 export interface Episode {
   /** @format int32 */
-  id?: number;
-  name?: string | null;
-  title?: string | null;
+  id: number;
+  name: string;
+  title: string;
+}
+
+export interface ErrorProdResponse {
+  error_code: string;
+  message: string;
 }
 
 export interface ImportRequest {
   /** @format int32 */
-  id?: number;
+  id: number;
 }
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";
@@ -179,7 +184,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes
      */
     animesList: (params: RequestParams = {}) =>
-      this.request<Anime[], any>({
+      this.request<Anime[], ErrorProdResponse>({
         path: `/api/animes`,
         method: "GET",
         format: "json",
@@ -193,7 +198,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes
      */
     useAnimesList: (options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Anime[], any>(doFetch ? `/api/animes` : null, options),
+      useSWR<Anime[], ErrorProdResponse>(doFetch ? `/api/animes` : null, options),
 
     /**
      * No description
@@ -213,7 +218,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes/{id}
      */
     animesDetail: (id: number, params: RequestParams = {}) =>
-      this.request<AnimeDetailed, any>({
+      this.request<AnimeDetailed, ErrorProdResponse>({
         path: `/api/animes/${id}`,
         method: "GET",
         format: "json",
@@ -227,7 +232,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes/{id}
      */
     useAnimesDetail: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<AnimeDetailed, any>(doFetch ? `/api/animes/${id}` : null, options),
+      useSWR<AnimeDetailed, ErrorProdResponse>(doFetch ? `/api/animes/${id}` : null, options),
 
     /**
      * No description
@@ -247,7 +252,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes/{id}/episodes
      */
     animesEpisodesDetail: (id: number, params: RequestParams = {}) =>
-      this.request<Episode[], any>({
+      this.request<Episode[], ErrorProdResponse>({
         path: `/api/animes/${id}/episodes`,
         method: "GET",
         format: "json",
@@ -261,7 +266,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/animes/{id}/episodes
      */
     useAnimesEpisodesDetail: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Episode[], any>(doFetch ? `/api/animes/${id}/episodes` : null, options),
+      useSWR<Episode[], ErrorProdResponse>(doFetch ? `/api/animes/${id}/episodes` : null, options),
 
     /**
      * No description
@@ -281,7 +286,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/animes/import_bangumi
      */
     animesImportBangumiCreate: (data: ImportRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<void, ErrorProdResponse>({
         path: `/api/animes/import_bangumi`,
         method: "POST",
         body: data,
@@ -293,3 +298,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 
 const api = new Api();
 export default api;
+
+export const fetcher = async (arg: string | [string, Record<string, string>]) => {
+  const [url, params] = typeof arg === "string" ? [arg, {}] : arg;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return await api
+    .request({ path: url, query: params })
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .then((res) => res.data)
+    .catch((err) => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      throw err.response.data;
+    });
+};

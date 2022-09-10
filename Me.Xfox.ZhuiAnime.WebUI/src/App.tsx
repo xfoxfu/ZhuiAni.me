@@ -14,22 +14,10 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 import React from "react";
-
-type Anime = [string, string];
-type Subscription = { n: string; e: string; g: string; r: string; s: string; t: string; l: string };
+import Api from "./api";
 
 const App: React.FunctionComponent = () => {
-  const [subscriptions, setSubscriptions] = React.useState<Subscription[]>();
-  const [anime, setAnime] = React.useState<Anime[]>();
-
-  React.useEffect(() => {
-    fetch("/api/subscriptions", { headers: { "Content-Type": "application/json" } })
-      .then((res) => res.json())
-      .then(setSubscriptions, console.error);
-    fetch("/api/animes", { headers: { "Content-Type": "application/json" } })
-      .then((res) => res.json())
-      .then(setAnime, console.error);
-  }, []);
+  const { data, error } = Api.anime.useAnimesList();
 
   return (
     <Flex>
@@ -58,37 +46,6 @@ const App: React.FunctionComponent = () => {
         <Heading as="h1" size="xl" color="green.700">
           Subscriptions
         </Heading>
-        <Stack spacing="1">
-          {
-            // background-image:url()
-            subscriptions?.map((s) => (
-              <HStack px="3" py="2" borderWidth="1px" rounded="md" bg="white">
-                <Image src="https://mikanani.me/images/Bangumi/202107/97dda452.jpg" alt={s.n} maxH="3em" />
-                <Stack spacing="1">
-                  <Heading as="h3" size="sm">
-                    {s.n} - {s.e}
-                  </Heading>
-                  <HStack spacing="1.5">
-                    <Tag>{s.g}</Tag>
-                    <Tag>{s.r}</Tag>
-                    <Tag>{s.s}</Tag>
-                    <Tag>{s.t}</Tag>
-                    <Tag>{s.l}</Tag>
-                  </HStack>
-                </Stack>
-                <Spacer />
-                <Center>
-                  <Button colorScheme="green" variant="ghost">
-                    Magnet
-                  </Button>
-                  <Button colorScheme="green" variant="ghost">
-                    Torrent
-                  </Button>
-                </Center>
-              </HStack>
-            ))
-          }
-        </Stack>
         <Heading as="h1" size="xl" color="green.700">
           Animations
         </Heading>
@@ -98,12 +55,12 @@ const App: React.FunctionComponent = () => {
             <Button size="sm">3 Days</Button>
           </HStack>
           <SimpleGrid spacingX="3" spacingY="2" minChildWidth="18ch">
-            {anime?.map((a) => (
+            {data?.map((a) => (
               <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
-                <Image src={a[1]} alt={a[0]} />
+                <Image alt={a.title} />
                 <Spacer />
                 <Heading as="h3" size="sm">
-                  {a[0]}
+                  {a.title}
                 </Heading>
               </VStack>
             ))}
