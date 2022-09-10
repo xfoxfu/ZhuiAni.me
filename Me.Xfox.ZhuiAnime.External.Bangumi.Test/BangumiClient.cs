@@ -12,6 +12,22 @@ public class BangumiClientTest
     }
 
     [TestMethod]
+    public async Task TestGetEpisodes()
+    {
+        var client = new BangumiApi();
+        var episodes = await client.GetEpisodesAsync(296870).ToListAsync();
+        episodes.Count.Should().BeGreaterThanOrEqualTo(13);
+    }
+
+    [TestMethod]
+    public async Task TestGetEpisodesPaginated()
+    {
+        var client = new BangumiApi();
+        var episodes = await client.GetEpisodesAsync(899).ToListAsync();
+        episodes.Count.Should().BeGreaterThan(200);
+    }
+
+    [TestMethod]
     public async Task TestErrorHandling()
     {
         var client = new BangumiApi();

@@ -1,4 +1,4 @@
-using System.Text.Json;
+using System.Runtime.CompilerServices;
 using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
 using RestSharp;
 
@@ -32,6 +32,30 @@ public partial class BangumiApi
         var request = new RestRequest("/v0/subjects/{subject_id}", Method.Get)
             .AddUrlSegment("subject_id", id);
         return await GetResponseAsync<Subject>(request, ct);
+    }
+    #endregion
+
+    #region /v0/episodes
+    public async IAsyncEnumerable<Episode> GetEpisodesAsync(
+        int subjectId,
+        [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        uint offset = 0;
+        uint total;
+        do
+        {
+            if (ct.IsCancellationRequested) yield break;
+            var request = new RestRequest("/v0/episodes", Method.Get)
+                .AddQueryParameter("subject_id", subjectId)
+                .AddQueryParameter("offset", offset);
+            var response = await GetResponseAsync<PaginatedResult<Episode>>(request, ct);
+            foreach (var episode in response.Data)
+            {
+                yield return episode;
+            }
+            offset = response.Offset + response.Limit;
+            total = response.Total;
+        } while (offset < total);
     }
     #endregion
 
