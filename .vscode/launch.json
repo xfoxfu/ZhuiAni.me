@@ -5,7 +5,7 @@
       "name": "Web",
       "type": "coreclr",
       "request": "launch",
-      "preLaunchTask": "watch",
+      "preLaunchTask": "build",
       "program": "${workspaceFolder}/Me.Xfox.ZhuiAnime/bin/Debug/net7.0/Me.Xfox.ZhuiAnime.dll",
       "args": [],
       "cwd": "${workspaceFolder}/Me.Xfox.ZhuiAnime",

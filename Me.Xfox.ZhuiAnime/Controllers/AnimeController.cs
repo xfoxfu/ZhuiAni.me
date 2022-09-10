@@ -60,6 +60,7 @@ namespace Me.Xfox.ZhuiAnime.Controllers
 
         public record Episode(
             uint Id,
+            string Name,
             string Title
         );
 
@@ -68,7 +69,7 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         {
             return await DbContext.Episode
                 .Where(e => e.AnimeId == id)
-                .Select(e => new Episode(e.Id, e.Title))
+                .Select(e => new Episode(e.Id, e.Name, e.Title))
                 .ToListAsync();
         }
 

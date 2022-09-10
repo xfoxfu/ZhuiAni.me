@@ -56,6 +56,9 @@ public class BangumiClient
         anime.BangumiLink = link;
         anime.Image = await BgmApi.GetBytesAsync(bgmAnime.Images.Common, ct);
 
+        int episodeNameLength = Convert.ToInt32(Math.Log10(bgmAnime.TotalEpisodes) + 1);
+        string episodeNameFormat = $"{new('0', episodeNameLength)}.###";
+
         var episodes = BgmApi.GetEpisodesAsync(subjectId, ct);
         await foreach (var bgmEpisode in episodes)
         {
@@ -72,6 +75,8 @@ public class BangumiClient
                 dbContext.Episode.Add(episode);
             }
 
+            episode.Name = (bgmEpisode.Sort ?? 0).ToString(episodeNameFormat);
+            if (bgmEpisode.Type == Episode.EpisodeType.SP) episode.Name = $"SP{episode.Name}";
             episode.Title = bgmEpisode.Name;
             episode.Anime = anime;
             episode.BangumiLink = epLink;

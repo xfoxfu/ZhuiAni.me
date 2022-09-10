@@ -14,6 +14,11 @@ public class Episode
 
     public uint AnimeId { get; set; }
 
+    /// <summary>
+    /// Anime episode name, like 01, SP01. Can be used for sorting.
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
     public string Title { get; set; } = string.Empty;
 
     public Uri BangumiLink { get; set; } = new Uri("invalid://");
