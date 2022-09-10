@@ -1,9 +1,12 @@
+using System;
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +34,7 @@ builder.Services.AddDbContext<ZAContext>(opt =>
     var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext));
     if (connectionString == null)
     {
-        throw new System.Exception("Connection string for ZAContext cannot be null");
+        throw new Exception("Connection string for ZAContext cannot be null");
     }
     opt.UseNpgsql(connectionString);
     opt.UseSnakeCaseNamingConvention();
@@ -47,6 +50,8 @@ builder.Services.AddSwaggerGen(options =>
         Version = "v1",
         Title = "ZhuiAni.me API",
     });
+    options.SchemaFilter<RequiredNotNullableSchemaFilter>();
+    options.SupportNonNullableReferenceTypes();
 });
 
 builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
@@ -66,7 +71,6 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
