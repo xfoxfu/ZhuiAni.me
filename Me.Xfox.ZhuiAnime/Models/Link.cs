@@ -9,19 +9,23 @@ public class Link
     public uint Id { get; set; }
     public Uri Address { get; set; } = new Uri("invalid://");
     public string Annotation { get; set; } = string.Empty;
+    public Catalog Catalog { get; set; } = null!;
+    public uint CatalogId { get; set; }
 
     public class LinkConfiguration : IEntityTypeConfiguration<Link>
     {
         public void Configure(EntityTypeBuilder<Link> builder)
         {
+            builder.HasOne(l => l.Catalog)
+                .WithMany(c => c.Links);
         }
     }
 }
 
 public class AnimeLink : Link
 {
-    public Anime? Anime { get; set; }
-    public uint? AnimeId { get; set; }
+    public Anime Anime { get; set; } = null!;
+    public uint AnimeId { get; set; }
 
     public class AnimeLinkConfiguration : IEntityTypeConfiguration<AnimeLink>
     {
@@ -35,8 +39,8 @@ public class AnimeLink : Link
 
 public class EpisodeLink : Link
 {
-    public Episode? Episode { get; set; }
-    public uint? EpisodeId { get; set; }
+    public Episode Episode { get; set; } = null!;
+    public uint EpisodeId { get; set; }
 
     public class EpisodeLinkConfiguration : IEntityTypeConfiguration<EpisodeLink>
     {
