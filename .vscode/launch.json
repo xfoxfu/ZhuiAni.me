@@ -6,7 +6,7 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "watch",
-      "program": "${workspaceFolder}/Me.Xfox.ZhuiAnime/bin/Debug/net6.0/Me.Xfox.ZhuiAnime.dll",
+      "program": "${workspaceFolder}/Me.Xfox.ZhuiAnime/bin/Debug/net7.0/Me.Xfox.ZhuiAnime.dll",
       "args": [],
       "cwd": "${workspaceFolder}/Me.Xfox.ZhuiAnime",
       "stopAtEntry": false,
