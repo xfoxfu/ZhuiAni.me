@@ -56,6 +56,27 @@ public class BangumiClient
         anime.BangumiLink = link;
         anime.Image = await BgmApi.GetBytesAsync(bgmAnime.Images.Common, ct);
 
+        var episodes = BgmApi.GetEpisodesAsync(subjectId, ct);
+        await foreach (var bgmEpisode in episodes)
+        {
+            if (bgmEpisode.Type != Episode.EpisodeType.Origin && bgmEpisode.Type != Episode.EpisodeType.SP)
+            {
+                continue;
+            }
+
+            var epLink = new Uri($"https://bgm.tv/episodes/{bgmEpisode.Id}");
+            var episode = await dbContext.Episode.Where(e => e.BangumiLink == epLink).FirstOrDefaultAsync(ct);
+            if (episode == null)
+            {
+                episode = new();
+                dbContext.Episode.Add(episode);
+            }
+
+            episode.Title = bgmEpisode.Name;
+            episode.Anime = anime;
+            episode.BangumiLink = epLink;
+        }
+
         await dbContext.SaveChangesAsync(ct);
         return anime;
     }
