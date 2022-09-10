@@ -14,6 +14,8 @@ public class Anime
 
     public byte[]? Image { get; set; } = null;
 
+    public string ImageBase64 { get => Convert.ToBase64String(Image ?? Array.Empty<byte>()); }
+
     public Uri BangumiLink { get; set; } = new Uri("invalid://");
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +24,9 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         public record Anime(
             uint Id,
             string Title,
-            Uri BangumiLink
+            Uri BangumiLink,
+            [property:JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+            string? ImageBase64
         );
 
         /// <summary>
@@ -31,10 +34,10 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         /// </summary>
         /// <returns>List of anime. Episodes and links are not returned.</returns>
         [HttpGet]
-        public async Task<IEnumerable<Anime>> ListAsync()
+        public async Task<IEnumerable<Anime>> ListAsync([FromQuery(Name = "include_image")] bool includeImage = false)
         {
             return await DbContext.Anime
-                .Select(a => new Anime(a.Id, a.Title, a.BangumiLink))
+                .Select(a => new Anime(a.Id, a.Title, a.BangumiLink, includeImage ? a.ImageBase64 : null))
                 .ToListAsync();
         }
 

@@ -17,7 +17,7 @@ import React from "react";
 import Api from "./api";
 
 const App: React.FunctionComponent = () => {
-  const { data, error } = Api.anime.useAnimesList();
+  const { data, error } = Api.anime.useAnimesList({ include_image: true });
 
   return (
     <Flex>
@@ -54,17 +54,17 @@ const App: React.FunctionComponent = () => {
             <Button size="sm">Today</Button>
             <Button size="sm">3 Days</Button>
           </HStack>
-          <SimpleGrid spacingX="3" spacingY="2" minChildWidth="18ch">
+          <HStack spacingX="3" spacingY="2" minChildWidth="18ch" alignItems="stretch">
             {data?.map((a) => (
               <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
-                <Image alt={a.title} />
+                <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
                 <Spacer />
                 <Heading as="h3" size="sm">
                   {a.title}
                 </Heading>
               </VStack>
             ))}
-          </SimpleGrid>
+          </HStack>
         </Stack>
       </Stack>
     </Flex>

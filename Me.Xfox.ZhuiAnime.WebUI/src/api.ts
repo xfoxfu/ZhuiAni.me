@@ -16,6 +16,7 @@ export interface Anime {
 
   /** @format uri */
   bangumi_link: string;
+  image_base64?: string | null;
 }
 
 export interface AnimeDetailed {
@@ -183,10 +184,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name AnimesList
      * @request GET:/api/animes
      */
-    animesList: (params: RequestParams = {}) =>
+    animesList: (query?: { include_image?: boolean }, params: RequestParams = {}) =>
       this.request<Anime[], ErrorProdResponse>({
         path: `/api/animes`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
@@ -197,8 +199,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name AnimesList
      * @request GET:/api/animes
      */
-    useAnimesList: (options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Anime[], ErrorProdResponse>(doFetch ? `/api/animes` : null, options),
+    useAnimesList: (query?: { include_image?: boolean }, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<Anime[], ErrorProdResponse>(doFetch ? [`/api/animes`, query] : null, options),
 
     /**
      * No description
@@ -207,8 +209,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name AnimesList
      * @request GET:/api/animes
      */
-    mutateAnimesList: (data?: Anime[] | Promise<Anime[]>, options?: MutatorOptions) =>
-      mutate<Anime[]>(`/api/animes`, data, options),
+    mutateAnimesList: (
+      query?: { include_image?: boolean },
+      data?: Anime[] | Promise<Anime[]>,
+      options?: MutatorOptions
+    ) => mutate<Anime[]>([`/api/animes`, query], data, options),
 
     /**
      * No description
@@ -299,15 +304,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 const api = new Api();
 export default api;
 
-export const fetcher = async (arg: string | [string, Record<string, string>]) => {
-  const [url, params] = typeof arg === "string" ? [arg, {}] : arg;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+export const fetcher = async (path: string, query?: Record<string, unknown>) => {
   return await api
-    .request({ path: url, query: params })
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .request({ path, query })
     .then((res) => res.data)
     .catch((err) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       throw err.response.data;
     });
 };

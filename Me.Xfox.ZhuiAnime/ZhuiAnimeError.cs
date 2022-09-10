@@ -2,8 +2,6 @@ using System;
 using System.Net;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
-using NSwag.Generation.Processors;
-using NSwag.Generation.Processors.Contexts;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Me.Xfox.ZhuiAnime;
@@ -46,27 +44,6 @@ public class ZhuiAnimeError : Exception
         [property:JsonPropertyName("stack_trace")]
         string StackTrace
     );
-
-    public class OpenApiErrorProcessor : IOperationProcessor
-    {
-        public bool Process(OperationProcessorContext context)
-        {
-            if (!context.SchemaResolver.HasSchema(typeof(ErrorProdResponse), false))
-            {
-                context.SchemaResolver.AddSchema(
-                typeof(ErrorProdResponse),
-                false,
-                context.SchemaGenerator.Generate(typeof(ErrorProdResponse)));
-            }
-
-            context.OperationDescription.Operation.Responses[$"{(int)HttpStatusCode.InternalServerError}"]
-                = new NSwag.OpenApiResponse()
-                {
-                    Schema = context.SchemaResolver.GetSchema(typeof(ErrorProdResponse), false),
-                };
-            return true;
-        }
-    }
 
     public class ErrorResponsesOperationFilter : IOperationFilter
     {
