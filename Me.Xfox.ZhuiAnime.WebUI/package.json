@@ -1,7 +1,8 @@
 {
-  "name": "zhui-anime-client",
+  "name": "zhui-anime-webui",
   "version": "0.0.0",
   "license": "MIT",
+  "private": true,
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
