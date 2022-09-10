@@ -31,11 +31,31 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         /// </summary>
         /// <returns>List of anime. Episodes and links are not returned.</returns>
         [HttpGet]
-        public async Task<IEnumerable<Anime>> GetAsync()
+        public async Task<IEnumerable<Anime>> ListAsync()
         {
             return await DbContext.Anime
                 .Select(a => new Anime(a.Id, a.Title, a.BangumiLink))
                 .ToListAsync();
+        }
+
+        public record AnimeDetailed(
+            uint Id,
+            string Title,
+            Uri BangumiLink,
+            string? Image
+        );
+
+        [HttpGet("{id}")]
+        public async Task<AnimeDetailed> GetAsync([FromRoute] uint id)
+        {
+            return await DbContext.Anime
+                .Where(a => a.Id == id)
+                .Select(a => new AnimeDetailed(
+                    a.Id,
+                    a.Title,
+                    a.BangumiLink,
+                    a.Image != null ? Convert.ToBase64String(a.Image) : null))
+                .SingleAsync();
         }
 
         public record ImportRequest(int Id);
