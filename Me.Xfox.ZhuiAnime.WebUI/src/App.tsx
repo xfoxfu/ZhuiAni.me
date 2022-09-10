@@ -26,7 +26,7 @@ const App: React.FunctionComponent = () => {
     fetch("/api/subscriptions", { headers: { "Content-Type": "application/json" } })
       .then((res) => res.json())
       .then(setSubscriptions, console.error);
-    fetch("/api/anime", { headers: { "Content-Type": "application/json" } })
+    fetch("/api/animes", { headers: { "Content-Type": "application/json" } })
       .then((res) => res.json())
       .then(setAnime, console.error);
   }, []);

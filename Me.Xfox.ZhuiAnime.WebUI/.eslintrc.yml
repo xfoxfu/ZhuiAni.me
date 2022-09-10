@@ -13,3 +13,6 @@ extends:
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
   - "prettier"
   - "plugin:prettier/recommended"
+
+ignorePatterns:
+  - "vite.config.ts"
