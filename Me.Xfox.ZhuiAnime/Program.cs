@@ -4,6 +4,7 @@ using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,7 +13,12 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.ReplaceJsonWithToml();
-builder.Services.AddControllersWithViews()
+builder.Services
+    .AddControllersWithViews(options =>
+    {
+        options.OutputFormatters.RemoveType<StringOutputFormatter>();
+        options.OutputFormatters.RemoveType<StreamOutputFormatter>();
+    })
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();

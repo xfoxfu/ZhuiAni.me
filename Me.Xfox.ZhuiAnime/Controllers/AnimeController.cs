@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,14 +20,22 @@ namespace Me.Xfox.ZhuiAnime.Controllers
             Bangumi = client;
         }
 
+        public record Anime(
+            uint Id,
+            string Title,
+            Uri BangumiLink
+        );
+
         /// <summary>
         /// Get all anime.
         /// </summary>
         /// <returns>List of anime. Episodes and links are not returned.</returns>
         [HttpGet]
-        public async Task<List<Models.Anime>> GetAsync()
+        public async Task<IEnumerable<Anime>> GetAsync()
         {
-            return await DbContext.Anime.ToListAsync();
+            return await DbContext.Anime
+                .Select(a => new Anime(a.Id, a.Title, a.BangumiLink))
+                .ToListAsync();
         }
 
         public record ImportRequest(int Id);
