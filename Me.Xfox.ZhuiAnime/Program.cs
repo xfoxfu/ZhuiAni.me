@@ -34,10 +34,13 @@ builder.Services.AddDbContext<ZAContext>(opt =>
 Me.Xfox.ZhuiAnime.Services.BangumiData.Option.ConfigureOn(builder);
 Me.Xfox.ZhuiAnime.Services.BangumiClient.Option.ConfigureOn(builder);
 
-builder.Services.AddOpenApiDocument(c =>
+builder.Services.AddSwaggerGen(options =>
 {
-    c.Title = "ZhuiAni.me API";
-    c.Version = "v1";
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Version = "v1",
+        Title = "ZhuiAni.me API",
+    });
 });
 
 builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
@@ -48,11 +51,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-    app.UseOpenApi(c => c.Path = "/api/swagger/{documentName}/swagger.json");
+    app.UseSwagger(c => c.RouteTemplate = "/api/swagger/{documentName}/swagger.json");
     app.UseReDoc(c =>
     {
-        c.DocumentPath = "/api/swagger/{documentName}/swagger.json";
-        c.Path = "/api/swagger";
+        c.RoutePrefix = "api/swagger";
+        c.SpecUrl = "/api/swagger/v1/swagger.json";
     });
 }
 else
