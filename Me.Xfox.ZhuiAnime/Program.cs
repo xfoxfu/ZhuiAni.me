@@ -94,7 +94,9 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         {
             await context.Response.WriteAsJsonAsync(new ZhuiAnimeError.ErrorProdResponse(
                 error.ErrorCode,
-                error.Message
+                error.Message,
+                context.TraceIdentifier,
+                error.ExtraData
             ));
         }
         else
@@ -102,7 +104,9 @@ app.UseExceptionHandler(exceptionHandlerApp =>
             await context.Response.WriteAsJsonAsync(new ZhuiAnimeError.ErrorDevResponse(
                 error.ErrorCode,
                 error.Message,
-                error.StackTrace ?? error.InnerException?.StackTrace ?? "No stacktrace available."
+                context.TraceIdentifier,
+                error.StackTrace ?? error.InnerException?.StackTrace ?? "No stacktrace available.",
+                error.ExtraData
             ));
         }
     });

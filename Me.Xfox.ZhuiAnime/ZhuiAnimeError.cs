@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
@@ -12,28 +13,42 @@ public class ZhuiAnimeError : Exception
 
     public string ErrorCode { get; set; }
 
-    public ZhuiAnimeError(HttpStatusCode statusCode, string errorCode, string message) : base(message)
+    public IDictionary<string, object> ExtraData { get; set; }
+
+    public ZhuiAnimeError(
+        HttpStatusCode statusCode,
+        string errorCode,
+        string message,
+        Exception? innerException = null) : this(
+            statusCode,
+            errorCode,
+            message,
+            new Dictionary<string, object>(),
+            innerException)
     {
-        StatusCode = statusCode;
-        ErrorCode = errorCode;
     }
 
     public ZhuiAnimeError(
         HttpStatusCode statusCode,
         string errorCode,
         string message,
-        Exception innerException
-    ) : base(message, innerException)
+        IDictionary<string, object> extraData,
+        Exception? innerException = null) : base(message, innerException)
     {
         StatusCode = statusCode;
         ErrorCode = errorCode;
+        ExtraData = extraData;
     }
 
     public record ErrorProdResponse(
         [property:JsonPropertyName("error_code")]
         string ErrorCode,
         [property:JsonPropertyName("message")]
-        string Message
+        string Message,
+        [property:JsonPropertyName("trace_id")]
+        string TraceId,
+        [property:JsonExtensionData]
+        IDictionary<string, object> ExtraData
     );
 
     public record ErrorDevResponse(
@@ -41,8 +56,12 @@ public class ZhuiAnimeError : Exception
         string ErrorCode,
         [property:JsonPropertyName("message")]
         string Message,
+        [property:JsonPropertyName("trace_id")]
+        string TraceId,
         [property:JsonPropertyName("stack_trace")]
-        string StackTrace
+        string StackTrace,
+        [property:JsonExtensionData]
+        IDictionary<string, object> ExtraData
     );
 
     public class ErrorResponsesOperationFilter : IOperationFilter
