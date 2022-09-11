@@ -4,11 +4,8 @@ import {
   HStack,
   Heading,
   Button,
-  Center,
-  Tag,
   chakra,
   Stack,
-  SimpleGrid,
   Image,
   Divider,
   Spacer,
@@ -61,7 +58,7 @@ const App: React.FunctionComponent = () => {
               .fill(data ?? [])
               .flat()
               ?.map((a) => (
-                <WrapItem minW="12ch" alignItems="stretch">
+                <WrapItem minW="12ch" alignItems="stretch" key={a.id}>
                   <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
                     <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
                     <Spacer />
