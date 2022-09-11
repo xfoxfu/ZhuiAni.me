@@ -12,9 +12,11 @@ import {
   Image,
   Divider,
   Spacer,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import React from "react";
-import Api from "./api";
+import Api, { Anime } from "./api";
 
 const App: React.FunctionComponent = () => {
   const { data, error } = Api.anime.useAnimesList({ include_image: true });
@@ -54,17 +56,22 @@ const App: React.FunctionComponent = () => {
             <Button size="sm">Today</Button>
             <Button size="sm">3 Days</Button>
           </HStack>
-          <HStack spacingX="3" spacingY="2" minChildWidth="18ch" alignItems="stretch">
-            {data?.map((a) => (
-              <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
-                <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
-                <Spacer />
-                <Heading as="h3" size="sm">
-                  {a.title}
-                </Heading>
-              </VStack>
-            ))}
-          </HStack>
+          <Wrap spacingX="3" spacingY="2" alignItems="stretch">
+            {new Array<Anime[]>(100)
+              .fill(data ?? [])
+              .flat()
+              ?.map((a) => (
+                <WrapItem minW="12ch" alignItems="stretch">
+                  <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
+                    <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
+                    <Spacer />
+                    <Heading as="h3" size="sm">
+                      {a.title}
+                    </Heading>
+                  </VStack>
+                </WrapItem>
+              ))}
+          </Wrap>
         </Stack>
       </Stack>
     </Flex>
