@@ -1,6 +1,7 @@
 import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { Anime } from "./pages/Anime";
 import { AnimesList } from "./pages/AnimesList";
 
 const App: React.FunctionComponent = () => {
@@ -29,7 +30,10 @@ const App: React.FunctionComponent = () => {
       </Stack>
       <Stack flex="3" padding="4" bg="gray.50" spacing="4">
         <Routes>
-          <Route path="/" element={<AnimesList />} />
+          <Route path="/" element={<AnimesList />}></Route>
+          <Route path="/animes">
+            <Route path=":animeId" element={<Anime />} />
+          </Route>
         </Routes>
       </Stack>
     </Flex>
