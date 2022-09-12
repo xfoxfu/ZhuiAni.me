@@ -11,13 +11,14 @@ import {
   Spacer,
   Wrap,
   WrapItem,
+  Tooltip,
 } from "@chakra-ui/react";
 import React from "react";
-import Api, { Anime } from "./api";
+import Api from "./api";
+import { ImportBangumi } from "./components/anime/ImportBangumi";
 
 const App: React.FunctionComponent = () => {
-  const { data, error } = Api.anime.useAnimesList({ include_image: true });
-
+  const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
   return (
     <Flex>
       <Stack flex="1" bg="green.500" minH="100vh" paddingX="6" paddingY="4" color="white" spacing="4">
@@ -52,22 +53,31 @@ const App: React.FunctionComponent = () => {
           <HStack spacing="1.5">
             <Button size="sm">Today</Button>
             <Button size="sm">3 Days</Button>
+            <ImportBangumi />
           </HStack>
           <Wrap spacingX="3" spacingY="2" alignItems="stretch">
-            {new Array<Anime[]>(100)
-              .fill(data ?? [])
-              .flat()
-              ?.map((a) => (
-                <WrapItem minW="12ch" alignItems="stretch" key={a.id}>
-                  <VStack px="3" py="2" borderWidth="1px" rounded="md" align="stretch" bg="white">
-                    <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
-                    <Spacer />
-                    <Heading as="h3" size="sm">
+            {animes?.map((a) => (
+              <WrapItem alignItems="stretch" key={a.id}>
+                <VStack
+                  minW="18ch"
+                  px="3"
+                  py="2"
+                  borderWidth="1px"
+                  rounded="md"
+                  align="stretch"
+                  bg="white"
+                  width="min-content"
+                >
+                  <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
+                  <Spacer />
+                  <Tooltip label={a.title}>
+                    <Heading as="h3" size="sm" noOfLines={1}>
                       {a.title}
                     </Heading>
-                  </VStack>
-                </WrapItem>
-              ))}
+                  </Tooltip>
+                </VStack>
+              </WrapItem>
+            ))}
           </Wrap>
         </Stack>
       </Stack>
