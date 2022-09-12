@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -49,7 +52,17 @@ public class ZhuiAnimeError : Exception
         string TraceId,
         [property:JsonExtensionData]
         IDictionary<string, object> ExtraData
-    );
+    )
+    {
+        public ErrorProdResponse(ZhuiAnimeError e, string traceId) : this(
+            e.ErrorCode,
+            e.Message,
+            traceId,
+            e.ExtraData)
+        {
+        }
+
+    };
 
     public record ErrorDevResponse(
         [property:JsonPropertyName("error_code")]
@@ -62,7 +75,17 @@ public class ZhuiAnimeError : Exception
         string StackTrace,
         [property:JsonExtensionData]
         IDictionary<string, object> ExtraData
-    );
+    )
+    {
+        public ErrorDevResponse(ZhuiAnimeError e, string traceId) : this(
+              e.ErrorCode,
+              e.Message,
+              traceId,
+              e.StackTrace ?? e.InnerException?.StackTrace ?? "No stacktrace provided.",
+              e.ExtraData)
+        {
+        }
+    };
 
     public class ErrorResponsesOperationFilter : IOperationFilter
     {
@@ -75,6 +98,35 @@ public class ZhuiAnimeError : Exception
             var schema = context.SchemaGenerator.GenerateSchema(typeof(ErrorProdResponse), context.SchemaRepository);
             errorres.Content.Add("application/json", new OpenApiMediaType { Schema = schema });
             operation.Responses.Add($"{(int)HttpStatusCode.InternalServerError}", errorres);
+        }
+    }
+
+    public class ErrorExceptionFilter : IExceptionFilter
+    {
+        private readonly IHostEnvironment _hostEnvironment;
+
+        public ErrorExceptionFilter(IHostEnvironment hostEnvironment) =>
+            _hostEnvironment = hostEnvironment;
+
+        public void OnException(ExceptionContext context)
+        {
+            var error = context.Exception switch
+            {
+                ZhuiAnimeError e => e,
+                Exception e => new InternalServerError(e),
+                null => new InternalServerError(new Exception("Null exception thrown.")),
+            };
+
+            if (_hostEnvironment.IsProduction())
+            {
+                context.Result = new ObjectResult(new ErrorProdResponse(error, context.ActionDescriptor.Id))
+                { StatusCode = (int)error.StatusCode };
+            }
+            else
+            {
+                context.Result = new ObjectResult(new ErrorDevResponse(error, context.ActionDescriptor.Id))
+                { StatusCode = (int)error.StatusCode };
+            }
         }
     }
 
