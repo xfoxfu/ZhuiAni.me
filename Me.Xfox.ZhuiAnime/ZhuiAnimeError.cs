@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -108,25 +110,33 @@ public class ZhuiAnimeError : Exception
         public ErrorExceptionFilter(IHostEnvironment hostEnvironment) =>
             _hostEnvironment = hostEnvironment;
 
-        public void OnException(ExceptionContext context)
+        private static IActionResult NormalizeError(Exception exception, string traceId, bool isProduction)
         {
-            var error = context.Exception switch
+            var error = exception switch
             {
                 ZhuiAnimeError e => e,
                 Exception e => new InternalServerError(e),
                 null => new InternalServerError(new Exception("Null exception thrown.")),
             };
 
-            if (_hostEnvironment.IsProduction())
+            if (isProduction)
             {
-                context.Result = new ObjectResult(new ErrorProdResponse(error, context.ActionDescriptor.Id))
+                return new ObjectResult(new ErrorProdResponse(error, traceId))
                 { StatusCode = (int)error.StatusCode };
             }
             else
             {
-                context.Result = new ObjectResult(new ErrorDevResponse(error, context.ActionDescriptor.Id))
+                return new ObjectResult(new ErrorDevResponse(error, traceId))
                 { StatusCode = (int)error.StatusCode };
             }
+        }
+
+        public void OnException(ExceptionContext context)
+        {
+            context.Result = NormalizeError(
+                context.Exception,
+                context.ActionDescriptor.Id,
+                _hostEnvironment.IsProduction());
         }
     }
 
@@ -143,5 +153,17 @@ public class ZhuiAnimeError : Exception
     {
         public EndpointNotFound() : base(HttpStatusCode.NotFound, "ENDPOINT_NOT_FOUND", "API endpoint not found.") { }
     }
-}
 
+    public class BadRequest : ZhuiAnimeError
+    {
+        public BadRequest(ModelStateDictionary state) : base(
+            HttpStatusCode.BadRequest,
+            "BAD_REQUEST",
+            "Request body is invalid.")
+        {
+            ExtraData.Add("errors", state
+                .Select(e => new { e.Key, Value = e.Value?.Errors.Select(e => e.ErrorMessage) })
+                .ToDictionary(e => e.Key, e => e.Value));
+        }
+    }
+}

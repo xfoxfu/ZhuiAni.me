@@ -28,6 +28,11 @@ builder.Services
         options.JsonSerializerOptions.DictionaryKeyPolicy = new JsonSnakeCaseNamingPolicy();
         options.JsonSerializerOptions.PropertyNamingPolicy = new JsonSnakeCaseNamingPolicy();
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+            throw new ZhuiAnimeError.BadRequest(context.ModelState);
     });
 
 builder.Services.AddDbContext<ZAContext>(opt =>
