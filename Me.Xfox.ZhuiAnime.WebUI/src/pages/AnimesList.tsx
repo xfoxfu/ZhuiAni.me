@@ -52,7 +52,6 @@ export const AnimesList: React.FunctionComponent = () => {
                 width="min-content"
               >
                 <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
-                <Spacer />
                 <Tooltip label={a.title}>
                   <Heading as="h3" size="sm" noOfLines={1}>
                     <Link to={`/animes/${a.id}`}>{a.title}</Link>

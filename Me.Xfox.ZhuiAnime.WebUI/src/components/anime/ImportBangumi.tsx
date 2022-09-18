@@ -28,7 +28,11 @@ export const ImportBangumi: React.FunctionComponent = () => {
     setIsLoading(true);
     Api.anime
       .animesImportBangumiCreate({ id: Number.parseInt(importLink, 10) })
-      .then(() => toast({ title: "Anime imported.", status: "success" }))
+      .then(() => {
+        toast({ title: "Anime imported.", status: "success" });
+        void Api.anime.mutateAnimesList();
+        void Api.anime.mutateAnimesList({ include_image: true });
+      })
       .catch((err) =>
         toast({
           title: "Failed to import anime.",
@@ -44,8 +48,6 @@ export const ImportBangumi: React.FunctionComponent = () => {
       .finally(() => {
         setIsLoading(false);
         setIsOpen(false);
-        void Api.anime.mutateAnimesList();
-        void Api.anime.mutateAnimesList({ include_image: true });
       });
   };
 
