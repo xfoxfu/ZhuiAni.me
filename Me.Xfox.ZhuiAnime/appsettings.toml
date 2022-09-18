@@ -1,9 +1,19 @@
 AllowedHosts = "*"
 
-[Logging.LogLevel]
-Default = "Information"
-Microsoft = "Warning"
-"Microsoft.Hosting.Lifetime" = "Information"
+[Serilog]
+Using = ["Serilog.Sinks.Console"]
+
+[Serilog.MinimumLevel]
+Default = "Debug"
+[Serilog.MinimumLevel.Override]
+Microsoft = "Information"
+"Microsoft.AspNetCore" = "Warning"
+
+[[Serilog.WriteTo]]
+Name = "Console"
+
+[Serilog.Properties]
+Application = "ZhuiAni.me"
 
 [ConnectionStrings]
 ZAContext = "Host=localhost;Database=zhuianime;Include Error Detail=true"

@@ -4,18 +4,33 @@ using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithCorrelationId()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .Enrich.WithCorrelationId()
+);
+
 builder.Configuration.ReplaceJsonWithToml();
+
+builder.Services.AddHttpContextAccessor();
+
 builder.Services
     .AddControllers(options =>
     {
@@ -80,6 +95,8 @@ else
 {
     app.UseHsts();
 }
+
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 app.UseStaticFiles();

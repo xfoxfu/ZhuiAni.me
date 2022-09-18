@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -50,16 +51,13 @@ public class ZhuiAnimeError : Exception
         string ErrorCode,
         [property:JsonPropertyName("message")]
         string Message,
-        [property:JsonPropertyName("trace_id")]
-        string TraceId,
         [property:JsonExtensionData]
         IDictionary<string, object> ExtraData
     )
     {
-        public ErrorProdResponse(ZhuiAnimeError e, string traceId) : this(
+        public ErrorProdResponse(ZhuiAnimeError e) : this(
             e.ErrorCode,
             e.Message,
-            traceId,
             e.ExtraData)
         {
         }
@@ -71,18 +69,15 @@ public class ZhuiAnimeError : Exception
         string ErrorCode,
         [property:JsonPropertyName("message")]
         string Message,
-        [property:JsonPropertyName("trace_id")]
-        string TraceId,
         [property:JsonPropertyName("stack_trace")]
         string StackTrace,
         [property:JsonExtensionData]
         IDictionary<string, object> ExtraData
     )
     {
-        public ErrorDevResponse(ZhuiAnimeError e, string traceId) : this(
+        public ErrorDevResponse(ZhuiAnimeError e) : this(
               e.ErrorCode,
               e.Message,
-              traceId,
               e.StackTrace ?? e.InnerException?.StackTrace ?? "No stacktrace provided.",
               e.ExtraData)
         {
@@ -110,7 +105,7 @@ public class ZhuiAnimeError : Exception
         public ErrorExceptionFilter(IHostEnvironment hostEnvironment) =>
             _hostEnvironment = hostEnvironment;
 
-        private static IActionResult NormalizeError(Exception exception, string traceId, bool isProduction)
+        private static IActionResult NormalizeError(Exception exception, ExceptionContext context, bool isProduction)
         {
             var error = exception switch
             {
@@ -119,14 +114,18 @@ public class ZhuiAnimeError : Exception
                 null => new InternalServerError(new Exception("Null exception thrown.")),
             };
 
+            error.ExtraData.Add("connection_id", context.HttpContext.Connection.Id);
+            error.ExtraData.Add("request_id", context.HttpContext.TraceIdentifier);
+            error.ExtraData.Add("action_id", context.ActionDescriptor.Id);
+
             if (isProduction)
             {
-                return new ObjectResult(new ErrorProdResponse(error, traceId))
+                return new ObjectResult(new ErrorProdResponse(error))
                 { StatusCode = (int)error.StatusCode };
             }
             else
             {
-                return new ObjectResult(new ErrorDevResponse(error, traceId))
+                return new ObjectResult(new ErrorDevResponse(error))
                 { StatusCode = (int)error.StatusCode };
             }
         }
@@ -135,7 +134,7 @@ public class ZhuiAnimeError : Exception
         {
             context.Result = NormalizeError(
                 context.Exception,
-                context.ActionDescriptor.Id,
+                context,
                 _hostEnvironment.IsProduction());
         }
     }

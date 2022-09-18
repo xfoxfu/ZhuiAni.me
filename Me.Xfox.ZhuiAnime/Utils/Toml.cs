@@ -207,7 +207,7 @@ public static class TomlConfigurationExtensions
     {
         for (var i = 0; i < builder.Sources.Count; i++)
         {
-            if (builder.Sources[i] is JsonConfigurationSource j)
+            if (builder.Sources[i] is JsonConfigurationSource j && (j.Path?.StartsWith("appsettings") ?? false))
             {
                 var s = new TomlConfigurationSource
                 {
