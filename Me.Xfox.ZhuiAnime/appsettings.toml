@@ -1,7 +1,7 @@
 AllowedHosts = "*"
 
 [Serilog]
-Using = ["Serilog.Sinks.Console", "Me.Xfox.ZhuiAnime"]
+Using = ["Serilog.Sinks.Console", "Me.Xfox.ZhuiAnime", "Sentry.Serilog"]
 
 [Serilog.MinimumLevel]
 Default = "Debug"

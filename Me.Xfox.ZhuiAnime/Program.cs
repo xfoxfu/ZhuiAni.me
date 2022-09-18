@@ -20,6 +20,8 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.UseSentry();
+
 builder.Configuration.ReplaceJsonWithToml();
 builder.Configuration.AddTomlFile("appsettings.Local.toml", true);
 
@@ -28,9 +30,7 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Services(services)
     .Enrich.FromLogContext()
     .Enrich.WithCorrelationId()
-// .WriteTo.InfluxDB()
 );
-
 
 builder.Services.AddHttpContextAccessor();
 
@@ -99,6 +99,7 @@ else
     app.UseHsts();
 }
 
+app.UseSentryTracing();
 app.UseSerilogRequestLogging();
 
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
