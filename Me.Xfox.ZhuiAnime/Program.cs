@@ -20,14 +20,17 @@ Log.Logger = new LoggerConfiguration()
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.ReplaceJsonWithToml();
+builder.Configuration.AddTomlFile("appsettings.Local.toml", true);
+
 builder.Host.UseSerilog((context, services, configuration) => configuration
     .ReadFrom.Configuration(context.Configuration)
     .ReadFrom.Services(services)
     .Enrich.FromLogContext()
     .Enrich.WithCorrelationId()
+// .WriteTo.InfluxDB()
 );
 
-builder.Configuration.ReplaceJsonWithToml();
 
 builder.Services.AddHttpContextAccessor();
 

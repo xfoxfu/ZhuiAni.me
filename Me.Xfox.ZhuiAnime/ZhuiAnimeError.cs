@@ -100,10 +100,14 @@ public class ZhuiAnimeError : Exception
 
     public class ErrorExceptionFilter : IExceptionFilter
     {
-        private readonly IHostEnvironment _hostEnvironment;
+        private readonly IHostEnvironment HostEnvironment;
+        private readonly Serilog.ILogger Logger;
 
-        public ErrorExceptionFilter(IHostEnvironment hostEnvironment) =>
-            _hostEnvironment = hostEnvironment;
+        public ErrorExceptionFilter(IHostEnvironment hostEnvironment, Serilog.ILogger logger)
+        {
+            HostEnvironment = hostEnvironment;
+            Logger = logger;
+        }
 
         private static IActionResult NormalizeError(Exception exception, ExceptionContext context, bool isProduction)
         {
@@ -132,10 +136,15 @@ public class ZhuiAnimeError : Exception
 
         public void OnException(ExceptionContext context)
         {
+            if (context.Exception is Exception e)
+            {
+                Logger.Error(e, "Internal error occurred.");
+            }
+
             context.Result = NormalizeError(
                 context.Exception,
                 context,
-                _hostEnvironment.IsProduction());
+                HostEnvironment.IsProduction());
         }
     }
 

@@ -7,8 +7,8 @@ using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace Me.Xfox.ZhuiAnime.Services;
 
@@ -17,12 +17,12 @@ public class BangumiClient
     protected const string BANGUMI_API_HOST = "https://api.bgm.tv/";
     protected BangumiApi BgmApi { get; init; }
     protected IOptionsMonitor<Option> Options { get; set; }
-    protected ILogger<BangumiClient> Logger { get; set; }
+    protected ILogger Logger { get; set; }
     protected IServiceScopeFactory Scope { get; set; }
     protected string AppId { get => Options.CurrentValue.AppId; }
     protected string AppSecret { get => Options.CurrentValue.AppSecret; }
 
-    public BangumiClient(IOptionsMonitor<Option> options, ILogger<BangumiClient> logger, IServiceScopeFactory scope)
+    public BangumiClient(IOptionsMonitor<Option> options, ILogger logger, IServiceScopeFactory scope)
     {
         Options = options;
         Logger = logger;

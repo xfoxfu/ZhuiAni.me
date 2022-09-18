@@ -1,7 +1,7 @@
 AllowedHosts = "*"
 
 [Serilog]
-Using = ["Serilog.Sinks.Console"]
+Using = ["Serilog.Sinks.Console", "Me.Xfox.ZhuiAnime"]
 
 [Serilog.MinimumLevel]
 Default = "Debug"
@@ -9,7 +9,7 @@ Default = "Debug"
 Microsoft = "Information"
 "Microsoft.AspNetCore" = "Warning"
 
-[[Serilog.WriteTo]]
+[Serilog.WriteTo.Console]
 Name = "Console"
 
 [Serilog.Properties]
