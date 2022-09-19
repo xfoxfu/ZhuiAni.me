@@ -25,13 +25,13 @@
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="6.0.0" />
     <PackageReference Include="InfluxDB.Client" Version="4.5.0" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.0-preview.6.21355.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.4">
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.9">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.3" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.9" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.7" />
     <PackageReference Include="NSwag.Annotations" Version="13.17.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="3.21.0" />
     <PackageReference Include="Sentry.Serilog" Version="3.21.0" />
@@ -43,7 +43,7 @@
     <PackageReference Include="Serilog.Sinks.PeriodicBatching" Version="3.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.4.0" />
-    <PackageReference Include="Tomlyn" Version="0.14.3" />
+    <PackageReference Include="Tomlyn" Version="0.15.0" />
   </ItemGroup>
 
   <ItemGroup>
