@@ -17,6 +17,11 @@
     <UserSecretsId>86322a12-80fe-4f6d-b08b-b98cb0427acc</UserSecretsId>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="EFCore.NamingConventions" Version="6.0.0" />
     <PackageReference Include="InfluxDB.Client" Version="4.5.0" />
@@ -27,6 +32,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.4" />
+    <PackageReference Include="NSwag.Annotations" Version="13.17.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="3.21.0" />
     <PackageReference Include="Sentry.Serilog" Version="3.21.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />

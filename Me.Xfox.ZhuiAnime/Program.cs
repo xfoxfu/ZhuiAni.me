@@ -77,6 +77,9 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
     options.SchemaFilter<RequiredNotNullableSchemaFilter>();
     options.SupportNonNullableReferenceTypes();
+    options.IncludeXmlComments(System.IO.Path.Combine(
+        AppContext.BaseDirectory,
+        $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
 builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();

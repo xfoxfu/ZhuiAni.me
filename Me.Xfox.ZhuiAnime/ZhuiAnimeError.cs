@@ -174,4 +174,15 @@ public class ZhuiAnimeError : Exception
                 .ToDictionary(e => e.Key, e => e.Value));
         }
     }
+
+    public class AnimeNotFound : ZhuiAnimeError
+    {
+        public AnimeNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "ANIME_NOT_FOUND",
+            $"Anime {id} not found.")
+        {
+            ExtraData.Add("anime_id", id);
+        }
+    }
 }

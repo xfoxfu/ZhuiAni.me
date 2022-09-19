@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime.Controllers
 {
+    /// <summary>
+    /// Get anime.
+    /// </summary>
     [ApiController, Route("api/animes")]
     public class AnimeController : ControllerBase
     {
@@ -21,6 +24,13 @@ namespace Me.Xfox.ZhuiAnime.Controllers
             Bangumi = client;
         }
 
+        /// <summary>
+        /// Anime information.
+        /// </summary>
+        /// <param name="Id">id</param>
+        /// <param name="Title">original title</param>
+        /// <param name="BangumiLink">link to bgm.tv subject</param>
+        /// <param name="ImageBase64">key vision image (if include_image), base64 encoded</param>
         public record Anime(
             uint Id,
             string Title,
@@ -30,9 +40,10 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         );
 
         /// <summary>
-        /// Get all anime.
+        /// Get all animes.
         /// </summary>
-        /// <returns>List of anime. Episodes and links are not returned.</returns>
+        /// <param name="includeImage">whether include key vision image in result</param>
+        /// <returns>List of anime.</returns>
         [HttpGet]
         public async Task<IEnumerable<Anime>> ListAsync([FromQuery(Name = "include_image")] bool includeImage = false)
         {
@@ -41,24 +52,33 @@ namespace Me.Xfox.ZhuiAnime.Controllers
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Detailed anime information.
+        /// </summary>
+        /// <param name="Id">id</param>
+        /// <param name="Title">original title</param>
+        /// <param name="BangumiLink">link to bgm.tv subject</param>
+        /// <param name="ImageBase64">key vision image (zero byte if not exist), base64 encoded</param>
         public record AnimeDetailed(
             uint Id,
             string Title,
             Uri BangumiLink,
-            string? Image
+            string ImageBase64
         );
 
         [HttpGet("{id}")]
         public async Task<AnimeDetailed> GetAsync([FromRoute] uint id)
         {
-            return await DbContext.Anime
+            var anime = await DbContext.Anime
                 .Where(a => a.Id == id)
                 .Select(a => new AnimeDetailed(
                     a.Id,
                     a.Title,
                     a.BangumiLink,
-                    a.Image != null ? Convert.ToBase64String(a.Image) : null))
-                .SingleAsync();
+                    a.ImageBase64))
+                .SingleOrDefaultAsync();
+            if (anime == null) throw new ZhuiAnimeError.AnimeNotFound(id);
+            return anime;
         }
 
         public record Episode(

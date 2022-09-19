@@ -9,24 +9,50 @@
  * ---------------------------------------------------------------
  */
 
+/**
+ * Anime information.
+ */
 export interface Anime {
-  /** @format int32 */
+  /**
+   * id
+   * @format int32
+   */
   id: number;
+
+  /** original title */
   title: string;
 
-  /** @format uri */
+  /**
+   * link to bgm.tv subject
+   * @format uri
+   */
   bangumi_link: string;
+
+  /** key vision image (if include_image), base64 encoded */
   image_base64?: string | null;
 }
 
+/**
+ * Detailed anime information.
+ */
 export interface AnimeDetailed {
-  /** @format int32 */
+  /**
+   * id
+   * @format int32
+   */
   id: number;
+
+  /** original title */
   title: string;
 
-  /** @format uri */
+  /**
+   * link to bgm.tv subject
+   * @format uri
+   */
   bangumi_link: string;
-  image?: string | null;
+
+  /** key vision image (zero byte if not exist), base64 encoded */
+  image_base64: string;
 }
 
 export interface Episode {
@@ -182,6 +208,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Anime
      * @name AnimesList
+     * @summary Get all animes.
      * @request GET:/api/animes
      */
     animesList: (query?: { include_image?: boolean }, params: RequestParams = {}) =>
@@ -197,6 +224,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Anime
      * @name AnimesList
+     * @summary Get all animes.
      * @request GET:/api/animes
      */
     useAnimesList: (query?: { include_image?: boolean }, options?: SWRConfiguration, doFetch: boolean = true) =>
@@ -207,6 +235,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Anime
      * @name AnimesList
+     * @summary Get all animes.
      * @request GET:/api/animes
      */
     mutateAnimesList: (
@@ -288,6 +317,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Anime
      * @name AnimesImportBangumiCreate
+     * @summary Import anime from bgm.tv.
      * @request POST:/api/animes/import_bangumi
      */
     animesImportBangumiCreate: (data: ImportRequest, params: RequestParams = {}) =>
