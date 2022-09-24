@@ -196,4 +196,16 @@ public class ZhuiAnimeError : Exception
             ExtraData.Add("episode_id", id);
         }
     }
+
+    public class EpisodeNotBelongToAnime : ZhuiAnimeError
+    {
+        public EpisodeNotBelongToAnime(uint episodeId, uint animeId) : base(
+            HttpStatusCode.NotFound,
+            "EPISODE_NOT_BELONG_TO_ANIME",
+            $"Episode {episodeId} does not belong to Anime {animeId}.")
+        {
+            ExtraData.Add("episode_id", episodeId);
+            ExtraData.Add("anime_id", animeId);
+        }
+    }
 }

@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Serilog;
 
 namespace Me.Xfox.ZhuiAnime.Models;
 
@@ -46,7 +48,7 @@ public class Episode
     {
         private readonly ZAContext DbContext;
 
-        public EpisodeModelBinder(ZAContext dbContext)
+        public EpisodeModelBinder(ZAContext dbContext, ILogger logger) : base(logger)
         {
             DbContext = dbContext;
         }
@@ -55,6 +57,7 @@ public class Episode
 
         protected override ZhuiAnimeError GetError(uint id) => new ZhuiAnimeError.EpisodeNotFound(id);
 
-        protected override ValueTask<Episode?> GetValue(uint id) => DbContext.Episode.FindAsync(id);
+        protected override Task<Episode?> GetValue(uint id) =>
+            DbContext.Episode.Include(e => e.Anime).Where(e => e.Id == id).FirstOrDefaultAsync();
     }
 }

@@ -1,13 +1,21 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Serilog;
 
 namespace Me.Xfox.ZhuiAnime.Utils;
 
 public abstract class ZAModelBinder<T> : IModelBinder
 {
+    protected readonly ILogger Logger;
+
+    protected ZAModelBinder(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     protected abstract string ModelName { get; }
-    protected abstract ValueTask<T?> GetValue(uint id);
+    protected abstract Task<T?> GetValue(uint id);
     protected abstract ZhuiAnimeError GetError(uint id);
 
     public async Task BindModelAsync(ModelBindingContext bindingContext)
@@ -18,6 +26,7 @@ public abstract class ZAModelBinder<T> : IModelBinder
         }
 
         var modelName = bindingContext.ModelName;
+        Logger.Information("Finding binding for {ModelName}", modelName);
 
         // Try to fetch the value of the argument by name
         var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
@@ -41,6 +50,10 @@ public abstract class ZAModelBinder<T> : IModelBinder
 
         var model = await GetValue(id);
         if (model == null) throw GetError(id);
+
+        Logger.Information("Adding {ItemKey} to HttpContext.Items", typeof(T));
+        bindingContext.HttpContext.Items.Add(typeof(T), model);
+
         bindingContext.Result = ModelBindingResult.Success(model);
     }
 }

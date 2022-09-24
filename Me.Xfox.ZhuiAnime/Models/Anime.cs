@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Serilog;
 
 namespace Me.Xfox.ZhuiAnime.Models;
 
@@ -42,7 +42,7 @@ public class Anime
     {
         private readonly ZAContext DbContext;
 
-        public AnimeModelBinder(ZAContext dbContext)
+        public AnimeModelBinder(ZAContext dbContext, ILogger logger) : base(logger)
         {
             DbContext = dbContext;
         }
@@ -51,6 +51,6 @@ public class Anime
 
         protected override ZhuiAnimeError GetError(uint id) => new ZhuiAnimeError.AnimeNotFound(id);
 
-        protected override ValueTask<Anime?> GetValue(uint id) => DbContext.Anime.FindAsync(id);
+        protected override Task<Anime?> GetValue(uint id) => DbContext.Anime.FindAsync(id).AsTask();
     }
 }
