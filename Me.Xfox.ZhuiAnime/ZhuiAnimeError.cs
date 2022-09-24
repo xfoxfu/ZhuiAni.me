@@ -208,4 +208,15 @@ public class ZhuiAnimeError : Exception
             ExtraData.Add("anime_id", animeId);
         }
     }
+
+    public class CatalogNotFound : ZhuiAnimeError
+    {
+        public CatalogNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "CATALOG_NOT_FOUND",
+            $"Catalog {id} not found.")
+        {
+            ExtraData.Add("catalog_id", id);
+        }
+    }
 }

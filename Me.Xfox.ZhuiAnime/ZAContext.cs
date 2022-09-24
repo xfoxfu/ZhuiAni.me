@@ -14,6 +14,7 @@ public class ZAContext : DbContext
     public DbSet<Episode> Episode { get; set; } = null!;
     public DbSet<AnimeLink> AnimeLink { get; set; } = null!;
     public DbSet<EpisodeLink> EpisodeLink { get; set; } = null!;
+    public DbSet<Catalog> Catalog { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
