@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Me.Xfox.ZhuiAnime.Utils;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Me.Xfox.ZhuiAnime.Models;
 
+[ModelBinder(typeof(AnimeModelBinder))]
 public class Anime
 {
     public uint Id { get; set; }
@@ -31,5 +36,21 @@ public class Anime
             builder.HasIndex(a => a.BangumiLink)
                 .IsUnique();
         }
+    }
+
+    public class AnimeModelBinder : ZAModelBinder<Anime>
+    {
+        private readonly ZAContext DbContext;
+
+        public AnimeModelBinder(ZAContext dbContext)
+        {
+            DbContext = dbContext;
+        }
+
+        protected override string ModelName => "Anime ID";
+
+        protected override ZhuiAnimeError GetError(uint id) => new ZhuiAnimeError.AnimeNotFound(id);
+
+        protected override ValueTask<Anime?> GetValue(uint id) => DbContext.Anime.FindAsync(id);
     }
 }

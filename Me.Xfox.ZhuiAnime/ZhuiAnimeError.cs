@@ -136,7 +136,7 @@ public class ZhuiAnimeError : Exception
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is Exception e)
+            if (context.Exception is Exception e and not ZhuiAnimeError)
             {
                 Logger.Error(e, "Internal error occurred.");
             }
@@ -183,6 +183,17 @@ public class ZhuiAnimeError : Exception
             $"Anime {id} not found.")
         {
             ExtraData.Add("anime_id", id);
+        }
+    }
+
+    public class EpisodeNotFound : ZhuiAnimeError
+    {
+        public EpisodeNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "EPISODE_NOT_FOUND",
+            $"Episode {id} not found.")
+        {
+            ExtraData.Add("episode_id", id);
         }
     }
 }

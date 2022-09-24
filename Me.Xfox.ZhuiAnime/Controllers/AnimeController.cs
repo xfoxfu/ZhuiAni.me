@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,7 +32,7 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         /// <param name="Title">original title</param>
         /// <param name="BangumiLink">link to bgm.tv subject</param>
         /// <param name="ImageBase64">key vision image (if include_image), base64 encoded</param>
-        public record Anime(
+        public record AnimeDto(
             uint Id,
             string Title,
             Uri BangumiLink,
@@ -45,10 +46,10 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         /// <param name="includeImage">whether include key vision image in result</param>
         /// <returns>List of anime.</returns>
         [HttpGet]
-        public async Task<IEnumerable<Anime>> ListAsync([FromQuery(Name = "include_image")] bool includeImage = false)
+        public async Task<IEnumerable<AnimeDto>> ListAsync([FromQuery(Name = "include_image")] bool includeImage = false)
         {
             return await DbContext.Anime
-                .Select(a => new Anime(a.Id, a.Title, a.BangumiLink, includeImage ? a.ImageBase64 : null))
+                .Select(a => new AnimeDto(a.Id, a.Title, a.BangumiLink, includeImage ? a.ImageBase64 : null))
                 .ToListAsync();
         }
 
@@ -59,41 +60,47 @@ namespace Me.Xfox.ZhuiAnime.Controllers
         /// <param name="Title">original title</param>
         /// <param name="BangumiLink">link to bgm.tv subject</param>
         /// <param name="ImageBase64">key vision image (zero byte if not exist), base64 encoded</param>
-        public record AnimeDetailed(
+        public record AnimeDetailedDto(
             uint Id,
             string Title,
             Uri BangumiLink,
             string ImageBase64
         );
 
-        [HttpGet("{id}")]
-        public async Task<AnimeDetailed> GetAsync([FromRoute] uint id)
+        [HttpGet("{anime}")]
+        public AnimeDetailedDto Get(Anime anime)
         {
-            var anime = await DbContext.Anime
-                .Where(a => a.Id == id)
-                .Select(a => new AnimeDetailed(
-                    a.Id,
-                    a.Title,
-                    a.BangumiLink,
-                    a.ImageBase64))
-                .SingleOrDefaultAsync();
-            if (anime == null) throw new ZhuiAnimeError.AnimeNotFound(id);
-            return anime;
+            return new AnimeDetailedDto(
+                anime.Id,
+                anime.Title,
+                anime.BangumiLink,
+                anime.ImageBase64
+            );
         }
 
-        public record Episode(
+        public record EpisodeDto(
             uint Id,
             string Name,
             string Title
         );
 
         [HttpGet("{id}/episodes")]
-        public async Task<IEnumerable<Episode>> GetEpisodesAsync([FromRoute] uint id)
+        public async Task<IEnumerable<EpisodeDto>> GetEpisodesAsync([FromRoute] uint id)
         {
             return await DbContext.Episode
                 .Where(e => e.AnimeId == id)
-                .Select(e => new Episode(e.Id, e.Name, e.Title))
+                .Select(e => new EpisodeDto(e.Id, e.Name, e.Title))
                 .ToListAsync();
+        }
+
+        [HttpGet("{anime}/episodes/{episode}")]
+        public EpisodeDto GetEpisode(Anime anime, Episode episode)
+        {
+            return new EpisodeDto(
+                episode.Id,
+                episode.Name,
+                episode.Title
+            );
         }
 
         public record ImportRequest(int Id);
