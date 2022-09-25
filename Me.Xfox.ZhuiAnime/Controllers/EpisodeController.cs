@@ -32,6 +32,7 @@ public class EpisodeController : ControllerBase
         return await DbContext.Entry(anime)
             .Collection(a => a.Episodes!)
             .Query()
+            .OrderBy(e => e.Name)
             .Select(e => new EpisodeDto(e.Id, e.Name, e.Title))
             .ToListAsync();
     }

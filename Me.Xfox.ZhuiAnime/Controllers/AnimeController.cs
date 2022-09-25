@@ -43,12 +43,25 @@ public class AnimeController : ControllerBase
     /// <summary>
     /// Get all animes.
     /// </summary>
+    /// <remarks>
+    /// This API provides pagination based on cursor. `count` determines the size of a single page, and `cursor`
+    /// determines the ID of first item. To acquire a next page, set `cursor` to the last ID of current page + 1.
+    /// If the item count of current page is smaller than `count`, then it suggests the current page is the last page.
+    /// </remarks>
+    /// <param name="cursor">minimum id of first item in the page</param>
+    /// <param name="count">page size, defaults to 20</param>
     /// <param name="includeImage">whether include key vision image in result</param>
     /// <returns>List of anime.</returns>
     [HttpGet]
-    public async Task<IEnumerable<AnimeDto>> ListAsync([FromQuery(Name = "include_image")] bool includeImage = false)
+    public async Task<IEnumerable<AnimeDto>> ListAsync(
+        [FromQuery(Name = "cursor")] uint cursor = 0,
+        [FromQuery(Name = "count")] uint count = 20,
+        [FromQuery(Name = "include_image")] bool includeImage = false)
     {
         return await DbContext.Anime
+            .OrderBy(a => a.Id)
+            .Where(a => a.Id >= cursor)
+            .Take((int)count)
             .Select(a => new AnimeDto(a.Id, a.Title, a.BangumiLink, includeImage ? a.ImageBase64 : null))
             .ToListAsync();
     }
@@ -67,6 +80,11 @@ public class AnimeController : ControllerBase
         string ImageBase64
     );
 
+    /// <summary>
+    /// Get a single anime.
+    /// </summary>
+    /// <param name="anime"></param>
+    /// <returns></returns>
     [HttpGet("{anime}")]
     public AnimeDetailedDto Get(Anime anime)
     {

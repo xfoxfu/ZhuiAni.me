@@ -58,7 +58,10 @@ public class CatalogController : ControllerBase
         };
         DbContext.Catalog.Add(catalog);
         await DbContext.SaveChangesAsync();
-        return CreatedAtRoute($"{nameof(CatalogController)}.{nameof(GetAsync)}", new { catalog = catalog.Id }, new CatalogDto(catalog.Id, catalog.Title));
+        return CreatedAtRoute(
+            $"{nameof(CatalogController)}.{nameof(GetAsync)}",
+            new { catalog = catalog.Id },
+            new CatalogDto(catalog.Id, catalog.Title));
     }
 
     /// <summary>
