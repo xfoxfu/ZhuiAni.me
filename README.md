@@ -1,5 +1,7 @@
 # [ZhuiAni.me](https://zhuiani.me)
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/xfoxfu/ZhuiAni.me/.NET?label=dotnet&style=flat-square) ![GitHub](https://img.shields.io/github/license/xfoxfu/ZhuiAni.me?style=flat-square)
+
 A platform for scraping, subscribing, downloading and watching animations based on torrents.
 
 ## Components

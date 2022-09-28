@@ -1,0 +1,57 @@
+name: .NET
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: install pnpm
+        uses: pnpm/action-setup@v2.0.1
+        id: pnpm-install
+        with:
+          version: 7
+          run_install: false
+      - name: get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
+      - name: setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: install dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: "7.0.x"
+          include-prerelease: true
+
+      - name: restore dependencies
+        run: dotnet restore
+
+      - name: build
+        run: dotnet build -c Release --no-restore
+      - name: test
+        run: dotnet test -c Release --no-build --verbosity normal
+
+      - name: publish
+        run: dotnet publish -c Release
+      - name: upload
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: Me.Xfox.ZhuiAnime/bin/Release/net7.0/publish/
