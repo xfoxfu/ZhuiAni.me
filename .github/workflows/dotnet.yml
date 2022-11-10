@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18
       - name: install pnpm
-        uses: pnpm/action-setup@v2.0.1
+        uses: pnpm/action-setup@v2
         id: pnpm-install
         with:
           version: 7
@@ -26,7 +26,7 @@ jobs:
       - name: get pnpm store directory
         id: pnpm-cache
         run: |
-          echo "::set-output name=pnpm_cache_dir::$(pnpm store path)"
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
       - name: setup pnpm cache
         uses: actions/cache@v3
         with:
@@ -38,7 +38,6 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: "7.0.x"
-          include-prerelease: true
 
       - name: restore dependencies
         run: dotnet restore
