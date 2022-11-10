@@ -17,9 +17,9 @@ import api from "../api";
 
 export const Anime: React.FunctionComponent = () => {
   const params = useParams();
-  const { data: anime, error: animeError } = api.anime.useAnimesDetail(Number.parseInt(params.animeId ?? "0", 10));
+  const { data: anime, error: animeError } = api.anime.useAnimesDetail(Number.parseInt(params["animeId"] ?? "0", 10));
   const { data: episodes, error: episodesError } = api.anime.useAnimesEpisodesDetail(
-    Number.parseInt(params.animeId ?? "0", 10)
+    Number.parseInt(params["animeId"] ?? "0", 10)
   );
   const error = animeError ?? episodesError;
 
