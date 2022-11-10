@@ -6,7 +6,6 @@ import {
   Wrap,
   WrapItem,
   VStack,
-  Spacer,
   Tooltip,
   Image,
   Alert,
