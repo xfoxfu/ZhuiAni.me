@@ -1,0 +1,5 @@
+{
+  "eslint.workingDirectories": [
+    { "directory": "./Me.Xfox.ZhuiAnime.WebUI", "changeProcessCWD": true }
+  ]
+}
