@@ -1,10 +1,10 @@
 import { defineConfig, splitVendorChunkPlugin } from "vite";
-import react from "@vitejs/plugin-react";
+import solid from "vite-plugin-solid";
 import eslint from "vite-plugin-eslint";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), eslint(), splitVendorChunkPlugin()],
+  plugins: [solid(), eslint(), splitVendorChunkPlugin()],
   server: {
     proxy: {
       "/api": {
