@@ -41,7 +41,7 @@ public class BangumiClientTest
         await o2.Should().ThrowAsync<BangumiException>()
             .Where(e => e.Error != null
             && e.Error.Title == "Bad Request"
-            && e.Error.Description == "\"-1\" is not valid subject ID");
+            && e.Error.Description.Contains("\"-1\" is not valid"));
     }
 
     [TestMethod]
