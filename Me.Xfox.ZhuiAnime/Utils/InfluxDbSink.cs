@@ -34,7 +34,7 @@ public class InfluxDBSink : IBatchedLogEventSink
         OrganizationId = organizationId;
         BucketName = bucketName;
         MeasurementName = measurementName;
-        Client = InfluxDBClientFactory.Create("http://localhost:8086", Token);
+        Client = new InfluxDBClient("http://localhost:8086", Token);
     }
 
     public async Task EmitBatchAsync(IEnumerable<SerilogLogEvent> events)
