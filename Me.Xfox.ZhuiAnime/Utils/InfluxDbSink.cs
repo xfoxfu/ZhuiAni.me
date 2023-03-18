@@ -34,7 +34,7 @@ public class InfluxDBSink : IBatchedLogEventSink
         OrganizationId = organizationId;
         BucketName = bucketName;
         MeasurementName = measurementName;
-        Client = new InfluxDBClient("http://localhost:8086", Token);
+        Client = new InfluxDBClient(ServerEndpoint, Token);
     }
 
     public async Task EmitBatchAsync(IEnumerable<SerilogLogEvent> events)
@@ -49,7 +49,7 @@ public class InfluxDBSink : IBatchedLogEventSink
 
             foreach (var logEvent in logEvents)
             {
-                var p = PointData.Measurement("zhuianime.logging")
+                var p = PointData.Measurement(MeasurementName)
                     .Timestamp(logEvent.Timestamp.UtcDateTime, WritePrecision.Ns);
                 foreach (var property in logEvent.Properties)
                 {
@@ -68,7 +68,7 @@ public class InfluxDBSink : IBatchedLogEventSink
                 points.Add(p);
             }
 
-            await Client.GetWriteApiAsync().WritePointsAsync(points, "zhuianime", "030783613ae14cf6");
+            await Client.GetWriteApiAsync().WritePointsAsync(points, BucketName, OrganizationId);
         }
         catch (Exception e)
         {
