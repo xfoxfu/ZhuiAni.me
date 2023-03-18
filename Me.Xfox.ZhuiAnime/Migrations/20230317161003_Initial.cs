@@ -1,4 +1,4 @@
-using System;
+﻿using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -6,44 +6,48 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Me.Xfox.ZhuiAnime.Migrations
 {
-    public partial class InitDatabase : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "anime",
+                name: "category",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    title = table.Column<string>(type: "text", nullable: false),
-                    image = table.Column<byte[]>(type: "bytea", nullable: true),
-                    bangumi_link = table.Column<string>(type: "text", nullable: false)
+                    title = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_anime", x => x.id);
+                    table.PrimaryKey("pk_category", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "episode",
+                name: "item",
                 columns: table => new
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    anime_id = table.Column<long>(type: "bigint", nullable: false),
+                    category_id = table.Column<long>(type: "bigint", nullable: false),
                     title = table.Column<string>(type: "text", nullable: false),
-                    bangumi_link = table.Column<string>(type: "text", nullable: false)
+                    parent_item_id = table.Column<long>(type: "bigint", nullable: true),
+                    annotations = table.Column<IDictionary<string, string>>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_episode", x => x.id);
+                    table.PrimaryKey("pk_item", x => x.id);
                     table.ForeignKey(
-                        name: "fk_episode_anime_anime_id",
-                        column: x => x.anime_id,
-                        principalTable: "anime",
+                        name: "fk_item_category_category_id",
+                        column: x => x.category_id,
+                        principalTable: "category",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_item_item_parent_item_id",
+                        column: x => x.parent_item_id,
+                        principalTable: "item",
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateTable(
@@ -52,53 +56,47 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 {
                     id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    item_id = table.Column<long>(type: "bigint", nullable: false),
                     address = table.Column<string>(type: "text", nullable: false),
-                    annotation = table.Column<string>(type: "text", nullable: false),
-                    discriminator = table.Column<string>(type: "text", nullable: false),
-                    anime_id = table.Column<long>(type: "bigint", nullable: true),
-                    episode_id = table.Column<long>(type: "bigint", nullable: true)
+                    mime_type = table.Column<string>(type: "text", nullable: false),
+                    annotations = table.Column<IDictionary<string, string>>(type: "jsonb", nullable: false),
+                    parent_link_id = table.Column<long>(type: "bigint", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_link", x => x.id);
                     table.ForeignKey(
-                        name: "fk_link_anime_anime_id",
-                        column: x => x.anime_id,
-                        principalTable: "anime",
-                        principalColumn: "id");
+                        name: "fk_link_item_item_id",
+                        column: x => x.item_id,
+                        principalTable: "item",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "fk_link_episode_episode_id",
-                        column: x => x.episode_id,
-                        principalTable: "episode",
+                        name: "fk_link_link_parent_link_id",
+                        column: x => x.parent_link_id,
+                        principalTable: "link",
                         principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_anime_bangumi_link",
-                table: "anime",
-                column: "bangumi_link",
-                unique: true);
+                name: "ix_item_category_id",
+                table: "item",
+                column: "category_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_episode_anime_id",
-                table: "episode",
-                column: "anime_id");
+                name: "ix_item_parent_item_id",
+                table: "item",
+                column: "parent_item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_episode_bangumi_link",
-                table: "episode",
-                column: "bangumi_link",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_link_anime_id",
+                name: "ix_link_item_id",
                 table: "link",
-                column: "anime_id");
+                column: "item_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_link_episode_id",
+                name: "ix_link_parent_link_id",
                 table: "link",
-                column: "episode_id");
+                column: "parent_link_id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -107,10 +105,10 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 name: "link");
 
             migrationBuilder.DropTable(
-                name: "episode");
+                name: "item");
 
             migrationBuilder.DropTable(
-                name: "anime");
+                name: "category");
         }
     }
 }

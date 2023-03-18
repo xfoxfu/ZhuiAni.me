@@ -64,9 +64,6 @@ builder.Services.AddDbContext<ZAContext>(opt =>
     opt.UseSnakeCaseNamingConvention();
 });
 
-Me.Xfox.ZhuiAnime.Services.BangumiData.Option.ConfigureOn(builder);
-Me.Xfox.ZhuiAnime.Services.BangumiClient.Option.ConfigureOn(builder);
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -81,8 +78,6 @@ builder.Services.AddSwaggerGen(options =>
         AppContext.BaseDirectory,
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
-
-builder.Services.AddSingleton<Me.Xfox.ZhuiAnime.Services.BangumiClient>();
 
 var app = builder.Build();
 

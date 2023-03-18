@@ -10,11 +10,9 @@ public class ZAContext : DbContext
     {
     }
 
-    public DbSet<Anime> Anime { get; set; } = null!;
-    public DbSet<Episode> Episode { get; set; } = null!;
-    public DbSet<AnimeLink> AnimeLink { get; set; } = null!;
-    public DbSet<EpisodeLink> EpisodeLink { get; set; } = null!;
-    public DbSet<Catalog> Catalog { get; set; } = null!;
+    public DbSet<Category> Category { get; set; } = null!;
+    public DbSet<Item> Item { get; set; } = null!;
+    public DbSet<Link> Link { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

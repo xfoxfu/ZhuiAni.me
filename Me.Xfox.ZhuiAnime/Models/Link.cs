@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -7,47 +9,35 @@ namespace Me.Xfox.ZhuiAnime.Models;
 public class Link
 {
     public uint Id { get; set; }
+
+    public Item Item { get; set; } = null!;
+    public uint ItemId { get; set; }
+
     public Uri Address { get; set; } = new Uri("invalid://");
-    public string Annotation { get; set; } = string.Empty;
-    public Catalog Catalog { get; set; } = null!;
-    public uint CatalogId { get; set; }
+
+    public string MimeType { get; set; } = "application/octet-stream";
+
+    public IDictionary<string, string> Annotations { get; set; } = new Dictionary<string, string>();
+
+    public Link? ParentLink { get; set; } = null;
+    public uint? ParentLinkId { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<Link>? ChildLinks { get; set; }
 
     public class LinkConfiguration : IEntityTypeConfiguration<Link>
     {
         public void Configure(EntityTypeBuilder<Link> builder)
         {
-            builder.HasOne(l => l.Catalog)
-                .WithMany(c => c.Links);
-        }
-    }
-}
-
-public class AnimeLink : Link
-{
-    public Anime Anime { get; set; } = null!;
-    public uint AnimeId { get; set; }
-
-    public class AnimeLinkConfiguration : IEntityTypeConfiguration<AnimeLink>
-    {
-        public void Configure(EntityTypeBuilder<AnimeLink> builder)
-        {
-            builder.HasOne(e => e.Anime)
+            builder.HasOne(e => e.Item)
                 .WithMany(e => e.Links);
-        }
-    }
-}
 
-public class EpisodeLink : Link
-{
-    public Episode Episode { get; set; } = null!;
-    public uint EpisodeId { get; set; }
+            builder.HasOne(e => e.ParentLink)
+                .WithMany(e => e.ChildLinks)
+                .IsRequired(false);
 
-    public class EpisodeLinkConfiguration : IEntityTypeConfiguration<EpisodeLink>
-    {
-        public void Configure(EntityTypeBuilder<EpisodeLink> builder)
-        {
-            builder.HasOne(e => e.Episode)
-                .WithMany(e => e.Links);
+            builder.Property(e => e.Annotations)
+                .HasColumnType("jsonb");
         }
     }
 }
