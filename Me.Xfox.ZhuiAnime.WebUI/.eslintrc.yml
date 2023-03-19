@@ -18,5 +18,5 @@ extends:
 
 ignorePatterns:
   - "vite.config.ts"
-  - "tailwind.config.ts"
-  - "postcss.config.ts"
+  - "tailwind.config.js"
+  - "postcss.config.js"

@@ -1,31 +1,17 @@
-import {
-  Heading,
-  Stack,
-  Alert,
-  AlertIcon,
-  AlertDescription,
-  Tag,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Tr,
-} from "@chakra-ui/react";
-import React from "react";
-import { useParams } from "react-router-dom";
+import { Component } from "solid-js";
 import api from "../api";
 
-export const Anime: React.FunctionComponent = () => {
-  const params = useParams();
-  const { data: anime, error: animeError } = api.anime.useAnimesDetail(Number.parseInt(params["animeId"] ?? "0", 10));
-  const { data: episodes, error: episodesError } = api.anime.useAnimesEpisodesDetail(
-    Number.parseInt(params["animeId"] ?? "0", 10)
-  );
-  const error = animeError ?? episodesError;
+export const Anime: Component = () => {
+  // const params = useParams();
+  // const { data: anime, error: animeError } = api.anime.useAnimesDetail(Number.parseInt(params["animeId"] ?? "0", 10));
+  // const { data: episodes, error: episodesError } = api.anime.useAnimesEpisodesDetail(
+  //   Number.parseInt(params["animeId"] ?? "0", 10)
+  // );
+  // const error = animeError ?? episodesError;
 
   return (
     <>
-      <Heading as="h1" size="xl" color="green.700">
+      {/* <Heading as="h1" size="xl" color="green.700">
         {anime?.title}
       </Heading>
       <Stack spacing="1">
@@ -55,7 +41,8 @@ export const Anime: React.FunctionComponent = () => {
             </Tbody>
           </Table>
         </TableContainer>
-      </Stack>
+      </Stack> */}
     </>
   );
 };
+export default Anime;

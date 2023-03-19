@@ -11,6 +11,8 @@
     "build-api": "swagger-typescript-api -p http://localhost:5000/api/swagger/v1/swagger.json -t build/api-template -o src -n api.ts --module-name-first-tag"
   },
   "dependencies": {
+    "@solidjs/router": "^0.8.0",
+    "@tailwindcss/typography": "^0.5.9",
     "axios": "^1.3.4",
     "solid-js": "^1.6.15"
   },

@@ -1,28 +1,13 @@
-import {
-  Heading,
-  Stack,
-  HStack,
-  Button,
-  Wrap,
-  WrapItem,
-  VStack,
-  Tooltip,
-  Image,
-  Alert,
-  AlertDescription,
-  AlertIcon,
-} from "@chakra-ui/react";
-import React from "react";
 import { ImportBangumi } from "../components/anime/ImportBangumi";
 import Api from "../api";
-import { Link } from "react-router-dom";
+import { Component } from "solid-js";
 
-export const AnimesList: React.FunctionComponent = () => {
-  const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
+export const AnimesList: Component = () => {
+  // const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
 
   return (
     <>
-      <Heading as="h1" size="xl" color="green.700">
+      {/* <Heading as="h1" size="xl" color="green.700">
         Animations
       </Heading>
       <Stack spacing="1">
@@ -60,7 +45,7 @@ export const AnimesList: React.FunctionComponent = () => {
             </WrapItem>
           ))}
         </Wrap>
-      </Stack>
+      </Stack> */}
     </>
   );
 };
