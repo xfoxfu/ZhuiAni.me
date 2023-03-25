@@ -1,12 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ItemDto = Me.Xfox.ZhuiAnime.Controllers.ItemController.ItemDto;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
@@ -126,34 +125,12 @@ public class CategoryController : ControllerBase
     }
 
     /// <summary>
-    /// An item, like an anime, a manga, a episode in an anime, etc.
-    /// </summary>
-    /// <param name="Id">id</param>
-    /// <param name="CategoryId">the id of category this item belongs to</param>
-    /// <param name="Title">original title of the item</param>
-    /// <param name="Annotations">additional information</param>
-    /// <param name="ParentItemId">the id of the parent item, if this item belongs to a parent item</param>
-    public record ItemDto(
-        uint Id,
-        uint CategoryId,
-        string Title,
-        IDictionary<string, string> Annotations,
-        uint? ParentItemId
-    )
-    {
-        public ItemDto(Item item) : this(
-            item.Id,
-            item.CategoryId,
-            item.Title,
-            item.Annotations,
-            item.ParentItemId)
-        {
-        }
-    }
-
-    /// <summary>
     /// Get a category's items.
     /// </summary>
+    /// <remarks>
+    /// This API will only return those are top-level, i.e. do not have a parent
+    /// item. The result will be ordered by id descendingly.
+    /// </remarks>
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
@@ -167,6 +144,7 @@ public class CategoryController : ControllerBase
         var items = await DbContext.Entry(category)
             .Collection(c => c.Items!)
             .Query()
+            .Where(i => i.ParentItemId == null)
             .OrderByDescending(i => i.Id)
             .Select(i => new ItemDto(i))
             .ToListAsync();
