@@ -175,48 +175,14 @@ public class ZhuiAnimeError : Exception
         }
     }
 
-    public class AnimeNotFound : ZhuiAnimeError
+    public class CategoryNotFound : ZhuiAnimeError
     {
-        public AnimeNotFound(uint id) : base(
+        public CategoryNotFound(uint id) : base(
             HttpStatusCode.NotFound,
-            "ANIME_NOT_FOUND",
-            $"Anime {id} not found.")
+            "CATAGORY_NOT_FOUND",
+            $"Catagory {id} not found.")
         {
-            ExtraData.Add("anime_id", id);
-        }
-    }
-
-    public class EpisodeNotFound : ZhuiAnimeError
-    {
-        public EpisodeNotFound(uint id) : base(
-            HttpStatusCode.NotFound,
-            "EPISODE_NOT_FOUND",
-            $"Episode {id} not found.")
-        {
-            ExtraData.Add("episode_id", id);
-        }
-    }
-
-    public class EpisodeNotBelongToAnime : ZhuiAnimeError
-    {
-        public EpisodeNotBelongToAnime(uint episodeId, uint animeId) : base(
-            HttpStatusCode.NotFound,
-            "EPISODE_NOT_BELONG_TO_ANIME",
-            $"Episode {episodeId} does not belong to Anime {animeId}.")
-        {
-            ExtraData.Add("episode_id", episodeId);
-            ExtraData.Add("anime_id", animeId);
-        }
-    }
-
-    public class CatalogNotFound : ZhuiAnimeError
-    {
-        public CatalogNotFound(uint id) : base(
-            HttpStatusCode.NotFound,
-            "CATALOG_NOT_FOUND",
-            $"Catalog {id} not found.")
-        {
-            ExtraData.Add("catalog_id", id);
+            ExtraData.Add("category_id", id);
         }
     }
 }
