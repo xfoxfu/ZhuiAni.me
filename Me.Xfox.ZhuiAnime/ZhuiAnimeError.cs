@@ -196,4 +196,15 @@ public class ZhuiAnimeError : Exception
             ExtraData.Add("item_id", id);
         }
     }
+
+    public class LinkNotFound : ZhuiAnimeError
+    {
+        public LinkNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "LINK_NOT_FOUND",
+            $"Link {id} not found.")
+        {
+            ExtraData.Add("link_id", id);
+        }
+    }
 }

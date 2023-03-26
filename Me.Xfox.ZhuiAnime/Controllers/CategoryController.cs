@@ -51,7 +51,7 @@ public class CategoryController : ControllerBase
     }
 
     /// <param name="Title">user-friendly name</param>
-    public record CreateCategoryDto(string Title);
+    public record CreateOrUpdateCategoryDto(string Title);
 
     /// <summary>
     /// Create a new category.
@@ -60,7 +60,7 @@ public class CategoryController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [ProducesResponseType(typeof(CategoryDto), (int)HttpStatusCode.Created)]
-    public async Task<IActionResult> CreateAsync([FromBody] CreateCategoryDto category)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateOrUpdateCategoryDto category)
     {
         var categoryDb = new Category
         {
@@ -94,7 +94,7 @@ public class CategoryController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost("{id}")]
-    public async Task<CategoryDto> Update(uint id, [FromBody] CreateCategoryDto request)
+    public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
         var category = await DbContext.Category.FindAsync(id);
         if (category == null)
