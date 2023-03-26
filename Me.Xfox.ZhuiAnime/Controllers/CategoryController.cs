@@ -71,6 +71,16 @@ public class CategoryController : ControllerBase
         return CreatedAtAction(nameof(Get), new { category_id = categoryDb.Id }, new CategoryDto(categoryDb));
     }
 
+    protected async Task<Category> LoadCategory(uint id)
+    {
+        var category = await DbContext.Category.FindAsync(id);
+        if (category == null)
+        {
+            throw new ZhuiAnimeError.CategoryNotFound(id);
+        }
+        return category;
+    }
+
     /// <summary>
     /// Get a category.
     /// </summary>
@@ -79,12 +89,7 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<CategoryDto> Get(uint id)
     {
-        var category = await DbContext.Category.FindAsync(id);
-        if (category == null)
-        {
-            throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
-        return new CategoryDto(category);
+        return new CategoryDto(await LoadCategory(id));
     }
 
     /// <summary>
@@ -96,11 +101,7 @@ public class CategoryController : ControllerBase
     [HttpPost("{id}")]
     public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
-        var category = await DbContext.Category.FindAsync(id);
-        if (category == null)
-        {
-            throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
+        var category = await LoadCategory(id);
         category.Title = request.Title;
         await DbContext.SaveChangesAsync();
         return new CategoryDto(category);
@@ -114,11 +115,7 @@ public class CategoryController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<CategoryDto> Delete(uint id)
     {
-        var category = await DbContext.Category.FindAsync(id);
-        if (category == null)
-        {
-            throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
+        var category = await LoadCategory(id);
         DbContext.Remove(category);
         await DbContext.SaveChangesAsync();
         return new CategoryDto(category);
@@ -136,11 +133,7 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}/items")]
     public async Task<IEnumerable<ItemDto>> GetItems(uint id)
     {
-        var category = await DbContext.Category.FindAsync(id);
-        if (category == null)
-        {
-            throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
+        var category = await LoadCategory(id);
         var items = await DbContext.Entry(category)
             .Collection(c => c.Items!)
             .Query()

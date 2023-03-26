@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using ItemDto = Me.Xfox.ZhuiAnime.Controllers.ItemController.ItemDto;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
@@ -59,16 +58,13 @@ public class ItemLinkController : ControllerBase
     [HttpGet]
     public async Task<IEnumerable<LinkDto>> ListAsync(uint item_id)
     {
-        var item = await DbContext.Item.FindAsync(item_id);
+        var item = await DbContext.Item.Include(i => i.Links)
+            .FirstOrDefaultAsync(i => i.Id == item_id);
         if (item == null)
         {
             throw new ZhuiAnimeError.ItemNotFound(item_id);
         }
-        return await DbContext.Link
-            .Where(l => l.ItemId == item.Id)
-            .OrderBy(l => l.Id)
-            .Select(c => new LinkDto(c))
-            .ToListAsync();
+        return item.Links!.Select(l => new LinkDto(l));
     }
 
     /// <summary>
@@ -113,15 +109,35 @@ public class ItemLinkController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newLink.Id }, new LinkDto(newLink));
     }
 
+    protected async Task<Link> LoadLink(uint item_id, uint id)
+    {
+        var item = await DbContext.Item.FindAsync(item_id);
+        if (item == null)
+        {
+            throw new ZhuiAnimeError.ItemNotFound(item_id);
+        }
+        var link = await DbContext.Entry(item)
+            .Collection(i => i.Links!)
+            .Query()
+            .FirstOrDefaultAsync(l => l.Id == id);
+        if (link == null)
+        {
+            throw new ZhuiAnimeError.LinkNotFound(id);
+        }
+        await TryUpdateModelAsync<Link>(link);
+        return link;
+    }
+
     /// <summary>
     /// Get a link.
     /// </summary>
+    /// <param name="item_id">item id, which this link belongs to</param>
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    public async Task<LinkDto> Get(uint id)
+    public async Task<LinkDto> Get(uint item_id, uint id)
     {
-        var link = await DbContext.Link.FindAsync(id);
+        var link = await LoadLink(item_id, id);
         if (link == null)
         {
             throw new ZhuiAnimeError.LinkNotFound(id);
@@ -130,7 +146,7 @@ public class ItemLinkController : ControllerBase
     }
 
     /// <summary>
-    /// Information for creating a link.
+    /// Information for updating a link.
     /// </summary>
     /// <param name="Address">the url this link points to</param>
     /// <param name="MimeType">the MIME type of the target of this link</param>
@@ -142,19 +158,16 @@ public class ItemLinkController : ControllerBase
     );
 
     /// <summary>
-    /// Update a category.
+    /// Update a link.
     /// </summary>
-    /// <param name="id">category id</param>
+    /// <param name="item_id">item id, which this link belongs to</param>
+    /// <param name="id">link id</param>
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost("{id}")]
-    public async Task<LinkDto> Update(uint id, [FromBody] UpdateLinkDto request)
+    public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
     {
-        var link = await DbContext.Link.FindAsync(id);
-        if (link == null)
-        {
-            throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
+        var link = await LoadLink(item_id, id);
         link.Address = request.Address;
         link.MimeType = request.MimeType;
         link.Annotations = request.Annotations;
@@ -165,16 +178,13 @@ public class ItemLinkController : ControllerBase
     /// <summary>
     /// Delete a link.
     /// </summary>
+    /// <param name="item_id">item id, which this link belongs to</param>
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    public async Task<LinkDto> Delete(uint id)
+    public async Task<LinkDto> Delete(uint item_id, uint id)
     {
-        var link = await DbContext.Link.FindAsync(id);
-        if (link == null)
-        {
-            throw new ZhuiAnimeError.LinkNotFound(id);
-        }
+        var link = await LoadLink(item_id, id);
         DbContext.Link.Remove(link);
         await DbContext.SaveChangesAsync();
         return new LinkDto(link);

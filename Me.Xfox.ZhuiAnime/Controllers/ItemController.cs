@@ -93,6 +93,16 @@ public class ItemController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newItem.Id }, new ItemDto(newItem));
     }
 
+    protected async Task<Item> LoadItem(uint id)
+    {
+        var item = await DbContext.Item.FindAsync(id);
+        if (item == null)
+        {
+            throw new ZhuiAnimeError.ItemNotFound(id);
+        }
+        return item;
+    }
+
     /// <summary>
     /// Get a item.
     /// </summary>
@@ -101,12 +111,7 @@ public class ItemController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ItemDto> Get(uint id)
     {
-        var item = await DbContext.Item.FindAsync(id);
-        if (item == null)
-        {
-            throw new ZhuiAnimeError.ItemNotFound(id);
-        }
-        return new ItemDto(item);
+        return new ItemDto(await LoadItem(id));
     }
 
     public record UpdateItemDto(
@@ -124,11 +129,7 @@ public class ItemController : ControllerBase
     [HttpPost("{id}")]
     public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
     {
-        var item = await DbContext.Item.FindAsync(id);
-        if (item == null)
-        {
-            throw new ZhuiAnimeError.ItemNotFound(id);
-        }
+        var item = await LoadItem(id);
         item.CategoryId = request.CategoryId ?? item.CategoryId;
         item.Title = request.Title ?? item.Title;
         item.Annotations = request.Annotations ?? item.Annotations;
@@ -144,11 +145,7 @@ public class ItemController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ItemDto> Delete(uint id)
     {
-        var item = await DbContext.Item.FindAsync(id);
-        if (item == null)
-        {
-            throw new ZhuiAnimeError.ItemNotFound(id);
-        }
+        var item = await LoadItem(id);
         DbContext.Item.Remove(item);
         await DbContext.SaveChangesAsync();
         return new ItemDto(item);
@@ -162,11 +159,7 @@ public class ItemController : ControllerBase
     [HttpGet("{id}/items")]
     public async Task<IEnumerable<ItemDto>> GetChildItems(uint id)
     {
-        var item = await DbContext.Item.FindAsync(id);
-        if (item == null)
-        {
-            throw new ZhuiAnimeError.ItemNotFound(id);
-        }
+        var item = await LoadItem(id);
         return await DbContext.Item
             .Where(i => i.ParentItemId == id)
             .OrderBy(i => i.Id)
