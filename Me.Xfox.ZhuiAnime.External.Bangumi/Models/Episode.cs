@@ -19,7 +19,7 @@ public record Episode(
     double? Sort,
 
     [property:JsonPropertyName("ep")]
-    int? Ep,
+    double? Ep,
     /// <summary>
     /// air date in `YYYY-MM-DD` format
     /// </summary>

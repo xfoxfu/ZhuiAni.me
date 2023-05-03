@@ -15,7 +15,7 @@ public class BangumiException : Exception
 
     public static BangumiException FromResponse(RestResponse response)
     {
-        if (response.IsSuccessful)
+        if (response.ErrorException == null && response.ErrorMessage == null && response.IsSuccessful)
         {
             throw new ArgumentException("cannot construct exception from success response", nameof(response));
         }

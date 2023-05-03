@@ -55,6 +55,7 @@ public partial class BangumiApi
             }
             offset = response.Offset + response.Limit;
             total = response.Total;
+            Console.WriteLine($"O={offset} T={total}");
         } while (offset < total);
     }
     #endregion
@@ -63,13 +64,10 @@ public partial class BangumiApi
     public async Task<T> GetResponseAsync<T>(RestRequest request, CancellationToken ct = default)
     {
         var response = await Client.ExecuteAsync<T>(request, ct);
-        if (response.IsSuccessful)
-        {
-            System.Diagnostics.Debug.Assert(response.Data != null);
-            return response.Data;
-        }
+        if (response.ErrorException != null) throw BangumiException.FromResponse(response);
 
-        throw BangumiException.FromResponse(response);
+        System.Diagnostics.Debug.Assert(response.Data != null);
+        return response.Data;
     }
 
     public async Task<byte[]> GetBytesAsync(RestRequest request, CancellationToken ct = default)
