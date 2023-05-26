@@ -1,12 +1,17 @@
-import { ImportBangumi } from "../components/anime/ImportBangumi";
 import Api from "../api";
-import { Component } from "solid-js";
+import { Component, createResource, createSignal } from "solid-js";
 
 export const AnimesList: Component = () => {
   // const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
+  const [category_id] = createSignal(1);
+  const [category] = createResource(
+    () => category_id(),
+    (id) => Api.category.getCategory(id)
+  );
 
   return (
     <>
+      {category()?.data?.title}
       {/* <Heading as="h1" size="xl" color="green.700">
         Animations
       </Heading>

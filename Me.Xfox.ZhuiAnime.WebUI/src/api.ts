@@ -9,74 +9,112 @@
  * ---------------------------------------------------------------
  */
 
-/**
- * Anime information.
- */
-export interface Anime {
+/** Category information. */
+export interface CategoryDto {
   /**
    * id
    * @format int32
    */
   id: number;
-
-  /** original title */
+  /** user-friendly name */
   title: string;
-
-  /**
-   * link to bgm.tv subject
-   * @format uri
-   */
-  bangumi_link: string;
-
-  /** key vision image (if include_image), base64 encoded */
-  image_base64?: string | null;
 }
 
-/**
- * Detailed anime information.
- */
-export interface AnimeDetailed {
-  /**
-   * id
-   * @format int32
-   */
-  id: number;
-
-  /** original title */
-  title: string;
-
-  /**
-   * link to bgm.tv subject
-   * @format uri
-   */
-  bangumi_link: string;
-
-  /** key vision image (zero byte if not exist), base64 encoded */
-  image_base64: string;
-}
-
-export interface Episode {
+export interface CreateItemDto {
   /** @format int32 */
-  id: number;
-  name: string;
+  category_id: number;
+  title: string;
+  annotations: Record<string, string>;
+  /** @format int32 */
+  parent_item_id?: number | null;
+}
+
+export interface CreateOrUpdateCategoryDto {
+  /** user-friendly name */
   title: string;
 }
 
 export interface ErrorProdResponse {
   error_code: string;
   message: string;
+  [key: string]: any;
 }
 
-export interface ImportRequest {
-  /** @format int32 */
+/** An item, like an anime, a manga, a episode in an anime, etc. */
+export interface ItemDto {
+  /**
+   * id
+   * @format int32
+   */
   id: number;
+  /**
+   * the id of category this item belongs to
+   * @format int32
+   */
+  category_id: number;
+  /** original title of the item */
+  title: string;
+  /** additional information */
+  annotations: Record<string, string>;
+  /**
+   * the id of the parent item, if this item belongs to a parent item
+   * @format int32
+   */
+  parent_item_id?: number | null;
 }
 
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, ResponseType } from "axios";
+/** Link. */
+export interface LinkDto {
+  /**
+   * id
+   * @format int32
+   */
+  id: number;
+  /**
+   * id of the item this link belongs to
+   * @format int32
+   */
+  item_id: number;
+  /**
+   * the url this link points to
+   * @format uri
+   */
+  address: string;
+  /** the MIME type of the target of this link */
+  mime_type: string;
+  /** extra information for this link */
+  annotations: Record<string, string>;
+  /**
+   * id of parent link, if exists
+   * @format int32
+   */
+  parent_link_id?: number | null;
+}
+
+export interface UpdateItemDto {
+  /** @format int32 */
+  category_id?: number | null;
+  title?: string | null;
+  annotations?: Record<string, string>;
+}
+
+/** Information for updating a link. */
+export interface UpdateLinkDto {
+  /**
+   * the url this link points to
+   * @format uri
+   */
+  address: string;
+  /** the MIME type of the target of this link */
+  mime_type: string;
+  /** extra information for this link */
+  annotations: Record<string, string>;
+}
 
 export type QueryParamsType = Record<string | number, any>;
+export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
-export interface FullRequestParams extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+export interface FullRequestParams extends Omit<RequestInit, "body"> {
   /** set parameter to `true` for call `securityWorker` for this request */
   secure?: boolean;
   /** request path */
@@ -86,246 +124,497 @@ export interface FullRequestParams extends Omit<AxiosRequestConfig, "data" | "pa
   /** query params */
   query?: QueryParamsType;
   /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseType;
+  format?: ResponseFormat;
   /** request body */
   body?: unknown;
+  /** base url */
+  baseUrl?: string;
+  /** request cancellation token */
+  cancelToken?: CancelToken;
 }
 
 export type RequestParams = Omit<FullRequestParams, "body" | "method" | "query" | "path">;
 
-export interface ApiConfig<SecurityDataType = unknown> extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
-  securityWorker?: (
-    securityData: SecurityDataType | null
-  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
-  secure?: boolean;
-  format?: ResponseType;
+export interface ApiConfig<SecurityDataType = unknown> {
+  baseUrl?: string;
+  baseApiParams?: Omit<RequestParams, "baseUrl" | "cancelToken" | "signal">;
+  securityWorker?: (securityData: SecurityDataType | null) => Promise<RequestParams | void> | RequestParams | void;
+  customFetch?: typeof fetch;
 }
+
+export interface HttpResponse<D extends unknown, E extends unknown = unknown> extends Response {
+  data: D;
+  error: E;
+}
+
+type CancelToken = Symbol | string | number;
 
 export enum ContentType {
   Json = "application/json",
   FormData = "multipart/form-data",
   UrlEncoded = "application/x-www-form-urlencoded",
+  Text = "text/plain",
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public instance: AxiosInstance;
+  public baseUrl: string = "";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
-  private secure?: boolean;
-  private format?: ResponseType;
+  private abortControllers = new Map<CancelToken, AbortController>();
+  private customFetch = (...fetchParams: Parameters<typeof fetch>) => fetch(...fetchParams);
 
-  constructor({ securityWorker, secure, format, ...axiosConfig }: ApiConfig<SecurityDataType> = {}) {
-    this.instance = axios.create({ ...axiosConfig, baseURL: axiosConfig.baseURL || "" });
-    this.secure = secure;
-    this.format = format;
-    this.securityWorker = securityWorker;
+  private baseApiParams: RequestParams = {
+    credentials: "same-origin",
+    headers: {},
+    redirect: "follow",
+    referrerPolicy: "no-referrer",
+  };
+
+  constructor(apiConfig: ApiConfig<SecurityDataType> = {}) {
+    Object.assign(this, apiConfig);
   }
 
   public setSecurityData = (data: SecurityDataType | null) => {
     this.securityData = data;
   };
 
-  private mergeRequestParams(params1: AxiosRequestConfig, params2?: AxiosRequestConfig): AxiosRequestConfig {
-    return {
-      ...this.instance.defaults,
-      ...params1,
-      ...(params2 || {}),
-      headers: Object.assign({}, this.instance.defaults.headers, (params1 || {}).headers, (params2 || {}).headers),
-    };
+  protected encodeQueryParam(key: string, value: any) {
+    const encodedKey = encodeURIComponent(key);
+    return `${encodedKey}=${encodeURIComponent(typeof value === "number" ? value : `${value}`)}`;
   }
 
-  private createFormData(input: Record<string, unknown>): FormData {
-    return Object.keys(input || {}).reduce((formData, key) => {
-      const property = input[key];
-      if (Array.isArray(property)) {
-        property.forEach((blob) => {
-          formData.append(
-            key,
-            blob instanceof Blob ? blob : typeof blob === "object" && blob !== null ? JSON.stringify(blob) : `${blob}`
-          );
-        });
-      } else {
+  protected addQueryParam(query: QueryParamsType, key: string) {
+    return this.encodeQueryParam(key, query[key]);
+  }
+
+  protected addArrayQueryParam(query: QueryParamsType, key: string) {
+    const value = query[key];
+    return value.map((v: any) => this.encodeQueryParam(key, v)).join("&");
+  }
+
+  protected toQueryString(rawQuery?: QueryParamsType): string {
+    const query = rawQuery || {};
+    const keys = Object.keys(query).filter((key) => "undefined" !== typeof query[key]);
+    return keys
+      .map((key) => (Array.isArray(query[key]) ? this.addArrayQueryParam(query, key) : this.addQueryParam(query, key)))
+      .join("&");
+  }
+
+  protected addQueryParams(rawQuery?: QueryParamsType): string {
+    const queryString = this.toQueryString(rawQuery);
+    return queryString ? `?${queryString}` : "";
+  }
+
+  private contentFormatters: Record<ContentType, (input: any) => any> = {
+    [ContentType.Json]: (input: any) =>
+      input !== null && (typeof input === "object" || typeof input === "string") ? JSON.stringify(input) : input,
+    [ContentType.Text]: (input: any) => (input !== null && typeof input !== "string" ? JSON.stringify(input) : input),
+    [ContentType.FormData]: (input: any) =>
+      Object.keys(input || {}).reduce((formData, key) => {
+        const property = input[key];
         formData.append(
           key,
           property instanceof Blob
             ? property
             : typeof property === "object" && property !== null
             ? JSON.stringify(property)
-            : `${property}`
+            : `${property}`,
         );
-      }
-      return formData;
-    }, new FormData());
+        return formData;
+      }, new FormData()),
+    [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
+  };
+
+  protected mergeRequestParams(params1: RequestParams, params2?: RequestParams): RequestParams {
+    return {
+      ...this.baseApiParams,
+      ...params1,
+      ...(params2 || {}),
+      headers: {
+        ...(this.baseApiParams.headers || {}),
+        ...(params1.headers || {}),
+        ...((params2 && params2.headers) || {}),
+      },
+    };
   }
 
-  public request = async <T = any, _E = any>({
+  protected createAbortSignal = (cancelToken: CancelToken): AbortSignal | undefined => {
+    if (this.abortControllers.has(cancelToken)) {
+      const abortController = this.abortControllers.get(cancelToken);
+      if (abortController) {
+        return abortController.signal;
+      }
+      return void 0;
+    }
+
+    const abortController = new AbortController();
+    this.abortControllers.set(cancelToken, abortController);
+    return abortController.signal;
+  };
+
+  public abortRequest = (cancelToken: CancelToken) => {
+    const abortController = this.abortControllers.get(cancelToken);
+
+    if (abortController) {
+      abortController.abort();
+      this.abortControllers.delete(cancelToken);
+    }
+  };
+
+  public request = async <T = any, E = any>({
+    body,
     secure,
     path,
     type,
     query,
     format,
-    body,
+    baseUrl,
+    cancelToken,
     ...params
-  }: FullRequestParams): Promise<AxiosResponse<T>> => {
+  }: FullRequestParams): Promise<HttpResponse<T, E>> => {
     const secureParams =
-      ((typeof secure === "boolean" ? secure : this.secure) &&
+      ((typeof secure === "boolean" ? secure : this.baseApiParams.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
       {};
     const requestParams = this.mergeRequestParams(params, secureParams);
-    const responseFormat = (format && this.format) || void 0;
+    const queryString = query && this.toQueryString(query);
+    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
+    const responseFormat = format || requestParams.format;
 
-    if (type === ContentType.FormData && body && body !== null && typeof body === "object") {
-      if (!requestParams.headers) requestParams.headers = { Accept: "*/*" };
-
-      body = this.createFormData(body as Record<string, unknown>);
-    }
-
-    return this.instance.request({
+    return this.customFetch(`${baseUrl || this.baseUrl || ""}${path}${queryString ? `?${queryString}` : ""}`, {
       ...requestParams,
       headers: {
-        ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
         ...(requestParams.headers || {}),
+        ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
       },
-      params: query,
-      responseType: responseFormat,
-      data: body,
-      url: path,
+      signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
+      body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
+    }).then(async (response) => {
+      const r = response as HttpResponse<T, E>;
+      r.data = null as unknown as T;
+      r.error = null as unknown as E;
+
+      const data = !responseFormat
+        ? r
+        : await response[responseFormat]()
+            .then((data) => {
+              if (r.ok) {
+                r.data = data;
+              } else {
+                r.error = data;
+              }
+              return r;
+            })
+            .catch((e) => {
+              r.error = e;
+              return r;
+            });
+
+      if (cancelToken) {
+        this.abortControllers.delete(cancelToken);
+      }
+
+      if (!response.ok) throw data;
+      return data;
     });
   };
 }
 
-import useSWR, { mutate, MutatorOptions, SWRConfiguration } from "swr";
+// import { ResourceSource, createResource } from "solid-js";
+
+// const santizeResourceSource = <T>(source: ResourceSource<T>): T =>
+//   typeof source === "function" ? source() : source;
 
 /**
  * @title ZhuiAni.me API
  * @version v1
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  anime = {
+  category = {
     /**
      * No description
      *
-     * @tags Anime
-     * @name AnimesList
-     * @summary Get all animes.
-     * @request GET:/api/animes
+     * @tags Category
+     * @name GetCategories
+     * @summary Get all categories.
+     * @request GET:/api/categories
      */
-    animesList: (query?: { include_image?: boolean }, params: RequestParams = {}) =>
-      this.request<Anime[], ErrorProdResponse>({
-        path: `/api/animes`,
-        method: "GET",
-        query: query,
-        format: "json",
-        ...params,
-      }),
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesList
-     * @summary Get all animes.
-     * @request GET:/api/animes
-     */
-    useAnimesList: (query?: { include_image?: boolean }, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Anime[], ErrorProdResponse>(doFetch ? [`/api/animes`, query] : null, options),
-
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesList
-     * @summary Get all animes.
-     * @request GET:/api/animes
-     */
-    mutateAnimesList: (
-      query?: { include_image?: boolean },
-      data?: Anime[] | Promise<Anime[]>,
-      options?: MutatorOptions
-    ) => mutate<Anime[]>([`/api/animes`, query], data, options),
-
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesDetail
-     * @request GET:/api/animes/{id}
-     */
-    animesDetail: (id: number, params: RequestParams = {}) =>
-      this.request<AnimeDetailed, ErrorProdResponse>({
-        path: `/api/animes/${id}`,
+    getCategories: (params: RequestParams = {}) =>
+      this.request<CategoryDto[], ErrorProdResponse>({
+        path: `/api/categories`,
         method: "GET",
         format: "json",
         ...params,
       }),
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesDetail
-     * @request GET:/api/animes/{id}
-     */
-    useAnimesDetail: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<AnimeDetailed, ErrorProdResponse>(doFetch ? `/api/animes/${id}` : null, options),
 
     /**
      * No description
      *
-     * @tags Anime
-     * @name AnimesDetail
-     * @request GET:/api/animes/{id}
+     * @tags Category
+     * @name PostCategories
+     * @summary Create a new category.
+     * @request POST:/api/categories
      */
-    mutateAnimesDetail: (id: number, data?: AnimeDetailed | Promise<AnimeDetailed>, options?: MutatorOptions) =>
-      mutate<AnimeDetailed>(`/api/animes/${id}`, data, options),
-
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesEpisodesDetail
-     * @request GET:/api/animes/{id}/episodes
-     */
-    animesEpisodesDetail: (id: number, params: RequestParams = {}) =>
-      this.request<Episode[], ErrorProdResponse>({
-        path: `/api/animes/${id}/episodes`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesEpisodesDetail
-     * @request GET:/api/animes/{id}/episodes
-     */
-    useAnimesEpisodesDetail: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Episode[], ErrorProdResponse>(doFetch ? `/api/animes/${id}/episodes` : null, options),
-
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesEpisodesDetail
-     * @request GET:/api/animes/{id}/episodes
-     */
-    mutateAnimesEpisodesDetail: (id: number, data?: Episode[] | Promise<Episode[]>, options?: MutatorOptions) =>
-      mutate<Episode[]>(`/api/animes/${id}/episodes`, data, options),
-
-    /**
-     * No description
-     *
-     * @tags Anime
-     * @name AnimesImportBangumiCreate
-     * @summary Import anime from bgm.tv.
-     * @request POST:/api/animes/import_bangumi
-     */
-    animesImportBangumiCreate: (data: ImportRequest, params: RequestParams = {}) =>
-      this.request<void, ErrorProdResponse>({
-        path: `/api/animes/import_bangumi`,
+    postCategories: (data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
+      this.request<CategoryDto, ErrorProdResponse>({
+        path: `/api/categories`,
         method: "POST",
         body: data,
         type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name GetCategory
+     * @summary Get a category.
+     * @request GET:/api/categories/{id}
+     */
+    getCategory: (id: number, params: RequestParams = {}) =>
+      this.request<CategoryDto, ErrorProdResponse>({
+        path: `/api/categories/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name PatchCategory
+     * @summary Update a category.
+     * @request PATCH:/api/categories/{id}
+     */
+    patchCategory: (id: number, data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
+      this.request<CategoryDto, ErrorProdResponse>({
+        path: `/api/categories/${id}`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name DeleteCategory
+     * @summary Delete a category.
+     * @request DELETE:/api/categories/{id}
+     */
+    deleteCategory: (id: number, params: RequestParams = {}) =>
+      this.request<CategoryDto, ErrorProdResponse>({
+        path: `/api/categories/${id}`,
+        method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Category
+     * @name GetCategoryItems
+     * @summary Get a category's items.
+     * @request GET:/api/categories/{id}/items
+     */
+    getCategoryItems: (id: number, params: RequestParams = {}) =>
+      this.request<ItemDto[], ErrorProdResponse>({
+        path: `/api/categories/${id}/items`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
+  item = {
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Item
+     * @name GetItems
+     * @summary Get all items.
+     * @request GET:/api/items
+     */
+    getItems: (params: RequestParams = {}) =>
+      this.request<ItemDto[], ErrorProdResponse>({
+        path: `/api/items`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name PostItems
+     * @summary Create a new item.
+     * @request POST:/api/items
+     */
+    postItems: (data: CreateItemDto, params: RequestParams = {}) =>
+      this.request<ItemDto, ErrorProdResponse>({
+        path: `/api/items`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItem
+     * @summary Get a item.
+     * @request GET:/api/items/{id}
+     */
+    getItem: (id: number, params: RequestParams = {}) =>
+      this.request<ItemDto, ErrorProdResponse>({
+        path: `/api/items/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name PatchItem
+     * @summary Update a item.
+     * @request PATCH:/api/items/{id}
+     */
+    patchItem: (id: number, data: UpdateItemDto, params: RequestParams = {}) =>
+      this.request<ItemDto, ErrorProdResponse>({
+        path: `/api/items/${id}`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name DeleteItem
+     * @summary Delete a item.
+     * @request DELETE:/api/items/{id}
+     */
+    deleteItem: (id: number, params: RequestParams = {}) =>
+      this.request<ItemDto, ErrorProdResponse>({
+        path: `/api/items/${id}`,
+        method: "DELETE",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItemItems
+     * @summary Get a item's child items.
+     * @request GET:/api/items/{id}/items
+     */
+    getItemItems: (id: number, params: RequestParams = {}) =>
+      this.request<ItemDto[], ErrorProdResponse>({
+        path: `/api/items/${id}/items`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+  };
+  itemLink = {
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLinks
+     * @summary Get all links.
+     * @request GET:/api/items/{item_id}/links
+     */
+    getItemLinks: (itemId: number, params: RequestParams = {}) =>
+      this.request<LinkDto[], ErrorProdResponse>({
+        path: `/api/items/${itemId}/links`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name PostItemLinks
+     * @summary Create a new link.
+     * @request POST:/api/items/{item_id}/links
+     */
+    postItemLinks: (itemId: number, data: LinkDto, params: RequestParams = {}) =>
+      this.request<LinkDto, ErrorProdResponse>({
+        path: `/api/items/${itemId}/links`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLink
+     * @summary Get a link.
+     * @request GET:/api/items/{item_id}/links/{id}
+     */
+    getItemLink: (itemId: number, id: number, params: RequestParams = {}) =>
+      this.request<LinkDto, ErrorProdResponse>({
+        path: `/api/items/${itemId}/links/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name PatchItemLink
+     * @summary Update a link.
+     * @request PATCH:/api/items/{item_id}/links/{id}
+     */
+    patchItemLink: (itemId: number, id: number, data: UpdateLinkDto, params: RequestParams = {}) =>
+      this.request<LinkDto, ErrorProdResponse>({
+        path: `/api/items/${itemId}/links/${id}`,
+        method: "PATCH",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name DeleteItemLink
+     * @summary Delete a link.
+     * @request DELETE:/api/items/{item_id}/links/{id}
+     */
+    deleteItemLink: (itemId: number, id: number, params: RequestParams = {}) =>
+      this.request<LinkDto, ErrorProdResponse>({
+        path: `/api/items/${itemId}/links/${id}`,
+        method: "DELETE",
+        format: "json",
         ...params,
       }),
   };
@@ -333,12 +622,3 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 
 const api = new Api();
 export default api;
-
-export const fetcher = async (path: string, query?: Record<string, unknown>) => {
-  return await api
-    .request({ path, query })
-    .then((res) => res.data)
-    .catch((err) => {
-      throw err.response.data;
-    });
-};

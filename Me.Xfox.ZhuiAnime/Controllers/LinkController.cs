@@ -164,7 +164,7 @@ public class ItemLinkController : ControllerBase
     /// <param name="id">link id</param>
     /// <param name="request"></param>
     /// <returns></returns>
-    [HttpPost("{id}")]
+    [HttpPatch("{id}")]
     public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
     {
         var link = await LoadLink(item_id, id);

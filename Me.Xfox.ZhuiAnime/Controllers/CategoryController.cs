@@ -98,7 +98,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <param name="request"></param>
     /// <returns></returns>
-    [HttpPost("{id}")]
+    [HttpPatch("{id}")]
     public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
         var category = await LoadCategory(id);

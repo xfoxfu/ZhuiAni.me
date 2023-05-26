@@ -126,7 +126,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <param name="request"></param>
     /// <returns></returns>
-    [HttpPost("{id}")]
+    [HttpPatch("{id}")]
     public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
