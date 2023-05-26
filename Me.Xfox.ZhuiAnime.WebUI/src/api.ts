@@ -321,10 +321,7 @@ export class HttpClient<SecurityDataType = unknown> {
   };
 }
 
-// import { ResourceSource, createResource } from "solid-js";
-
-// const santizeResourceSource = <T>(source: ResourceSource<T>): T =>
-//   typeof source === "function" ? source() : source;
+import { createResource } from "solid-js";
 
 /**
  * @title ZhuiAni.me API
@@ -340,13 +337,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get all categories.
      * @request GET:/api/categories
      */
-    getCategories: (params: RequestParams = {}) =>
+    getCategories: (
+      query?: {
+        someBool?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
         method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
+    createCategories: (
+      args: () => {
+        query?: {
+          someBool?: boolean;
+        };
+        requestParams?: RequestParams;
+      },
+    ) => createResource(args, ({ query, requestParams }) => this.category.getCategories(query, requestParams)),
 
     /**
      * No description
@@ -381,6 +392,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createCategory: (args: () => { id: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ id, requestParams }) => this.category.getCategory(id, requestParams)),
 
     /**
      * No description
@@ -431,6 +444,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createCategoryItems: (args: () => { id: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ id, requestParams }) => this.category.getCategoryItems(id, requestParams)),
   };
   item = {
     /**
@@ -448,6 +463,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createItems: (args: () => { requestParams?: RequestParams }) =>
+      createResource(args, ({ requestParams }) => this.item.getItems(requestParams)),
 
     /**
      * No description
@@ -482,6 +499,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createItem: (args: () => { id: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ id, requestParams }) => this.item.getItem(id, requestParams)),
 
     /**
      * No description
@@ -532,6 +551,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createItemItems: (args: () => { id: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ id, requestParams }) => this.item.getItemItems(id, requestParams)),
   };
   itemLink = {
     /**
@@ -549,6 +570,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createItemLinks: (args: () => { itemId: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ itemId, requestParams }) => this.itemLink.getItemLinks(itemId, requestParams)),
 
     /**
      * No description
@@ -583,6 +606,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    createItemLink: (args: () => { itemId: number; id: number; requestParams?: RequestParams }) =>
+      createResource(args, ({ itemId, id, requestParams }) => this.itemLink.getItemLink(itemId, id, requestParams)),
 
     /**
      * No description

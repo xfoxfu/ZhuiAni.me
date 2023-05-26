@@ -1,2 +1,54 @@
 <%~ includeFile("@default/procedure-call.eta", it) %>
-<% // TODO: implement solidjs createResource %>
+<%
+const { utils, route, config } = it;
+const { requestBodyInfo, responseBodyInfo, specificArgNameResolver } = route;
+const { _, getInlineParseContent, getParseContent, parseSchema, getComponentByRef, require } = utils;
+const { parameters, path, method, payload, query, formData, security, requestParams } = route.request;
+const { type, errorType, contentTypes } = route.response;
+const { HTTP_CLIENT, RESERVED_REQ_PARAMS_ARG_NAMES } = config.constants;
+// const routeDocs = includeFile("@base/route-docs", { config, route, utils });
+const queryName = (query && query.name) || "query";
+const pathParams = _.values(parameters);
+const pathParamsNames = _.map(pathParams, "name");
+
+const isFetchTemplate = config.httpClientType === HTTP_CLIENT.FETCH;
+
+const requestConfigParam = {
+  name: specificArgNameResolver.resolve(RESERVED_REQ_PARAMS_ARG_NAMES),
+  optional: true,
+  type: "RequestParams",
+  defaultValue: "{}",
+};
+
+const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${optional ? "?" : ""}: ${type}`;
+const argToDestruct = ({ name }) => `${name}`;
+
+const rawWrapperArgs = config.extractRequestParams
+  ? _.compact([
+      requestParams && {
+        name: pathParams.length ? `{ ${_.join(pathParamsNames, ", ")}, ...${queryName} }` : queryName,
+        optional: false,
+        type: getInlineParseContent(requestParams),
+      },
+      ...(!requestParams ? pathParams : []),
+      payload,
+      requestConfigParam,
+    ])
+  : _.compact([...pathParams, query, payload, requestConfigParam]);
+
+const wrapperArgs = _
+  // Sort by optionality
+  .sortBy(rawWrapperArgs, [(o) => o.optional])
+  .map(argToTmpl)
+  .join(", ");
+const wrapperArgsDestruct = _
+  // Sort by optionality
+  .sortBy(rawWrapperArgs, [(o) => o.optional])
+  .map(argToDestruct)
+  .join(", ");
+
+%>
+<% if (_.upperCase(method) === "GET") { %>
+<%~ route.routeName.usage.replace("get", "create") %>: (args: () => {<%~ wrapperArgs %>}) => createResource(args, ({<%~ wrapperArgsDestruct %>}) => 
+this.<%~ route.namespace %>.<%~ route.routeName.usage %>(<%~ wrapperArgsDestruct %>)),
+<% } %>

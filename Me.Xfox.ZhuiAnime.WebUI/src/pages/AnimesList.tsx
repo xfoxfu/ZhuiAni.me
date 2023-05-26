@@ -1,13 +1,14 @@
 import Api from "../api";
-import { Component, createResource, createSignal } from "solid-js";
+import { Component, createSignal } from "solid-js";
 
 export const AnimesList: Component = () => {
   // const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
-  const [category_id] = createSignal(1);
-  const [category] = createResource(
-    () => category_id(),
-    (id) => Api.category.getCategory(id)
-  );
+  const [id, setId] = createSignal(1);
+  const [category] = Api.category.createCategory(() => ({ id: id() }));
+
+  setInterval(() => {
+    setId((prev) => prev + 1);
+  }, 1000);
 
   return (
     <>

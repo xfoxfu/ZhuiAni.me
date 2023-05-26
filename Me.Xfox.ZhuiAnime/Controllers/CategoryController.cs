@@ -42,7 +42,7 @@ public class CategoryController : ControllerBase
     /// </summary>
     /// <returns>List of categories.</returns>
     [HttpGet]
-    public async Task<IEnumerable<CategoryDto>> ListAsync()
+    public async Task<IEnumerable<CategoryDto>> ListAsync([FromQuery] bool someBool)
     {
         return await DbContext.Category
             .OrderBy(a => a.Id)
