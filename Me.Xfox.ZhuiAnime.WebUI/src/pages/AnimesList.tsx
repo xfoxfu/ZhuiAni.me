@@ -1,18 +1,26 @@
 import Api from "../api";
-import { Component, createSignal } from "solid-js";
+import { Component, Match, Switch, createSignal } from "solid-js";
 
 export const AnimesList: Component = () => {
   // const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
-  const [id, setId] = createSignal(1);
+  const [id] = createSignal(10);
   const [category] = Api.category.createCategory(() => ({ id: id() }));
 
-  setInterval(() => {
-    setId((prev) => prev + 1);
-  }, 1000);
+  // setInterval(() => {
+  //   setId((prev) => prev + 1);
+  // }, 1000);
 
   return (
     <>
-      {category()?.data?.title}
+      <Switch fallback={<div>Fallback</div>}>
+        <Match when={!!category.error}>
+          <div>
+            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
+            EEE Error: {JSON.stringify(category.error)} = {(category.error as Error).message}
+          </div>
+        </Match>
+        <Match when={category()}>{category()?.title}</Match>
+      </Switch>
       {/* <Heading as="h1" size="xl" color="green.700">
         Animations
       </Heading>

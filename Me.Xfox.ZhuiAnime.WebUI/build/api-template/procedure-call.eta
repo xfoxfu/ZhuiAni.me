@@ -49,6 +49,12 @@ const wrapperArgsDestruct = _
 
 %>
 <% if (_.upperCase(method) === "GET") { %>
-<%~ route.routeName.usage.replace("get", "create") %>: (args: () => {<%~ wrapperArgs %>}) => createResource(args, ({<%~ wrapperArgsDestruct %>}) => 
-this.<%~ route.namespace %>.<%~ route.routeName.usage %>(<%~ wrapperArgsDestruct %>)),
+<%~ route.routeName.usage.replace("get", "create") %>: (args: () => {<%~ wrapperArgs %>}) => createResource(args, async ({<%~ wrapperArgsDestruct %>}) => {
+  try {
+    return (await this.<%~ route.namespace %>.<%~ route.routeName.usage %>(<%~ wrapperArgsDestruct %>)).data;
+  } catch (err) {
+    if (err instanceof Error) throw err;
+    throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+  }
+}),
 <% } %>

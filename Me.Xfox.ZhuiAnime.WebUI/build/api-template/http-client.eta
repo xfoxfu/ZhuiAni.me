@@ -1,3 +1,5 @@
 <%~ includeFile("@base/http-client.eta", it) %>
 
 import { ResourceSource, createResource } from "solid-js";
+
+export class ApiError extends Error {}

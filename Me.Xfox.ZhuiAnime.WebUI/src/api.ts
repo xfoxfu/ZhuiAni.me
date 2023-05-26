@@ -323,6 +323,8 @@ export class HttpClient<SecurityDataType = unknown> {
 
 import { createResource } from "solid-js";
 
+export class ApiError extends Error {}
+
 /**
  * @title ZhuiAni.me API
  * @version v1
@@ -357,7 +359,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         };
         requestParams?: RequestParams;
       },
-    ) => createResource(args, ({ query, requestParams }) => this.category.getCategories(query, requestParams)),
+    ) =>
+      createResource(args, async ({ query, requestParams }) => {
+        try {
+          return (await this.category.getCategories(query, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
@@ -393,7 +403,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createCategory: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ id, requestParams }) => this.category.getCategory(id, requestParams)),
+      createResource(args, async ({ id, requestParams }) => {
+        try {
+          return (await this.category.getCategory(id, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
@@ -445,7 +462,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createCategoryItems: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ id, requestParams }) => this.category.getCategoryItems(id, requestParams)),
+      createResource(args, async ({ id, requestParams }) => {
+        try {
+          return (await this.category.getCategoryItems(id, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
   };
   item = {
     /**
@@ -464,7 +488,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createItems: (args: () => { requestParams?: RequestParams }) =>
-      createResource(args, ({ requestParams }) => this.item.getItems(requestParams)),
+      createResource(args, async ({ requestParams }) => {
+        try {
+          return (await this.item.getItems(requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
@@ -500,7 +531,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createItem: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ id, requestParams }) => this.item.getItem(id, requestParams)),
+      createResource(args, async ({ id, requestParams }) => {
+        try {
+          return (await this.item.getItem(id, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
@@ -552,7 +590,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createItemItems: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ id, requestParams }) => this.item.getItemItems(id, requestParams)),
+      createResource(args, async ({ id, requestParams }) => {
+        try {
+          return (await this.item.getItemItems(id, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
   };
   itemLink = {
     /**
@@ -571,7 +616,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createItemLinks: (args: () => { itemId: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ itemId, requestParams }) => this.itemLink.getItemLinks(itemId, requestParams)),
+      createResource(args, async ({ itemId, requestParams }) => {
+        try {
+          return (await this.itemLink.getItemLinks(itemId, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
@@ -607,7 +659,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
     createItemLink: (args: () => { itemId: number; id: number; requestParams?: RequestParams }) =>
-      createResource(args, ({ itemId, id, requestParams }) => this.itemLink.getItemLink(itemId, id, requestParams)),
+      createResource(args, async ({ itemId, id, requestParams }) => {
+        try {
+          return (await this.itemLink.getItemLink(itemId, id, requestParams)).data;
+        } catch (err) {
+          if (err instanceof Error) throw err;
+          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
+        }
+      }),
 
     /**
      * No description
