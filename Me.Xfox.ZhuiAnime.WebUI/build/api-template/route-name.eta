@@ -1,17 +1,7 @@
 <%
 const { routeInfo, utils } = it;
-const {
-  operationId,
-  method,
-  route,
-  moduleName,
-  responsesTypes,
-  description,
-  tags,
-  summary,
-  pathArgs,
-} = routeInfo;
-const { _, fmtToJSDocLine, require } = utils;
+const { method, route } = routeInfo;
+const { _ } = utils;
 
 const routeSegments = route.split("/").slice(2);
 const nameSegments = routeSegments

@@ -1,17 +1,14 @@
 <%~ includeFile("@default/procedure-call.eta", it) %>
 <%
 const { utils, route, config } = it;
-const { requestBodyInfo, responseBodyInfo, specificArgNameResolver } = route;
-const { _, getInlineParseContent, getParseContent, parseSchema, getComponentByRef, require } = utils;
-const { parameters, path, method, payload, query, formData, security, requestParams } = route.request;
-const { type, errorType, contentTypes } = route.response;
-const { HTTP_CLIENT, RESERVED_REQ_PARAMS_ARG_NAMES } = config.constants;
+const { specificArgNameResolver } = route;
+const { _, getInlineParseContent } = utils;
+const { parameters, method, payload, query, requestParams } = route.request;
+const { RESERVED_REQ_PARAMS_ARG_NAMES } = config.constants;
 // const routeDocs = includeFile("@base/route-docs", { config, route, utils });
 const queryName = (query && query.name) || "query";
 const pathParams = _.values(parameters);
 const pathParamsNames = _.map(pathParams, "name");
-
-const isFetchTemplate = config.httpClientType === HTTP_CLIENT.FETCH;
 
 const requestConfigParam = {
   name: specificArgNameResolver.resolve(RESERVED_REQ_PARAMS_ARG_NAMES),
