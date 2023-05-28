@@ -1,65 +1,67 @@
 import Api from "../api";
-import { Component, Match, Switch, createSignal } from "solid-js";
+import {
+  Component,
+  ErrorBoundary,
+  For,
+  Show,
+  Suspense,
+  createEffect,
+  createSignal,
+  resetErrorBoundaries,
+} from "solid-js";
+import { alertError } from "../components/AlertError";
 
 export const AnimesList: Component = () => {
-  // const { data: animes, error } = Api.anime.useAnimesList({ include_image: true });
-  const [id] = createSignal(10);
-  const [category] = Api.category.createCategory(() => ({ id: id() }));
+  const [categoryId, setCategoryId] = createSignal(0);
+  const [categories] = Api.category.useCategories(() => ({}));
+  const [items] = Api.category.useCategoryItems(() => ({ id: categoryId() }));
 
-  // setInterval(() => {
-  //   setId((prev) => prev + 1);
-  // }, 1000);
+  createEffect(() => {
+    categoryId();
+    resetErrorBoundaries();
+  });
 
   return (
     <>
-      <Switch fallback={<div>Fallback</div>}>
-        <Match when={!!category.error}>
-          <div>
-            {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-            EEE Error: {JSON.stringify(category.error)} = {(category.error as Error).message}
-          </div>
-        </Match>
-        <Match when={category()}>{category()?.title}</Match>
-      </Switch>
-      {/* <Heading as="h1" size="xl" color="green.700">
-        Animations
-      </Heading>
-      <Stack spacing="1">
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
-        <HStack spacing="1.5">
-          <Button size="sm">Today</Button>
-          <Button size="sm">3 Days</Button>
-          <ImportBangumi />
-        </HStack>
-        <Wrap spacingX="3" spacingY="2" alignItems="stretch">
-          {animes?.map((a) => (
-            <WrapItem alignItems="stretch" key={a.id}>
-              <VStack
-                minW="18ch"
-                px="3"
-                py="2"
-                borderWidth="1px"
-                rounded="md"
-                align="stretch"
-                bg="white"
-                width="min-content"
-              >
-                <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" />
-                <Tooltip label={a.title}>
-                  <Heading as="h3" size="sm" noOfLines={1}>
-                    <Link to={`/animes/${a.id}`}>{a.title}</Link>
-                  </Heading>
-                </Tooltip>
-              </VStack>
-            </WrapItem>
-          ))}
-        </Wrap>
-      </Stack> */}
+      <Suspense fallback={<progress class="w-56" />}>
+        <ErrorBoundary fallback={alertError}>
+          <Show when={categories()}>
+            <div class="flex gap-x-3">
+              <For each={categories()}>
+                {(category) => (
+                  <button
+                    classList={{ "btn btn-primary": true, "btn-outline": categoryId() !== category.id }}
+                    onClick={() => setCategoryId(category.id)}
+                  >
+                    {category.title}
+                  </button>
+                )}
+              </For>
+            </div>
+          </Show>
+        </ErrorBoundary>
+      </Suspense>
+      <Show when={categoryId() !== 0}>
+        <Suspense fallback={<progress class="progress w-56" />}>
+          <ErrorBoundary fallback={alertError}>
+            <Show when={items()}>
+              <div class="flex gap-x-3 gap-y-2 align-items-stretch">
+                <For each={items()}>
+                  {(item) => (
+                    <div class="card shadow-md">
+                      <div class="card-body">
+                        <a href="">
+                          <h3 class="card-title">{item.title}</h3>
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                </For>
+              </div>
+            </Show>
+          </ErrorBoundary>
+        </Suspense>
+      </Show>
     </>
   );
 };

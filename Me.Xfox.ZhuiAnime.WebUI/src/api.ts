@@ -352,7 +352,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createCategories: (
+    useCategories: (
       args: () => {
         query?: {
           someBool?: boolean;
@@ -402,7 +402,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createCategory: (args: () => { id: number; requestParams?: RequestParams }) =>
+    useCategory: (args: () => { id: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ id, requestParams }) => {
         try {
           return (await this.category.getCategory(id, requestParams)).data;
@@ -461,7 +461,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createCategoryItems: (args: () => { id: number; requestParams?: RequestParams }) =>
+    useCategoryItems: (args: () => { id: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ id, requestParams }) => {
         try {
           return (await this.category.getCategoryItems(id, requestParams)).data;
@@ -487,7 +487,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createItems: (args: () => { requestParams?: RequestParams }) =>
+    useItems: (args: () => { requestParams?: RequestParams }) =>
       createResource(args, async ({ requestParams }) => {
         try {
           return (await this.item.getItems(requestParams)).data;
@@ -530,7 +530,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createItem: (args: () => { id: number; requestParams?: RequestParams }) =>
+    useItem: (args: () => { id: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ id, requestParams }) => {
         try {
           return (await this.item.getItem(id, requestParams)).data;
@@ -589,7 +589,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createItemItems: (args: () => { id: number; requestParams?: RequestParams }) =>
+    useItemItems: (args: () => { id: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ id, requestParams }) => {
         try {
           return (await this.item.getItemItems(id, requestParams)).data;
@@ -615,7 +615,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createItemLinks: (args: () => { itemId: number; requestParams?: RequestParams }) =>
+    useItemLinks: (args: () => { itemId: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ itemId, requestParams }) => {
         try {
           return (await this.itemLink.getItemLinks(itemId, requestParams)).data;
@@ -658,7 +658,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    createItemLink: (args: () => { itemId: number; id: number; requestParams?: RequestParams }) =>
+    useItemLink: (args: () => { itemId: number; id: number; requestParams?: RequestParams }) =>
       createResource(args, async ({ itemId, id, requestParams }) => {
         try {
           return (await this.itemLink.getItemLink(itemId, id, requestParams)).data;
