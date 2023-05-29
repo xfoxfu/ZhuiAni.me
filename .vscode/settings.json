@@ -1,5 +1,8 @@
 {
   "eslint.workingDirectories": [
     { "directory": "./Me.Xfox.ZhuiAnime.WebUI", "changeProcessCWD": true }
-  ]
+  ],
+  "files.exclude": {
+    "**/node_modules": true
+  }
 }
