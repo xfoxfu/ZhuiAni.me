@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import { alertError } from "../components/AlertError";
 
-export const AnimesList: Component = () => {
+export const ItemsList: Component = () => {
   const [categoryId, setCategoryId] = createSignal(0);
   const [categories] = Api.category.useCategories(() => ({}));
   const [items] = Api.category.useCategoryItems(() => ({ id: categoryId() }));
@@ -50,7 +50,7 @@ export const AnimesList: Component = () => {
                   {(item) => (
                     <div class="card shadow-md">
                       <div class="card-body">
-                        <a href="">
+                        <a href={`/items/${item.id}`}>
                           <h3 class="card-title">{item.title}</h3>
                         </a>
                       </div>

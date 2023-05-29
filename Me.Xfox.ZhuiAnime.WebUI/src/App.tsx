@@ -1,8 +1,8 @@
 import { Route, Routes } from "@solidjs/router";
 import { Component, lazy } from "solid-js";
 
-import { AnimesList } from "./pages/AnimesList";
-const Anime = lazy(() => import("./pages/Anime"));
+import { ItemsList } from "./pages/ItemsList";
+const Item = lazy(() => import("./pages/Item"));
 
 const App: Component = () => {
   return (
@@ -22,9 +22,9 @@ const App: Component = () => {
       </div>
       <div class="flex-3 bg-gray-50 p-4 space-y-4">
         <Routes>
-          <Route path="/" element={<AnimesList />} />
-          <Route path="/animes">
-            <Route path="/:animeId" element={<Anime />} />
+          <Route path="/" element={<ItemsList />} />
+          <Route path="/items">
+            <Route path="/:itemId" element={<Item />} />
           </Route>
         </Routes>
       </div>
