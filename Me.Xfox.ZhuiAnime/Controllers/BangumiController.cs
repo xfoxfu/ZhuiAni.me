@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.External.Bangumi;
@@ -43,6 +44,7 @@ public class BangumiController : ControllerBase
 
             anime.Title = "アニメ";
 
+            await DbContext.SaveChangesAsync();
             await tx.CommitAsync();
             category = anime;
         }
@@ -112,6 +114,13 @@ public class BangumiController : ControllerBase
             episode.Title = string.IsNullOrEmpty(bgmEpisode.Name) ? name : $"{name} - {bgmEpisode.Name}";
             episode.Category = category;
             episode.ParentItem = item;
+            episode.Annotations = new Dictionary<string, string>(episode.Annotations)
+            {
+                ["https://bgm.tv/episodes/:id/type"] =
+                bgmEpisode.Type == Episode.EpisodeType.SP ? "SP" : "Origin",
+                ["https://bgm.tv/episodes/:id/sort"] =
+                bgmEpisode.Sort?.ToString() ?? ""
+            };
 
             await DbContext.SaveChangesAsync();
 
