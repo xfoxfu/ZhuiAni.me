@@ -13,10 +13,10 @@ for (const anime of importer.config.anime) {
     const target_folder_id = await importer.pikpak.resolve_folder_id(
       anime.target
     );
-    await importer.pikpak.move(file_id, target_folder_id);
     const episode =
       item.title?.match(new RegExp(anime.regex))?.groups?.ep ?? "";
     if (!episode) continue;
+    await importer.pikpak.move(file_id, target_folder_id);
     await importer.add_link(`${anime.target}/${file_name}`, za_item, episode);
   }
 }
