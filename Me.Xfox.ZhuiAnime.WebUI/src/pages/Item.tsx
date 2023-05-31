@@ -20,20 +20,22 @@ export const Item: Component = () => {
         </ErrorBoundary>
       </Suspense>
       <ItemLinks itemId={itemId} />
-      <Suspense fallback={<progress class="w-56" />}>
-        <ErrorBoundary fallback={alertError}>
-          <Show when={childItems()}>
-            <For each={childItems()}>
-              {(item) => (
-                <div class="px-3 py-2 bg-base-100 shadow-xl spacing-x-1">
-                  <h2 class="card-title">{item.title}</h2>
-                  <ItemLinks itemId={item.id} />
-                </div>
-              )}
-            </For>
-          </Show>
-        </ErrorBoundary>
-      </Suspense>
+      <div class="flex flex-wrap gap-x-3 gap-y-2">
+        <Suspense fallback={<progress class="w-56" />}>
+          <ErrorBoundary fallback={alertError}>
+            <Show when={childItems()}>
+              <For each={childItems()}>
+                {(item) => (
+                  <div class="w-72 px-3 py-2 bg-base-100 shadow-xl space-y-1">
+                    <h2 class="text-xl">{item.title}</h2>
+                    <ItemLinks itemId={item.id} />
+                  </div>
+                )}
+              </For>
+            </Show>
+          </ErrorBoundary>
+        </Suspense>
+      </div>
     </>
   );
 };
