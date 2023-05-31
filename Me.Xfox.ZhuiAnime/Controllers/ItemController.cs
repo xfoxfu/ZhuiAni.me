@@ -93,15 +93,8 @@ public class ItemController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = newItem.Id }, new ItemDto(newItem));
     }
 
-    protected async Task<Item> LoadItem(uint id)
-    {
-        var item = await DbContext.Item.FindAsync(id);
-        if (item == null)
-        {
-            throw new ZhuiAnimeError.ItemNotFound(id);
-        }
-        return item;
-    }
+    protected async Task<Item> LoadItem(uint id) => await DbContext.Item.FindAsync(id)
+        ?? throw new ZhuiAnimeError.ItemNotFound(id);
 
     /// <summary>
     /// Get a item.

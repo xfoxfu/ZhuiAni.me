@@ -55,11 +55,8 @@ builder.Services
 
 builder.Services.AddDbContext<ZAContext>(opt =>
 {
-    var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext));
-    if (connectionString == null)
-    {
+    var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext)) ??
         throw new Exception("Connection string for ZAContext cannot be null");
-    }
     opt.UseNpgsql(connectionString);
     opt.UseSnakeCaseNamingConvention();
 });
@@ -78,6 +75,8 @@ builder.Services.AddSwaggerGen(options =>
         AppContext.BaseDirectory,
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
+
+builder.Services.AddSingleton(new Me.Xfox.ZhuiAnime.External.Bangumi.BangumiApi());
 
 var app = builder.Build();
 

@@ -12,7 +12,6 @@ public class Item
     public Category Category { get; set; } = null!;
     public uint CategoryId { get; set; }
 
-
     public string Title { get; set; } = string.Empty;
 
     public IDictionary<string, string> Annotations = new Dictionary<string, string>();

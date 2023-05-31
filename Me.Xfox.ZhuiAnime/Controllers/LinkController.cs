@@ -89,7 +89,7 @@ public class ItemLinkController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [ProducesResponseType(typeof(LinkDto), (int)HttpStatusCode.Created)]
-    public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] LinkDto link)
+    public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
     {
         var item = await DbContext.Item.FindAsync(item_id);
         if (item == null)
