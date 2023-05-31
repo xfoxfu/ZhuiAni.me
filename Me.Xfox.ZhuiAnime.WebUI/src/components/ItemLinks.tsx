@@ -1,6 +1,9 @@
-import { Suspense, ErrorBoundary, Show, For } from "solid-js";
+import { Suspense, ErrorBoundary, Show, For, Switch, Match } from "solid-js";
 import { alertError } from "./AlertError";
 import api from "../api";
+import { IconVideo } from "../assets/icons/Video";
+import MIMEType from "whatwg-mimetype";
+import { IconGlobe } from "../assets/icons/Globe";
 
 export const ItemLinks = (props: { itemId: number }) => {
   const [links] = api.itemLink.useItemLinks(() => ({ itemId: props.itemId }));
@@ -11,11 +14,23 @@ export const ItemLinks = (props: { itemId: number }) => {
         <ErrorBoundary fallback={alertError}>
           <Show when={links()}>
             <For each={links()}>
-              {(link) => (
-                <li>
-                  <a href={link.address}>{link.id}</a>
-                </li>
-              )}
+              {(link) => {
+                const mime = new MIMEType(link.mime_type);
+                return (
+                  <li>
+                    <a href={link.address} target="blank">
+                      <Switch>
+                        <Match when={mime?.essence === "text/html" && mime?.parameters?.get("kind") === "video"}>
+                          <IconVideo />
+                        </Match>
+                        <Match when>
+                          <IconGlobe />
+                        </Match>
+                      </Switch>
+                    </a>
+                  </li>
+                );
+              }}
             </For>
           </Show>
         </ErrorBoundary>

@@ -52,6 +52,8 @@ export class Importer {
         }
       }
     }
+    this.db.data.refresh_token = this.pikpak.refresh_token;
+    this.db.data.access_token = this.pikpak.access_token;
   };
 
   fetch_rss_source = async (source_url: string): Promise<RssItem[]> => {
@@ -72,7 +74,6 @@ export class Importer {
       return this.db.data.downloaded_files[url];
     }
     const newFile = await this.pikpak.download(item.enclosure?.url);
-    console.log(JSON.stringify(newFile));
     if (!newFile.task?.id || !newFile.task.file_id || !newFile.task.file_name) {
       throw new Error("download failed");
     }
@@ -101,13 +102,21 @@ export class Importer {
     const episodes = await this.za.item.getItemItems(RssItem.id);
     const episode = episodes.data.find(
       (e) =>
-        Number.parseFloat(e.annotations["https://bgm.tv/episodes/:id/sort"]) ===
+        Number.parseFloat(e.annotations["https://bgm.tv/ep/:id/sort"]) ===
         Number.parseFloat(episode_id)
     );
-    await this.za.itemLink.postItemLinks(episode?.id ?? RssItem.id, {
-      address: `https://alist.xfox.me${file_path}`,
-      mime_type: "text/html;kind=video",
-      annotations: {},
-    });
+    const address = `https://alist.xfox.me${file_path}`;
+    if (
+      (
+        await this.za.itemLink.getItemLinks(episode?.id ?? RssItem.id)
+      ).data.filter((l) => decodeURI(l.address) === decodeURI(address))
+        .length === 0
+    ) {
+      await this.za.itemLink.postItemLinks(episode?.id ?? RssItem.id, {
+        address: address,
+        mime_type: "text/html;kind=video",
+        annotations: {},
+      });
+    }
   };
 }

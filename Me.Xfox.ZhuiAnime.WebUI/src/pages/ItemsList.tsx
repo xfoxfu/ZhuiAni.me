@@ -21,6 +21,12 @@ export const ItemsList: Component = () => {
     resetErrorBoundaries();
   });
 
+  createEffect(() => {
+    if (categoryId() === 0) {
+      setCategoryId(categories()?.[0]?.id ?? 0);
+    }
+  });
+
   return (
     <>
       <Suspense fallback={<progress class="w-56" />}>

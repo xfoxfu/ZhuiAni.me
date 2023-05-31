@@ -25,11 +25,9 @@ export const Item: Component = () => {
           <Show when={childItems()}>
             <For each={childItems()}>
               {(item) => (
-                <div class="card w-full bg-base-100 shadow-xl">
-                  <div class="card-body">
-                    <h2 class="card-title">{item.title}</h2>
-                    <ItemLinks itemId={item.id} />
-                  </div>
+                <div class="px-3 py-2 bg-base-100 shadow-xl spacing-x-1">
+                  <h2 class="card-title">{item.title}</h2>
+                  <ItemLinks itemId={item.id} />
                 </div>
               )}
             </For>

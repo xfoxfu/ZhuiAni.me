@@ -97,7 +97,7 @@ public class BangumiController : ControllerBase
                 continue;
             }
 
-            var address = new Uri($"https://bgm.tv/episodes/{bgmEpisode.Id}");
+            var address = new Uri($"https://bgm.tv/ep/{bgmEpisode.Id}");
             var name = (bgmEpisode.Sort ?? 0).ToString(episodeNameFormat);
             if (bgmEpisode.Type == Episode.EpisodeType.SP) name = $"SP{name}";
 
@@ -116,9 +116,9 @@ public class BangumiController : ControllerBase
             episode.ParentItem = item;
             episode.Annotations = new Dictionary<string, string>(episode.Annotations)
             {
-                ["https://bgm.tv/episodes/:id/type"] =
+                ["https://bgm.tv/ep/:id/type"] =
                 bgmEpisode.Type == Episode.EpisodeType.SP ? "SP" : "Origin",
-                ["https://bgm.tv/episodes/:id/sort"] =
+                ["https://bgm.tv/ep/:id/sort"] =
                 bgmEpisode.Sort?.ToString() ?? ""
             };
 
