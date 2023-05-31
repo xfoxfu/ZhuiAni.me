@@ -1,0 +1,20 @@
+username = "u+36cgfvah@xfox.me"
+password = "WcdatF6ACiv7ha5m"
+
+[[anime]]
+source = "https://mikanani.me/RSS/MyBangumi?token=%2bzdhWGetkXDO30J1uaDy%2bg%3d%3d"
+bangumi = 365437
+target = "/Animations/2023-04/Kimi wa Houkago Insomnia"
+regex = 'Insomnia - (?<ep>\d+)\w* \['
+
+[[anime]]
+source = "https://mikanani.me/RSS/MyBangumi?token=%2bzdhWGetkXDO30J1uaDy%2bg%3d%3d"
+bangumi = 404804
+target = "/Animations/2023-04/Tengoku Daimakyou"
+regex = 'Daimakyou - (?<ep>\d+)\w* \[WebRip'
+
+[[anime]]
+source = "https://mikanani.me/RSS/MyBangumi?token=%2bzdhWGetkXDO30J1uaDy%2bg%3d%3d"
+bangumi = 357961
+target = "/Animations/2023-04/Skip to Loafer"
+regex = 'Loafer - (?<ep>\d+)\w* \[WebRip'

@@ -4,5 +4,6 @@
   ],
   "files.exclude": {
     "**/node_modules": true
-  }
+  },
+  "deno.enablePaths": ["./Me.Xfox.ZhuiAnime.External.PikPak"]
 }
