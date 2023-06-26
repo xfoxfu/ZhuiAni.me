@@ -1,6 +1,6 @@
 import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import { Item } from "./pages/Item";
 import { ItemsList } from "./pages/ItemsList";
 
@@ -15,7 +15,7 @@ const App: React.FunctionComponent = () => {
           Ani<chakra.span fontWeight="light">.</chakra.span>me
         </Heading>
         <Heading as="h2" size="lg">
-          Animations
+          <Link to="/">Animations</Link>
         </Heading>
         <Heading as="h2" size="lg">
           Torrents
