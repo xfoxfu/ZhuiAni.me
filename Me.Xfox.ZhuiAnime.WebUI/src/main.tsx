@@ -1,22 +1,22 @@
-import { render } from "solid-js/web";
-import "./index.css";
+import React from "react";
+import { createRoot } from "react-dom/client";
 import App from "./App";
-import { Router } from "@solidjs/router";
+import { ChakraProvider } from "@chakra-ui/react";
+import { SWRConfig } from "swr";
+import { fetcher } from "./api";
+import { BrowserRouter } from "react-router-dom";
 
-const root = document.getElementById("root");
-
-if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
-  throw new Error(
-    "Root element not found. Did you forget to add it to your index.html? Or maybe the id attribute got mispelled?"
-  );
-}
-
-render(
-  () => (
-    <Router>
-      <App />
-    </Router>
-  ),
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  root!
+const container = document.getElementById("root");
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const root = createRoot(container!);
+root.render(
+  <React.StrictMode>
+    <ChakraProvider>
+      <SWRConfig value={{ fetcher }}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </SWRConfig>
+    </ChakraProvider>
+  </React.StrictMode>
 );

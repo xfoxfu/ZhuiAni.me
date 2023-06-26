@@ -3,7 +3,8 @@ parser: "@typescript-eslint/parser"
 plugins:
   - "@typescript-eslint"
   - "prettier"
-  - "solid"
+  - "react"
+  - "react-hooks"
 parserOptions:
   tsconfigRootDir: "."
   project: ["./tsconfig.json"]
@@ -12,11 +13,14 @@ extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/recommended"
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
-  - "plugin:solid/recommended"
+  - "plugin:react/recommended"
+  - "plugin:react-hooks/recommended"
   - "prettier"
   - "plugin:prettier/recommended"
 
 ignorePatterns:
   - "vite.config.ts"
-  - "tailwind.config.js"
-  - "postcss.config.js"
+
+settings:
+  react:
+    version: "detect"

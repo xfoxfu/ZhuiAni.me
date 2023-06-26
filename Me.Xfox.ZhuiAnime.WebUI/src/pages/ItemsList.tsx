@@ -1,73 +1,65 @@
-import Api from "../api";
 import {
-  Component,
-  ErrorBoundary,
-  For,
-  Show,
-  Suspense,
-  createEffect,
-  createSignal,
-  resetErrorBoundaries,
-} from "solid-js";
-import { alertError } from "../components/AlertError";
+  Heading,
+  Stack,
+  HStack,
+  Button,
+  Wrap,
+  WrapItem,
+  VStack,
+  Tooltip,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+} from "@chakra-ui/react";
+import React from "react";
+import Api from "../api";
+import { Link } from "react-router-dom";
 
-export const ItemsList: Component = () => {
-  const [categoryId, setCategoryId] = createSignal(0);
-  const [categories] = Api.category.useCategories(() => ({}));
-  const [items] = Api.category.useCategoryItems(() => ({ id: categoryId() }));
-
-  createEffect(() => {
-    categoryId();
-    resetErrorBoundaries();
-  });
-
-  createEffect(() => {
-    if (categoryId() === 0) {
-      setCategoryId(categories()?.[0]?.id ?? 0);
-    }
-  });
+export const ItemsList: React.FunctionComponent = () => {
+  const { data: animes, error } = Api.item.useGetItems();
+  console.log(animes);
 
   return (
     <>
-      <Suspense fallback={<progress class="w-56" />}>
-        <ErrorBoundary fallback={alertError}>
-          <Show when={categories()}>
-            <div class="flex gap-x-3">
-              <For each={categories()}>
-                {(category) => (
-                  <button
-                    classList={{ "btn btn-primary": true, "btn-outline": categoryId() !== category.id }}
-                    onClick={() => setCategoryId(category.id)}
-                  >
-                    {category.title}
-                  </button>
-                )}
-              </For>
-            </div>
-          </Show>
-        </ErrorBoundary>
-      </Suspense>
-      <Show when={categoryId() !== 0}>
-        <Suspense fallback={<progress class="progress w-56" />}>
-          <ErrorBoundary fallback={alertError}>
-            <Show when={items()}>
-              <div class="flex gap-x-3 gap-y-2 align-items-stretch">
-                <For each={items()}>
-                  {(item) => (
-                    <div class="card shadow-md">
-                      <div class="card-body">
-                        <a href={`/items/${item.id}`}>
-                          <h3 class="card-title">{item.title}</h3>
-                        </a>
-                      </div>
-                    </div>
-                  )}
-                </For>
-              </div>
-            </Show>
-          </ErrorBoundary>
-        </Suspense>
-      </Show>
+      <Heading as="h1" size="xl" color="green.700">
+        Animations
+      </Heading>
+      <Stack spacing="1">
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertDescription>{error.message}</AlertDescription>
+          </Alert>
+        )}
+        <HStack spacing="1.5">
+          <Button size="sm">Today</Button>
+          <Button size="sm">3 Days</Button>
+          {/* <ImportBangumi /> */}
+        </HStack>
+        <Wrap spacingX="3" spacingY="2" alignItems="stretch">
+          {animes?.map((a) => (
+            <WrapItem alignItems="stretch" key={a.id}>
+              <VStack
+                minW="18ch"
+                px="3"
+                py="2"
+                borderWidth="1px"
+                rounded="md"
+                align="stretch"
+                bg="white"
+                width="min-content"
+              >
+                {/* <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" /> */}
+                <Tooltip label={a.title}>
+                  <Heading as="h3" size="sm" noOfLines={1}>
+                    <Link to={`/animes/${a.id}`}>{a.title}</Link>
+                  </Heading>
+                </Tooltip>
+              </VStack>
+            </WrapItem>
+          ))}
+        </Wrap>
+      </Stack>
     </>
   );
 };

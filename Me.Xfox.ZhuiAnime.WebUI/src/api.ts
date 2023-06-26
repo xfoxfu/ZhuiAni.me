@@ -29,6 +29,24 @@ export interface CreateItemDto {
   parent_item_id?: number | null;
 }
 
+/** Information for creating a link. */
+export interface CreateLinkDto {
+  /**
+   * the url this link points to
+   * @format uri
+   */
+  address: string;
+  /** the MIME type of the target of this link */
+  mime_type: string;
+  /** extra information for this link */
+  annotations: Record<string, string>;
+  /**
+   * id of parent link, if exists
+   * @format int32
+   */
+  parent_link_id?: number | null;
+}
+
 export interface CreateOrUpdateCategoryDto {
   /** user-friendly name */
   title: string;
@@ -38,6 +56,11 @@ export interface ErrorProdResponse {
   error_code: string;
   message: string;
   [key: string]: any;
+}
+
+export interface ImportSubjectDto {
+  /** @format int32 */
+  id: number;
 }
 
 /** An item, like an anime, a manga, a episode in an anime, etc. */
@@ -218,7 +241,7 @@ export class HttpClient<SecurityDataType = unknown> {
             ? property
             : typeof property === "object" && property !== null
             ? JSON.stringify(property)
-            : `${property}`,
+            : `${property}`
         );
         return formData;
       }, new FormData()),
@@ -321,15 +344,33 @@ export class HttpClient<SecurityDataType = unknown> {
   };
 }
 
-import { createResource } from "solid-js";
-
 export class ApiError extends Error {}
+
+import useSWR, { mutate, MutatorOptions, SWRConfiguration } from "swr";
 
 /**
  * @title ZhuiAni.me API
  * @version v1
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+  bangumi = {
+    /**
+     * No description
+     *
+     * @tags Bangumi
+     * @name PostExternalBangumiImportSubject
+     * @request POST:/api/external/bangumi/import_subject
+     */
+    postExternalBangumiImportSubject: (data: ImportSubjectDto, params: RequestParams = {}) =>
+      this.request<ItemDto, ErrorProdResponse>({
+        path: `/api/external/bangumi/import_subject`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
   category = {
     /**
      * No description
@@ -343,7 +384,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         someBool?: boolean;
       },
-      params: RequestParams = {},
+      params: RequestParams = {}
     ) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
@@ -352,22 +393,37 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useCategories: (
-      args: () => {
-        query?: {
-          someBool?: boolean;
-        };
-        requestParams?: RequestParams;
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name GetCategories
+     * @summary Get all categories.
+     * @request GET:/api/categories
+     */
+    useGetCategories: (
+      query?: {
+        someBool?: boolean;
       },
-    ) =>
-      createResource(args, async ({ query, requestParams }) => {
-        try {
-          return (await this.category.getCategories(query, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+      options?: SWRConfiguration,
+      doFetch: boolean = true
+    ) => useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? [`/api/categories`, query] : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name GetCategories
+     * @summary Get all categories.
+     * @request GET:/api/categories
+     */
+    mutateGetCategories: (
+      query?: {
+        someBool?: boolean;
+      },
+      data?: CategoryDto[] | Promise<CategoryDto[]>,
+      options?: MutatorOptions
+    ) => mutate<CategoryDto[]>([`/api/categories`, query], data, options),
 
     /**
      * No description
@@ -402,15 +458,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useCategory: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ id, requestParams }) => {
-        try {
-          return (await this.category.getCategory(id, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name GetCategory
+     * @summary Get a category.
+     * @request GET:/api/categories/{id}
+     */
+    useGetCategory: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<CategoryDto, ErrorProdResponse>(doFetch ? `/api/categories/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name GetCategory
+     * @summary Get a category.
+     * @request GET:/api/categories/{id}
+     */
+    mutateGetCategory: (id: number, data?: CategoryDto | Promise<CategoryDto>, options?: MutatorOptions) =>
+      mutate<CategoryDto>(`/api/categories/${id}`, data, options),
 
     /**
      * No description
@@ -461,15 +529,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useCategoryItems: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ id, requestParams }) => {
-        try {
-          return (await this.category.getCategoryItems(id, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Category
+     * @name GetCategoryItems
+     * @summary Get a category's items.
+     * @request GET:/api/categories/{id}/items
+     */
+    useGetCategoryItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/categories/${id}/items` : null, options),
+
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Category
+     * @name GetCategoryItems
+     * @summary Get a category's items.
+     * @request GET:/api/categories/{id}/items
+     */
+    mutateGetCategoryItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+      mutate<ItemDto[]>(`/api/categories/${id}/items`, data, options),
   };
   item = {
     /**
@@ -487,15 +567,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useItems: (args: () => { requestParams?: RequestParams }) =>
-      createResource(args, async ({ requestParams }) => {
-        try {
-          return (await this.item.getItems(requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Item
+     * @name GetItems
+     * @summary Get all items.
+     * @request GET:/api/items
+     */
+    useGetItems: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/items` : null, options),
+
+    /**
+     * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
+     *
+     * @tags Item
+     * @name GetItems
+     * @summary Get all items.
+     * @request GET:/api/items
+     */
+    mutateGetItems: (data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+      mutate<ItemDto[]>(`/api/items`, data, options),
 
     /**
      * No description
@@ -530,15 +622,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useItem: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ id, requestParams }) => {
-        try {
-          return (await this.item.getItem(id, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItem
+     * @summary Get a item.
+     * @request GET:/api/items/{id}
+     */
+    useGetItem: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<ItemDto, ErrorProdResponse>(doFetch ? `/api/items/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItem
+     * @summary Get a item.
+     * @request GET:/api/items/{id}
+     */
+    mutateGetItem: (id: number, data?: ItemDto | Promise<ItemDto>, options?: MutatorOptions) =>
+      mutate<ItemDto>(`/api/items/${id}`, data, options),
 
     /**
      * No description
@@ -589,15 +693,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useItemItems: (args: () => { id: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ id, requestParams }) => {
-        try {
-          return (await this.item.getItemItems(id, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItemItems
+     * @summary Get a item's child items.
+     * @request GET:/api/items/{id}/items
+     */
+    useGetItemItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/items/${id}/items` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name GetItemItems
+     * @summary Get a item's child items.
+     * @request GET:/api/items/{id}/items
+     */
+    mutateGetItemItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+      mutate<ItemDto[]>(`/api/items/${id}/items`, data, options),
   };
   itemLink = {
     /**
@@ -615,15 +731,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useItemLinks: (args: () => { itemId: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ itemId, requestParams }) => {
-        try {
-          return (await this.itemLink.getItemLinks(itemId, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLinks
+     * @summary Get all links.
+     * @request GET:/api/items/{item_id}/links
+     */
+    useGetItemLinks: (itemId: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<LinkDto[], ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLinks
+     * @summary Get all links.
+     * @request GET:/api/items/{item_id}/links
+     */
+    mutateGetItemLinks: (itemId: number, data?: LinkDto[] | Promise<LinkDto[]>, options?: MutatorOptions) =>
+      mutate<LinkDto[]>(`/api/items/${itemId}/links`, data, options),
 
     /**
      * No description
@@ -633,7 +761,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Create a new link.
      * @request POST:/api/items/{item_id}/links
      */
-    postItemLinks: (itemId: number, data: LinkDto, params: RequestParams = {}) =>
+    postItemLinks: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "POST",
@@ -658,15 +786,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
-    useItemLink: (args: () => { itemId: number; id: number; requestParams?: RequestParams }) =>
-      createResource(args, async ({ itemId, id, requestParams }) => {
-        try {
-          return (await this.itemLink.getItemLink(itemId, id, requestParams)).data;
-        } catch (err) {
-          if (err instanceof Error) throw err;
-          throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-        }
-      }),
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLink
+     * @summary Get a link.
+     * @request GET:/api/items/{item_id}/links/{id}
+     */
+    useGetItemLink: (itemId: number, id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<LinkDto, ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name GetItemLink
+     * @summary Get a link.
+     * @request GET:/api/items/{item_id}/links/{id}
+     */
+    mutateGetItemLink: (itemId: number, id: number, data?: LinkDto | Promise<LinkDto>, options?: MutatorOptions) =>
+      mutate<LinkDto>(`/api/items/${itemId}/links/${id}`, data, options),
 
     /**
      * No description
@@ -706,3 +846,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
 
 const api = new Api();
 export default api;
+
+export const fetcher = async (path: string, query?: Record<string, unknown>) => {
+  return await api
+    .request({ path, query })
+    .then((res) => res.json())
+    .catch(async (err) => {
+      if (err instanceof Error) throw err;
+      const data = await err.json();
+      throw Object.assign(new ApiError((data as any)?.error?.message ?? "API request error"), data);
+    });
+};

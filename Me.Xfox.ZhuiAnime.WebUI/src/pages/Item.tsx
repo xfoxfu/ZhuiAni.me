@@ -1,42 +1,61 @@
-import { useParams } from "@solidjs/router";
-import { Component, ErrorBoundary, For, Show, Suspense } from "solid-js";
-import { alertError } from "../components/AlertError";
+import {
+  Heading,
+  Stack,
+  Alert,
+  AlertIcon,
+  AlertDescription,
+  Tag,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Tr,
+} from "@chakra-ui/react";
+import React from "react";
+import { useParams } from "react-router-dom";
 import api from "../api";
-import { ItemLinks } from "../components/ItemLinks";
 
-export const Item: Component = () => {
+export const Item: React.FunctionComponent = () => {
   const params = useParams();
-  const itemId = Number.parseInt(params["itemId"] ?? "0");
-  const [item] = api.item.useItem(() => ({ id: itemId }));
-  const [childItems] = api.item.useItemItems(() => ({ id: itemId }));
+  const { data: anime, error: animeError } = api.item.useGetItem(Number.parseInt(params["animeId"] ?? "0", 10));
+  const { data: episodes, error: episodesError } = api.item.useGetItemItems(
+    Number.parseInt(params["animeId"] ?? "0", 10)
+  );
+  const error = animeError ?? episodesError;
 
   return (
     <>
-      <Suspense fallback={<progress class="w-56" />}>
-        <ErrorBoundary fallback={alertError}>
-          <Show when={item()}>
-            <h1 class="text-3xl font-bold">{item()?.title}</h1>
-          </Show>
-        </ErrorBoundary>
-      </Suspense>
-      <ItemLinks itemId={itemId} />
-      <div class="flex flex-wrap gap-x-3 gap-y-2">
-        <Suspense fallback={<progress class="w-56" />}>
-          <ErrorBoundary fallback={alertError}>
-            <Show when={childItems()}>
-              <For each={childItems()}>
-                {(item) => (
-                  <div class="w-72 px-3 py-2 bg-base-100 shadow-xl space-y-1">
-                    <h2 class="text-xl">{item.title}</h2>
-                    <ItemLinks itemId={item.id} />
-                  </div>
-                )}
-              </For>
-            </Show>
-          </ErrorBoundary>
-        </Suspense>
-      </div>
+      <Heading as="h1" size="xl" color="green.700">
+        {anime?.title}
+      </Heading>
+      <Stack spacing="1">
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertDescription>{error.message}</AlertDescription>
+          </Alert>
+        )}
+        <TableContainer width="fit-content">
+          <Table>
+            <Tbody>
+              {episodes
+                ?.sort((a, b) => a.title.localeCompare(b.title))
+                ?.map((e) => (
+                  <Tr key={e.id}>
+                    <Td paddingY="1.5" paddingX="1">
+                      <Tag variant="solid" colorScheme="teal" width="100%" justifyContent="center">
+                        {e.title}
+                      </Tag>
+                    </Td>
+                    <Td paddingY="1.5" paddingX="1">
+                      {e.title}
+                    </Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
+        </TableContainer>
+      </Stack>
     </>
   );
 };
-export default Item;

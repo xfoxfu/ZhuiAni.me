@@ -1,34 +1,42 @@
-import { Route, Routes } from "@solidjs/router";
-import { Component, lazy } from "solid-js";
-
+import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import { Item } from "./pages/Item";
 import { ItemsList } from "./pages/ItemsList";
-const Item = lazy(() => import("./pages/Item"));
 
-const App: Component = () => {
+const App: React.FunctionComponent = () => {
   return (
-    <div class="flex">
-      <div class="flex-1 min-h-screen px-6 py-4 space-y-4 bg-green-500 text-white font-semibold">
-        <h1 class="text-green-50 text-5xl">
-          <span class="text-green-100 font-light">Zhui</span>
-          Ani<span class="font-light">.</span>me
-        </h1>
-        <h2 class="text-2xl">Animations</h2>
-        <h2 class="text-2xl">Torrents</h2>
-        <div class="divider" />
-        <div class="space-x-3">
-          <h2 class="inline">Login</h2>
-          <h2 class="inline">Register</h2>
-        </div>
-      </div>
-      <div class="flex-3 bg-gray-50 p-4 space-y-4">
+    <Flex>
+      <Stack flex="1" bg="green.500" minH="100vh" paddingX="6" paddingY="4" color="white" spacing="4">
+        <Heading color="green.50" as="h1" size="2xl">
+          <chakra.span color="green.100" fontWeight="light">
+            Zhui
+          </chakra.span>
+          Ani<chakra.span fontWeight="light">.</chakra.span>me
+        </Heading>
+        <Heading as="h2" size="lg">
+          Animations
+        </Heading>
+        <Heading as="h2" size="lg">
+          Torrents
+        </Heading>
+        <Divider />
+        <Heading as="h2" size="md" display="inline">
+          Login
+        </Heading>
+        <Heading as="h2" size="md" display="inline">
+          Register
+        </Heading>
+      </Stack>
+      <Stack flex="3" padding="4" bg="gray.50" spacing="4">
         <Routes>
-          <Route path="/" element={<ItemsList />} />
-          <Route path="/items">
-            <Route path="/:itemId" element={<Item />} />
+          <Route path="/" element={<ItemsList />}></Route>
+          <Route path="/animes">
+            <Route path=":animeId" element={<Item />} />
           </Route>
         </Routes>
-      </div>
-    </div>
+      </Stack>
+    </Flex>
   );
 };
 

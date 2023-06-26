@@ -1,57 +1,96 @@
 <%~ includeFile("@default/procedure-call.eta", it) %>
 <%
 const { utils, route, config } = it;
-const { specificArgNameResolver } = route;
-const { _, getInlineParseContent } = utils;
-const { parameters, method, payload, query, requestParams } = route.request;
-const { RESERVED_REQ_PARAMS_ARG_NAMES } = config.constants;
-// const routeDocs = includeFile("@base/route-docs", { config, route, utils });
+const { requestBodyInfo, responseBodyInfo, specificArgNameResolver } = route;
+const { _, getInlineParseContent, getParseContent, parseSchema, getComponentByRef, require } = utils;
+const { parameters, path, method, payload, query, formData, security, requestParams } = route.request;
+const { type, errorType, contentTypes } = route.response;
+const { HTTP_CLIENT, RESERVED_REQ_PARAMS_ARG_NAMES } = config.constants;
+const routeDocs = includeFile("@base/route-docs", { config, route, utils });
 const queryName = (query && query.name) || "query";
 const pathParams = _.values(parameters);
 const pathParamsNames = _.map(pathParams, "name");
 
-const requestConfigParam = {
-  name: specificArgNameResolver.resolve(RESERVED_REQ_PARAMS_ARG_NAMES),
-  optional: true,
-  type: "RequestParams",
-  defaultValue: "{}",
-};
+const FetchCondition = {
+    name: "doFetch",
+    optional: true,
+    type: "boolean",
+    defaultValue: true,
+}
 
-const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${optional ? "?" : ""}: ${type}`;
-const argToDestruct = ({ name }) => `${name}`;
+const SWRConfigParam = {
+    name: "options",
+    optional: true,
+    type: "SWRConfiguration",
+    defaultValue: null,
+}
 
-const rawWrapperArgs = config.extractRequestParams
-  ? _.compact([
-      requestParams && {
-        name: pathParams.length ? `{ ${_.join(pathParamsNames, ", ")}, ...${queryName} }` : queryName,
-        optional: false,
-        type: getInlineParseContent(requestParams),
-      },
-      ...(!requestParams ? pathParams : []),
-      payload,
-      requestConfigParam,
-    ])
-  : _.compact([...pathParams, query, payload, requestConfigParam]);
+const MutateConfigParam = {
+    name: "options",
+    optional: true,
+    type: "MutatorOptions",
+    defaultValue: null,
+}
+
+const DataParam = {
+    name: "data",
+    optional: true,
+    type: `${type} | Promise<${type}>`,
+    defaultValue: null,
+}
+
+const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${!defaultValue && optional ? '?' : ''}: ${type}${defaultValue ? ` = ${defaultValue}` : ''}`;
+
+const rawWrapperArgs = config.extractRequestParams ?
+    [
+        requestParams && {
+          name: pathParams.length ? `{ ${_.join(pathParamsNames, ", ")}, ...${queryName} }` : queryName,
+          optional: false,
+          type: getInlineParseContent(requestParams),
+        },
+        ...(!requestParams ? pathParams : []),
+        payload
+    ] : [
+        ...pathParams,
+        query,
+        payload
+    ]
+
+const mutateArgs = _
+    .sortBy(_.compact([...rawWrapperArgs, DataParam, MutateConfigParam]), [o => o.optional])
+    .map(argToTmpl)
+    .join(', ')
 
 const wrapperArgs = _
-  // Sort by optionality
-  .sortBy(rawWrapperArgs, [(o) => o.optional])
-  .map(argToTmpl)
-  .join(", ");
-const wrapperArgsDestruct = _
-  // Sort by optionality
-  .sortBy(rawWrapperArgs, [(o) => o.optional])
-  .map(argToDestruct)
-  .join(", ");
+    .sortBy(_.compact([...rawWrapperArgs, SWRConfigParam, FetchCondition]), [o => o.optional])
+    .map(argToTmpl)
+    .join(', ')
 
+const queryTmpl = (query != null && queryName) || null;
 %>
+
 <% if (_.upperCase(method) === "GET") { %>
-<%~ route.routeName.usage.replace("get", "use") %>: (args: () => {<%~ wrapperArgs %>}) => createResource(args, async ({<%~ wrapperArgsDestruct %>}) => {
-  try {
-    return (await this.<%~ route.namespace %>.<%~ route.routeName.usage %>(<%~ wrapperArgsDestruct %>)).data;
-  } catch (err) {
-    if (err instanceof Error) throw err;
-    throw Object.assign(new ApiError((err as any)?.error?.message ?? "API request error"), err);
-  }
-}),
+/**
+<%~ routeDocs.description %>
+
+ * <% /* Here you can add some other JSDoc tags */ %>
+
+<%~ routeDocs.lines %>
+
+ */
+  use<%~ route.routeName.usage.charAt(0).toUpperCase() %><%~ route.routeName.usage.slice(1) %><%~ route.namespace ? ': ' : ' = ' %>(<%~ wrapperArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
+    useSWR<<%~ type %>, <%~  errorType %>>(doFetch ?
+        <% if (!queryTmpl) { %>`<%~ path %>`<% } else { %>[`<%~ path %>`, <%~ queryTmpl %>]<% } %> : null, options),
+
+/**
+<%~ routeDocs.description %>
+
+ * <% /* Here you can add some other JSDoc tags */ %>
+
+<%~ routeDocs.lines %>
+
+ */
+  mutate<%~ route.routeName.usage.charAt(0).toUpperCase() %><%~ route.routeName.usage.slice(1) %><%~ route.namespace ? ': ' : ' = ' %>(<%~ mutateArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
+    mutate<<%~ type %>>(
+        <% if (!queryTmpl) { %>`<%~ path %>`<% } else { %>[`<%~ path %>`, <%~ queryTmpl %>]<% } %>, data, options),
 <% } %>
