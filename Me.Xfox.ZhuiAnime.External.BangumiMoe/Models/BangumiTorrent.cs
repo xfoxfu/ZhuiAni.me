@@ -56,6 +56,7 @@ public class BangumiTorrent
   [JsonPropertyName("teamsync")]
   public bool? Teamsync { get; set; }
 
+  [JsonConverter(typeof(ContentArrayConverter))]
   [JsonPropertyName("content")]
   public IEnumerable<IEnumerable<string>> Content { get; set; } = new List<IEnumerable<string>>();
 
@@ -66,5 +67,70 @@ public class BangumiTorrent
   public string? Btskey { get; set; } = string.Empty;
 
   [JsonPropertyName("sync")]
-  public IDictionary<string, string>? Sync { get; set; } = new Dictionary<string, string>();
+  public IDictionary<string, JsonElement>? Sync { get; set; } = new Dictionary<string, JsonElement>();
+
+  internal class ContentArrayConverter : JsonConverter<IEnumerable<IEnumerable<string>>>
+  {
+    public override IEnumerable<IEnumerable<string>>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+      if (reader.TokenType != JsonTokenType.StartArray)
+      {
+        throw new JsonException();
+      }
+
+      var list = new List<IEnumerable<string>>();
+      while (reader.Read())
+      {
+        if (reader.TokenType == JsonTokenType.EndArray)
+        {
+          return list;
+        }
+
+        if (reader.TokenType == JsonTokenType.String)
+        {
+          list.Add(new List<string> { reader.GetString() ?? string.Empty });
+        }
+        else if (reader.TokenType != JsonTokenType.StartArray)
+        {
+          throw new JsonException();
+        }
+        else
+        {
+          var subList = new List<string>();
+          while (reader.Read())
+          {
+            if (reader.TokenType == JsonTokenType.EndArray)
+            {
+              list.Add(subList);
+              break;
+            }
+
+            if (reader.TokenType != JsonTokenType.String)
+            {
+              throw new JsonException();
+            }
+
+            subList.Add(reader.GetString() ?? string.Empty);
+          }
+        }
+      }
+
+      throw new JsonException();
+    }
+
+    public override void Write(Utf8JsonWriter writer, IEnumerable<IEnumerable<string>> value, JsonSerializerOptions options)
+    {
+      writer.WriteStartArray();
+      foreach (var item in value)
+      {
+        writer.WriteStartArray();
+        foreach (var subItem in item)
+        {
+          writer.WriteStringValue(subItem);
+        }
+        writer.WriteEndArray();
+      }
+      writer.WriteEndArray();
+    }
+  }
 }

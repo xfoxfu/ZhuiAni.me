@@ -18,12 +18,20 @@ public class Worker : IHostedService, IDisposable
     _db = db;
   }
 
-  public Task StartAsync(CancellationToken ct)
+  public async Task StartAsync(CancellationToken ct)
   {
     _timerLatest = new Timer(UpdateLatestPage, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
     _timerNextPage = new Timer(UpdateNextPage, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
 
-    return Task.CompletedTask;
+    for (var i = 1; i <= 20; i++)
+    {
+      var lastPageResponse = await GetPageAsync((ulong)i);
+      foreach (var torrent in lastPageResponse)
+      {
+        _db.Put(torrent.Guid, JsonSerializer.Serialize(torrent));
+      }
+      _logger.LogInformation("Saved initial page: {page}", i);
+    }
   }
 
   protected async void UpdateLatestPage(object? state)

@@ -26,12 +26,20 @@ public class Worker : IHostedService, IDisposable
     _client = new(options);
   }
 
-  public Task StartAsync(CancellationToken ct)
+  public async Task StartAsync(CancellationToken ct)
   {
     _timerLatest = new Timer(UpdateLatestPage, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
     _timerNextPage = new Timer(UpdateNextPage, null, TimeSpan.Zero, TimeSpan.FromSeconds(30));
 
-    return Task.CompletedTask;
+    for (var i = 1; i <= 20; i++)
+    {
+      var lastPageResponse = await GetPageAsync((ulong)i);
+      foreach (var torrent in lastPageResponse.Torrents)
+      {
+        _db.Put(torrent.Id, JsonSerializer.Serialize(torrent));
+      }
+      _logger.LogInformation("Saved initial page: {page}", i);
+    }
   }
 
   protected async void UpdateLatestPage(object? state)
@@ -46,7 +54,7 @@ public class Worker : IHostedService, IDisposable
 
   protected async void UpdateNextPage(object? state)
   {
-    var lastPage = _db.HasKey("__next_page") ? Convert.ToUInt64(_db.Get("__next_page")) : 2;
+    var lastPage = _db.HasKey("__next_page") ? Convert.ToUInt64(_db.Get("__next_page")) : 1;
     var lastPageResponse = await GetPageAsync(lastPage);
     if (!lastPageResponse.Torrents.Any() && lastPage > lastPageResponse.PageCount)
     {
