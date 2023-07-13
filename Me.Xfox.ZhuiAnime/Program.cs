@@ -71,7 +71,7 @@ builder.Services.AddSwaggerGen(options =>
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-builder.Services.AddSingleton(new ZhuiAnime.External.Bangumi.BangumiApi());
+builder.Services.AddSingleton<ZhuiAnime.External.Bangumi.BangumiApi>();
 builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.BangumiSource>>();
 builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.AcgRipSource>>();
 

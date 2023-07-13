@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Me.Xfox.ZhuiAnime.External.Bangumi;
 using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
 using Me.Xfox.ZhuiAnime.Models;
