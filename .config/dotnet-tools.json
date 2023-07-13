@@ -3,13 +3,13 @@
   "isRoot": true,
   "tools": {
     "dotnet-aspnet-codegenerator": {
-      "version": "6.0.3",
+      "version": "7.0.8",
       "commands": [
         "dotnet-aspnet-codegenerator"
       ]
     },
     "dotnet-ef": {
-      "version": "6.0.4",
+      "version": "7.0.9",
       "commands": [
         "dotnet-ef"
       ]
