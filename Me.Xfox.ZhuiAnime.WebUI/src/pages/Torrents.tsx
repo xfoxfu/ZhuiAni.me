@@ -25,6 +25,7 @@ export const TorrentsList: React.FunctionComponent = () => {
     error,
     size,
     setSize,
+    isLoading,
   } = useSWRInfinite<TorrentDto[], ApiError>(
     (pageIndex, previousPageData: TorrentDto[]): [string, string, string | undefined] | null => {
       if (previousPageData?.length === 0) return null;
@@ -42,7 +43,7 @@ export const TorrentsList: React.FunctionComponent = () => {
     },
     {
       fetcher: ([, query, until]: [string, string, string | undefined]): Promise<TorrentDto[]> =>
-        Api.torrent.getModulesTorrentDirectoryTorrents({ query: query ?? "", until, count: 1 }).then((d) => d.data),
+        Api.torrent.getModulesTorrentDirectoryTorrents({ query: query ?? "", until }).then((d) => d.data),
     }
   );
   const [, copy] = useCopyToClipboard();
@@ -95,7 +96,7 @@ export const TorrentsList: React.FunctionComponent = () => {
           </HStack>
         ))}
         {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-        <Button variant="solid" colorScheme="teal" size="xs" onClick={() => setSize(size + 1)}>
+        <Button variant="solid" colorScheme="teal" size="xs" onClick={() => setSize(size + 1)} disabled={isLoading}>
           Load More
         </Button>
       </Stack>
