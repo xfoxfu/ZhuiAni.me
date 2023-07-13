@@ -10,11 +10,7 @@ public partial class BangumiApi
     protected const string DEFUALT_USER_AGENT = "xfoxfu/zhuianime (https://github.com/xfoxfu/ZhuiAni.me)";
 
     private RestClient Client { get; init; }
-    public string UserAgent
-    {
-        get => Client.Options.UserAgent;
-        set => Client.Options.UserAgent = value;
-    }
+    public string UserAgent => Client.Options.UserAgent!;
 
     public BangumiApi(
         string baseUrl = DEFAULT_BANGUMI_API_HOST,
