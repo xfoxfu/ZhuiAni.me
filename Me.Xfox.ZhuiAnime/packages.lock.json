@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     "net7.0": {
+      "CodeHollow.FeedReader": {
+        "type": "Direct",
+        "requested": "[1.2.6, )",
+        "resolved": "1.2.6",
+        "contentHash": "KpnP1zlX5zk58PUrREYUXC/7gk8ljjS8mkPfmFeuofaJlHJm62990cZdWLiMBuwWhV/HA6NAu9Ck5uM7GOJl0A=="
+      },
       "EFCore.NamingConventions": {
         "type": "Direct",
         "requested": "[7.0.2, )",
@@ -1315,8 +1321,8 @@
       },
       "RestSharp": {
         "type": "Transitive",
-        "resolved": "110.1.0",
-        "contentHash": "h9ERwfMeLp+BJ3cEwxxe1KIkTjB/yokJAjj3JNO5tKcMZI2Rx+bJe//DkVG3aX5g669Pi5Ifc4kFPrNKtTinsg==",
+        "resolved": "110.2.0",
+        "contentHash": "FXGw0IMcqY7yO/hzS9QrD3iNswNgb9UxJnxWmfOxmGs4kRlZWqdtBoGPLuhlbgsDzX1RFo4WKui8TGGKXWKalw==",
         "dependencies": {
           "System.Text.Json": "7.0.2"
         }
@@ -2412,7 +2418,7 @@
       "me.xfox.zhuianime.external.bangumi": {
         "type": "Project",
         "dependencies": {
-          "RestSharp": "[108.0.1, )"
+          "RestSharp": "[110.2.0, )"
         }
       }
     }

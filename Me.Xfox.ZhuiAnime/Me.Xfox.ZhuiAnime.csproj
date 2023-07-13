@@ -16,6 +16,7 @@
     <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
     <UserSecretsId>86322a12-80fe-4f6d-b08b-b98cb0427acc</UserSecretsId>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -24,6 +25,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
     <PackageReference Include="InfluxDB.Client" Version="4.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.9" />

@@ -5,6 +5,7 @@ using System.Text.Json;
 using Me.Xfox.ZhuiAnime;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -13,9 +14,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Me.Xfox.ZhuiAnime.Migrations
 {
     [DbContext(typeof(ZAContext))]
-    partial class ZAContextModelSnapshot : ModelSnapshot
+    [Migration("20230713080630_AddTorrent")]
+    partial class AddTorrent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

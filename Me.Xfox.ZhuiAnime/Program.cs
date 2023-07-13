@@ -77,6 +77,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton(new Me.Xfox.ZhuiAnime.External.Bangumi.BangumiApi());
+builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Worker<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Sources.BangumiSource>>();
+builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Worker<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Sources.AcgRipSource>>();
 
 var app = builder.Build();
 

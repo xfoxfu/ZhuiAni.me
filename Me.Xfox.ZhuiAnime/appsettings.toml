@@ -13,6 +13,7 @@ Default = "Debug"
 [Serilog.MinimumLevel.Override]
 Microsoft = "Information"
 "Microsoft.AspNetCore" = "Warning"
+"Microsoft.EntityFrameworkCore.Database.Command" = "Warning"
 
 [Serilog.WriteTo.Console]
 Name = "Console"

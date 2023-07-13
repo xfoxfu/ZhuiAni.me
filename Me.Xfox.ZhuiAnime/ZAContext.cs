@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime;
 
-public class ZAContext : DbContext
+public partial class ZAContext : DbContext
 {
     public ZAContext(DbContextOptions<ZAContext> options)
         : base(options)
