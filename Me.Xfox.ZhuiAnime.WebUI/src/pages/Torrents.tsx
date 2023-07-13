@@ -12,14 +12,39 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import Api from "../api";
+import Api, { ApiError, TorrentDto } from "../api";
 import { CopyIcon, LinkIcon, SearchIcon } from "@chakra-ui/icons";
 import { useCopyToClipboard, useDebounce } from "usehooks-ts";
-
+import useSWRInfinite from "swr/infinite";
 export const TorrentsList: React.FunctionComponent = () => {
   const [rawQuery, setQuery] = useState("");
   const query = useDebounce(rawQuery, 300);
-  const { data: torrents, error } = Api.torrent.useGetModulesTorrentDirectoryTorrents({ query });
+  // TODO: generate API hooks for this pattern
+  const {
+    data: torrents,
+    error,
+    size,
+    setSize,
+  } = useSWRInfinite<TorrentDto[], ApiError>(
+    (pageIndex, previousPageData: TorrentDto[]): [string, string, string | undefined] | null => {
+      if (previousPageData?.length === 0) return null;
+
+      if (pageIndex === 0) return ["/api/modules/torrent_directory/torrents", query, undefined];
+
+      return [
+        "/api/modules/torrent_directory/torrents",
+        query,
+        previousPageData
+          ?.map((d) => new Date(d.published_at))
+          .sort((a, b) => a.getTime() - b.getTime())[0]
+          ?.toISOString() ?? "",
+      ];
+    },
+    {
+      fetcher: ([, query, until]: [string, string, string | undefined]): Promise<TorrentDto[]> =>
+        Api.torrent.getModulesTorrentDirectoryTorrents({ query: query ?? "", until, count: 1 }).then((d) => d.data),
+    }
+  );
   const [, copy] = useCopyToClipboard();
 
   return (
@@ -40,7 +65,7 @@ export const TorrentsList: React.FunctionComponent = () => {
           </InputLeftElement>
           <Input placeholder="Query (regexp)" onChange={(e) => setQuery(e.target.value)} />
         </InputGroup>
-        {torrents?.map((a) => (
+        {torrents?.flat()?.map((a) => (
           <HStack key={a.id} px="3" py="2" borderWidth="1px" rounded="md" bg="white" gap="2">
             {a.link_torrent && (
               <a href={a.link_torrent} target="_blank" rel="noreferrer">
@@ -69,6 +94,10 @@ export const TorrentsList: React.FunctionComponent = () => {
             </Heading>
           </HStack>
         ))}
+        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
+        <Button variant="solid" colorScheme="teal" size="xs" onClick={() => setSize(size + 1)}>
+          Load More
+        </Button>
       </Stack>
     </>
   );

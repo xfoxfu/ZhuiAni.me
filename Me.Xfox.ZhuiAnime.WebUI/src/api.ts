@@ -867,6 +867,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         query?: string;
         /** @format int32 */
         count?: number;
+        /** @format date-time */
+        until?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -889,6 +891,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         query?: string;
         /** @format int32 */
         count?: number;
+        /** @format date-time */
+        until?: string;
       },
       options?: SWRConfiguration,
       doFetch: boolean = true,
@@ -910,6 +914,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         query?: string;
         /** @format int32 */
         count?: number;
+        /** @format date-time */
+        until?: string;
       },
       data?: TorrentDto[] | Promise<TorrentDto[]>,
       options?: MutatorOptions,
@@ -926,7 +932,6 @@ export const fetcher = async (arg: string | [string, Record<string, unknown>?]) 
     .request({ path, query })
     .then((res) => res.json())
     .catch(async (err) => {
-      console.log(err);
       throw await err.json();
     });
 };

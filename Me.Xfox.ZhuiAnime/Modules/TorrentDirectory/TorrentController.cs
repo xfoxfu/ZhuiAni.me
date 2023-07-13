@@ -28,9 +28,23 @@ public class TorrentController : ControllerBase
     );
 
     [HttpGet("torrents")]
-    public async Task<ActionResult<IEnumerable<TorrentDto>>> ListAsync([FromQuery] string? query, [FromQuery] int? count)
+    public async Task<ActionResult<IEnumerable<TorrentDto>>> ListAsync(
+        [FromQuery] string? query,
+        [FromQuery] int? count,
+        [FromQuery] DateTimeOffset? until)
     {
-        var baseQuery = DbContext.Torrent
+        var linq = DbContext.Torrent.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(query))
+        {
+            linq = linq.Where(t => Regex.IsMatch(t.Title, query));
+        }
+        if (until != null)
+        {
+            var untilUtc = until?.ToUniversalTime();
+            linq = linq.Where(t => t.PublishedAt < untilUtc);
+        }
+
+        return await linq
             .OrderByDescending(t => t.PublishedAt)
             .Take(Math.Min(count ?? 20, 100))
             .Select(t => new TorrentDto(
@@ -41,18 +55,7 @@ public class TorrentController : ControllerBase
                 t.PublishedAt,
                 t.LinkTorrent,
                 t.LinkMagnet
-            ));
-
-        List<TorrentDto> torrents;
-        if (string.IsNullOrEmpty(query))
-        {
-            torrents = await baseQuery.ToListAsync();
-        }
-        else
-        {
-            torrents = await baseQuery.Where(t => Regex.IsMatch(t.Title, query)).ToListAsync();
-        }
-
-        return torrents;
+            ))
+            .ToListAsync();
     }
 }
