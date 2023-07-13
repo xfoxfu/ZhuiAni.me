@@ -11,7 +11,8 @@ RUN npm i -g pnpm
 COPY [".", "/src/"]
 WORKDIR "/src"
 RUN dotnet restore "Me.Xfox.ZhuiAnime"
-RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish -r linux-x64 --no-self-contained --no-restore
+RUN dotnet build "Me.Xfox.ZhuiAnime" -c Release --no-restore
+RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish -r linux-x64 --no-self-contained
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
 WORKDIR /app
