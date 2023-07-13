@@ -1,16 +1,11 @@
-using System;
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Serilog;
+using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
@@ -76,9 +71,9 @@ builder.Services.AddSwaggerGen(options =>
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-builder.Services.AddSingleton(new Me.Xfox.ZhuiAnime.External.Bangumi.BangumiApi());
-builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Worker<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Sources.BangumiSource>>();
-builder.Services.AddHostedService<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Worker<Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Sources.AcgRipSource>>();
+builder.Services.AddSingleton(new ZhuiAnime.External.Bangumi.BangumiApi());
+builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.BangumiSource>>();
+builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.AcgRipSource>>();
 
 var app = builder.Build();
 
@@ -111,8 +106,8 @@ app.MapControllerRoute(
     pattern: "api/{controller}/{action=Index}/{id?}");
 
 app.MapFallbackToController("/api/{**path}",
-    nameof(Me.Xfox.ZhuiAnime.Controllers.InternalController.EndpointNotFound),
-    nameof(Me.Xfox.ZhuiAnime.Controllers.InternalController).Replace("Controller", ""));
+    nameof(ZhuiAnime.Controllers.InternalController.EndpointNotFound),
+    nameof(ZhuiAnime.Controllers.InternalController).Replace("Controller", ""));
 app.MapFallbackToFile("index.html");
 
 await app.RunAsync();
