@@ -3,6 +3,7 @@ import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
 import { Item } from "./pages/Item";
 import { ItemsList } from "./pages/ItemsList";
+import { TorrentsList } from "./pages/Torrents";
 
 const App: React.FunctionComponent = () => {
   return (
@@ -18,7 +19,7 @@ const App: React.FunctionComponent = () => {
           <Link to="/">Animations</Link>
         </Heading>
         <Heading as="h2" size="lg">
-          Torrents
+          <Link to="/torrents">Torrents</Link>
         </Heading>
         <Divider />
         <Heading as="h2" size="md" display="inline">
@@ -34,6 +35,7 @@ const App: React.FunctionComponent = () => {
           <Route path="/animes">
             <Route path=":animeId" element={<Item />} />
           </Route>
+          <Route path="/torrents" element={<TorrentsList />}></Route>
         </Routes>
       </Stack>
     </Flex>

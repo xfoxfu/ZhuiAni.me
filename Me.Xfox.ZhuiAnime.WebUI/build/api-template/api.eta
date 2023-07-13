@@ -5,11 +5,12 @@ import useSWR, { SWRConfiguration, MutatorOptions, mutate } from "swr";
 const api = new Api();
 export default api;
 
-export const fetcher = async (path: string, query?: Record<string, unknown>) => {
+export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
+  const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };
   return await api
     .request({ path, query })
-    .then((res) => res.data)
-    .catch((err) => {
-      throw err.response.data;
+    .then((res) => res.json())
+    .catch(async (err) => {
+      throw await err.json();
     });
 };

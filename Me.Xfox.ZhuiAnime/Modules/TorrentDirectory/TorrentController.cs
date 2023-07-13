@@ -30,8 +30,7 @@ public class TorrentController : ControllerBase
     [HttpGet("torrents")]
     public async Task<ActionResult<IEnumerable<TorrentDto>>> ListAsync([FromQuery] string? query, [FromQuery] int? count)
     {
-        var torrents = await DbContext.Torrent
-            .Where(t => Regex.IsMatch(t.Title, query ?? @"[\s\S]*"))
+        var baseQuery = DbContext.Torrent
             .OrderByDescending(t => t.PublishedAt)
             .Take(Math.Min(count ?? 20, 100))
             .Select(t => new TorrentDto(
@@ -42,8 +41,18 @@ public class TorrentController : ControllerBase
                 t.PublishedAt,
                 t.LinkTorrent,
                 t.LinkMagnet
-            ))
-            .ToListAsync();
+            ));
+
+        List<TorrentDto> torrents;
+        if (string.IsNullOrEmpty(query))
+        {
+            torrents = await baseQuery.ToListAsync();
+        }
+        else
+        {
+            torrents = await baseQuery.Where(t => Regex.IsMatch(t.Title, query)).ToListAsync();
+        }
+
         return torrents;
     }
 }

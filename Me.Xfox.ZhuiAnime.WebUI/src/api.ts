@@ -114,6 +114,18 @@ export interface LinkDto {
   parent_link_id?: number | null;
 }
 
+export interface TorrentDto {
+  /** @format int32 */
+  id: number;
+  origin_site: string;
+  origin_id: string;
+  title: string;
+  /** @format date-time */
+  published_at: string;
+  link_torrent?: string | null;
+  link_magnet?: string | null;
+}
+
 export interface UpdateItemDto {
   /** @format int32 */
   category_id?: number | null;
@@ -241,7 +253,7 @@ export class HttpClient<SecurityDataType = unknown> {
             ? property
             : typeof property === "object" && property !== null
             ? JSON.stringify(property)
-            : `${property}`
+            : `${property}`,
         );
         return formData;
       }, new FormData()),
@@ -384,7 +396,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         someBool?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
@@ -406,7 +418,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       options?: SWRConfiguration,
-      doFetch: boolean = true
+      doFetch: boolean = true,
     ) => useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? [`/api/categories`, query] : null, options),
 
     /**
@@ -422,7 +434,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       data?: CategoryDto[] | Promise<CategoryDto[]>,
-      options?: MutatorOptions
+      options?: MutatorOptions,
     ) => mutate<CategoryDto[]>([`/api/categories`, query], data, options),
 
     /**
@@ -842,18 +854,79 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
+  torrent = {
+    /**
+     * No description
+     *
+     * @tags Torrent
+     * @name GetModulesTorrentDirectoryTorrents
+     * @request GET:/api/modules/torrent_directory/torrents
+     */
+    getModulesTorrentDirectoryTorrents: (
+      query?: {
+        query?: string;
+        /** @format int32 */
+        count?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<TorrentDto[], ErrorProdResponse>({
+        path: `/api/modules/torrent_directory/torrents`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags Torrent
+     * @name GetModulesTorrentDirectoryTorrents
+     * @request GET:/api/modules/torrent_directory/torrents
+     */
+    useGetModulesTorrentDirectoryTorrents: (
+      query?: {
+        query?: string;
+        /** @format int32 */
+        count?: number;
+      },
+      options?: SWRConfiguration,
+      doFetch: boolean = true,
+    ) =>
+      useSWR<TorrentDto[], ErrorProdResponse>(
+        doFetch ? [`/api/modules/torrent_directory/torrents`, query] : null,
+        options,
+      ),
+
+    /**
+     * No description
+     *
+     * @tags Torrent
+     * @name GetModulesTorrentDirectoryTorrents
+     * @request GET:/api/modules/torrent_directory/torrents
+     */
+    mutateGetModulesTorrentDirectoryTorrents: (
+      query?: {
+        query?: string;
+        /** @format int32 */
+        count?: number;
+      },
+      data?: TorrentDto[] | Promise<TorrentDto[]>,
+      options?: MutatorOptions,
+    ) => mutate<TorrentDto[]>([`/api/modules/torrent_directory/torrents`, query], data, options),
+  };
 }
 
 const api = new Api();
 export default api;
 
-export const fetcher = async (path: string, query?: Record<string, unknown>) => {
+export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
+  const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };
   return await api
     .request({ path, query })
     .then((res) => res.json())
     .catch(async (err) => {
-      if (err instanceof Error) throw err;
-      const data = await err.json();
-      throw Object.assign(new ApiError((data as any)?.error?.message ?? "API request error"), data);
+      console.log(err);
+      throw await err.json();
     });
 };

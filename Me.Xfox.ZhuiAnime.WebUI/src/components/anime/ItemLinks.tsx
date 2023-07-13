@@ -4,7 +4,7 @@ import api from "../../api";
 import { LinkIcon, ViewIcon } from "@chakra-ui/icons";
 
 export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
-  const { data: links, error, isLoading } = api.itemLink.useGetItemLinks(id);
+  const { data: links, error } = api.itemLink.useGetItemLinks(id);
 
   return (
     <>
