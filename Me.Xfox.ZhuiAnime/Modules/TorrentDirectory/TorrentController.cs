@@ -66,14 +66,14 @@ public class TorrentController : ControllerBase
     {
         if (name == "bangumi.moe")
         {
-            var worker = Services.GetService<Worker<Sources.BangumiSource>>()!;
-            var hasNE = await worker.GetPage(page, DbContext);
+            ISource source = Activator.CreateInstance<Sources.BangumiSource>();
+            var hasNE = await source.GetPage(page, DbContext);
             return Ok(new { HasNewItems = hasNE });
         }
         else if (name == "acg.rip")
         {
-            var worker = Services.GetService<Worker<Sources.AcgRipSource>>()!;
-            var hasNE = await worker.GetPage(page, DbContext);
+            ISource source = Activator.CreateInstance<Sources.AcgRipSource>();
+            var hasNE = await source.GetPage(page, DbContext);
             return Ok(new { HasNewItems = hasNE });
         }
         else

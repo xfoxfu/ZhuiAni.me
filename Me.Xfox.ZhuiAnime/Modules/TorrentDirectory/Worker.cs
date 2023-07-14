@@ -33,7 +33,8 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         uint nextPage = 1;
         while (nextPage != 0)
         {
-            bool hasNonExistent = await GetPage(nextPage, db);
+            bool hasNonExistent = await Source.GetPage(nextPage, db);
+            Logger.LogInformation("{@Source} Got page {@Page}", Source.Name, nextPage);
             if (hasNonExistent)
             {
                 Logger.LogInformation("{@Source} Page {@Page} has unsaved item, continuing", Source.Name, nextPage);
@@ -51,26 +52,6 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
             }
             await Task.Delay(IntervalBetweenPages);
         }
-    }
-
-    public async Task<bool> GetPage(uint page, ZAContext db)
-    {
-        var response = await Source.GetPageAsync(page);
-        Logger.LogInformation("{@Source} Got page {@Page}", Source.Name, page);
-
-        bool hasNonExistent = false;
-
-        foreach (var item in response)
-        {
-            if (!await db.Torrent.Where(e => e.OriginSite == item.OriginSite && e.OriginId == item.OriginId).AnyAsync())
-            {
-                hasNonExistent = true;
-                db.Torrent.Add(item);
-            }
-        }
-        await db.SaveChangesAsync();
-
-        return hasNonExistent;
     }
 
     public Task StopAsync(CancellationToken ct)
