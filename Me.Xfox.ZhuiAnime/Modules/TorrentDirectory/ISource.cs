@@ -4,11 +4,11 @@ namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 
 public interface ISource
 {
-    string Name { get; }
+    public string Name { get; }
 
-    string Url { get; }
+    public string Url { get; }
 
-    Task<IList<Torrent>> GetPageAsync(uint id);
+    public Task<IList<Torrent>> GetPageAsync(uint id);
 
     public async Task<bool> GetPage(uint page, ZAContext db)
     {

@@ -89,9 +89,9 @@ internal class TomlConfigurationFileParser : Tomlyn.Syntax.SyntaxVisitor
             case long v: Convert(prefix, v); break;
             case string v: Convert(prefix, v); break;
             case bool v: Convert(prefix, v); break;
-            case DateTime v: Convert(prefix, v); break;
+            case TomlDateTime v: Convert(prefix, v); break;
             case null: break;
-            default: throw new NotImplementedException();
+            default: throw new NotImplementedException($"{value.GetType().FullName} is not supported");
         }
     }
 
@@ -142,9 +142,9 @@ internal class TomlConfigurationFileParser : Tomlyn.Syntax.SyntaxVisitor
         Data[prefix] = value.ToString(CultureInfo.InvariantCulture);
     }
 
-    private void Convert(string prefix, DateTime value)
+    private void Convert(string prefix, TomlDateTime value)
     {
-        Data[prefix] = value.ToString(CultureInfo.InvariantCulture);
+        Data[prefix] = value.ToString();
     }
 }
 

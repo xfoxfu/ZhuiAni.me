@@ -24,20 +24,11 @@ Application = "ZhuiAni.me"
 [ConnectionStrings]
 ZAContext = "Host=localhost;Database=zhuianime;Include Error Detail=true"
 
-[Bangumi.Client]
-UserAgent = "xfoxfu/zhuianime (https://github.com/xfoxfu/ZhuiAni.me)"
-# AppId = ""
-# AppSecret = ""
+[Modules.TorrentDirectory]
+IntervalBetweenFetch = 00:05:00
+IntervalBetweenPages = 00:00:10
+FetchPageThreshold = 20
 
-[Bangumi.Data]
-Character = "Data/bangumi/character.jsonlines"
-Episodes = "Data/bangumi/episodes.jsonlines"
-PersonCharacters = "Data/bangumi/person-characters.jsonlines"
-Person = "Data/bangumi/person.jsonlines"
-SubjectCharacters = "Data/bangumi/subject-characters.jsonlines"
-SubjectPersons = "Data/bangumi/subject-persons.jsonlines"
-SubjectRelations = "Data/bangumi/subject-relations.jsonlines"
-Subject = "Data/bangumi/subject.jsonlines"
-
-[Storage]
-Path = "Storage"
+[Modules.TorrentDirectory.Sources]
+"bangumi.moe" = true
+"acg.rip" = true

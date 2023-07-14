@@ -5,6 +5,7 @@ using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using Modules = Me.Xfox.ZhuiAnime.Modules;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 Log.Logger = new LoggerConfiguration()
@@ -72,8 +73,8 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddSingleton<ZhuiAnime.External.Bangumi.BangumiApi>();
-builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.BangumiSource>>();
-builder.Services.AddHostedService<ZhuiAnime.Modules.TorrentDirectory.Worker<ZhuiAnime.Modules.TorrentDirectory.Sources.AcgRipSource>>();
+Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.BangumiSource>.Option.ConfigureOn(builder);
+Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.AcgRipSource>.Option.ConfigureOn(builder);
 
 var app = builder.Build();
 

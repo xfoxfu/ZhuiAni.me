@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 
@@ -8,22 +8,32 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
     private S Source { get; init; }
     private IServiceProvider ServiceProvider { get; init; }
     private Timer? Timer { get; set; }
-    private TimeSpan IntervalBetweenPages { get; } = TimeSpan.FromSeconds(10);
-    private uint FetchPageThreshold { get; } = 20;
+    private IOptionsMonitor<Option> Options { get; set; }
 
-    public Worker(ILogger<Worker<S>> logger, IServiceProvider serviceProvider)
+    private TimeSpan IntervalBetweenPages => Options.CurrentValue.IntervalBetweenPages;
+    private uint FetchPageThreshold => Options.CurrentValue.FetchPageThreshold;
+
+    public Worker(ILogger<Worker<S>> logger, IServiceProvider serviceProvider, IOptionsMonitor<Option> options)
     {
         Logger = logger;
         ServiceProvider = serviceProvider;
         Source = Activator.CreateInstance<S>() ??
             throw new Exception($"Failed to create instance of {nameof(S)}");
+        Options = options;
     }
 
     public Task StartAsync(CancellationToken ct)
     {
-        var span = TimeSpan.FromMinutes(5);
-        Timer = new Timer(UpdateData, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
-        Logger.LogInformation("Started timed service for {@Source} every {@Span}", Source.Name, span);
+        if (Options.CurrentValue.Sources.TryGetValue(Source.Name, out var value) && value == true)
+        {
+            var span = Options.CurrentValue.IntervalBetweenFetch;
+            Timer = new Timer(UpdateData, null, TimeSpan.Zero, span);
+            Logger.LogInformation("Started timed service for {@Source} every {@Span}", Source.Name, span);
+        }
+        else
+        {
+            Logger.LogInformation("{@Source} is disabled", Source.Name);
+        }
         return Task.CompletedTask;
     }
 
@@ -37,17 +47,27 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
             Logger.LogInformation("{@Source} Got page {@Page}", Source.Name, nextPage);
             if (hasNonExistent)
             {
-                Logger.LogInformation("{@Source} Page {@Page} has unsaved item, continuing", Source.Name, nextPage);
+                Logger.LogInformation(
+                    "{@Source} Page {@Page} has unsaved item, continuing after {@Interval}",
+                    Source.Name,
+                    nextPage,
+                    IntervalBetweenPages);
                 nextPage += 1;
                 if (nextPage > FetchPageThreshold)
                 {
-                    Logger.LogInformation("{@Source} Page {@Page} reached threshold, stopping", Source.Name, nextPage);
+                    Logger.LogInformation(
+                        "{@Source} Page {@Page} reached threshold, stopping",
+                        Source.Name,
+                        nextPage);
                     nextPage = 0;
                 }
             }
             else
             {
-                Logger.LogInformation("{@Source} Page {@Page} all items saved, stopping", Source.Name, nextPage);
+                Logger.LogInformation(
+                    "{@Source} Page {@Page} all items saved, stopping",
+                    Source.Name,
+                    nextPage);
                 nextPage = 0;
             }
             await Task.Delay(IntervalBetweenPages);
@@ -57,9 +77,7 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
     public Task StopAsync(CancellationToken ct)
     {
         Logger.LogInformation("Stopped timed service for {@Source}.", Source.Name);
-
         Timer?.Change(Timeout.Infinite, 0);
-
         return Task.CompletedTask;
     }
 
@@ -67,5 +85,25 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
     {
         Timer?.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    public class Option
+    {
+        public const string LOCATION = "Modules:TorrentDirectory";
+
+        public TimeSpan IntervalBetweenFetch { get; set; }
+
+        public TimeSpan IntervalBetweenPages { get; set; }
+
+        public uint FetchPageThreshold { get; set; }
+
+        public IDictionary<string, bool> Sources { get; set; } = new Dictionary<string, bool>();
+
+        public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
+        {
+            builder.Services.Configure<Option>(builder.Configuration.GetSection(LOCATION));
+            builder.Services.AddHostedService<Worker<S>>();
+            return builder;
+        }
     }
 }
