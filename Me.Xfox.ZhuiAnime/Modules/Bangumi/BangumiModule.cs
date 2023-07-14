@@ -1,6 +1,6 @@
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi;
 
-public static class BangumiModule
+public class BangumiModule : IModule
 {
     public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
     {

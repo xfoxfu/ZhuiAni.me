@@ -87,6 +87,13 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         GC.SuppressFinalize(this);
     }
 
+    public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
+    {
+        builder.Services.Configure<Option>(builder.Configuration.GetSection(Option.LOCATION));
+        builder.Services.AddHostedService<Worker<S>>();
+        return builder;
+    }
+
     public class Option
     {
         public const string LOCATION = "Modules:TorrentDirectory";
@@ -98,12 +105,5 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         public uint FetchPageThreshold { get; set; }
 
         public IDictionary<string, bool> Sources { get; set; } = new Dictionary<string, bool>();
-
-        public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
-        {
-            builder.Services.Configure<Option>(builder.Configuration.GetSection(LOCATION));
-            builder.Services.AddHostedService<Worker<S>>();
-            return builder;
-        }
     }
 }

@@ -11,12 +11,10 @@ namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 public class TorrentController : ControllerBase
 {
     private ZAContext DbContext { get; init; }
-    private IServiceProvider Services { get; init; }
 
-    public TorrentController(ZAContext dbContext, IServiceProvider services)
+    public TorrentController(ZAContext dbContext)
     {
         DbContext = dbContext;
-        Services = services;
     }
 
     public record TorrentDto(
@@ -35,7 +33,7 @@ public class TorrentController : ControllerBase
         [FromQuery] int? count,
         [FromQuery] DateTimeOffset? until)
     {
-        var linq = DbContext.Torrent.AsQueryable();
+        var linq = DbContext.TorrentDirectoryTorrent.AsQueryable();
         if (!string.IsNullOrWhiteSpace(query))
         {
             linq = linq.Where(t => Regex.IsMatch(t.Title, query));

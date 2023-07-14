@@ -2,6 +2,7 @@ global using Microsoft.EntityFrameworkCore;
 
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
+using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -73,9 +74,13 @@ builder.Services.AddSwaggerGen(options =>
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-Modules.Bangumi.BangumiModule.ConfigureOn(builder);
-Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.BangumiSource>.ConfigureOn(builder);
-Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.AcgRipSource>.ConfigureOn(builder);
+foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetInterfaces().Contains(typeof(IModule))))
+{
+    Log.Logger.Information("Loading module {@Module}", type.FullName);
+    type.GetMethod("ConfigureOn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+        ?.Invoke(null, new object[] { builder });
+}
 
 var app = builder.Build();
 
