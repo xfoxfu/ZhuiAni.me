@@ -9,6 +9,7 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
     private IServiceProvider ServiceProvider { get; init; }
     private Timer? Timer { get; set; }
     private TimeSpan IntervalBetweenPages { get; } = TimeSpan.FromSeconds(10);
+    private uint FetchPageThreshold { get; } = 20;
 
     public Worker(ILogger<Worker<S>> logger, IServiceProvider serviceProvider)
     {
@@ -32,25 +33,16 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         uint nextPage = 1;
         while (nextPage != 0)
         {
-            var response = await Source.GetPageAsync(nextPage);
-            Logger.LogInformation("{@Source} Got page {@Page}", Source.Name, nextPage);
-
-            bool hasNonExistent = false;
-
-            foreach (var item in response)
-            {
-                if (!await db.Torrent.Where(e => e.OriginSite == item.OriginSite && e.OriginId == item.OriginId).AnyAsync())
-                {
-                    hasNonExistent = true;
-                    db.Torrent.Add(item);
-                }
-            }
-            await db.SaveChangesAsync();
-
+            bool hasNonExistent = await GetPage(nextPage, db);
             if (hasNonExistent)
             {
                 Logger.LogInformation("{@Source} Page {@Page} has unsaved item, continuing", Source.Name, nextPage);
                 nextPage += 1;
+                if (nextPage > FetchPageThreshold)
+                {
+                    Logger.LogInformation("{@Source} Page {@Page} reached threshold, stopping", Source.Name, nextPage);
+                    nextPage = 0;
+                }
             }
             else
             {
@@ -59,6 +51,26 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
             }
             await Task.Delay(IntervalBetweenPages);
         }
+    }
+
+    public async Task<bool> GetPage(uint page, ZAContext db)
+    {
+        var response = await Source.GetPageAsync(page);
+        Logger.LogInformation("{@Source} Got page {@Page}", Source.Name, page);
+
+        bool hasNonExistent = false;
+
+        foreach (var item in response)
+        {
+            if (!await db.Torrent.Where(e => e.OriginSite == item.OriginSite && e.OriginId == item.OriginId).AnyAsync())
+            {
+                hasNonExistent = true;
+                db.Torrent.Add(item);
+            }
+        }
+        await db.SaveChangesAsync();
+
+        return hasNonExistent;
     }
 
     public Task StopAsync(CancellationToken ct)

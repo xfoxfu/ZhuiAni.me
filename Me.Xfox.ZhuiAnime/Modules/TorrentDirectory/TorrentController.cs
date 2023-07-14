@@ -11,10 +11,12 @@ namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 public class TorrentController : ControllerBase
 {
     private ZAContext DbContext { get; init; }
+    private IServiceProvider Services { get; init; }
 
-    public TorrentController(ZAContext dbContext)
+    public TorrentController(ZAContext dbContext, IServiceProvider services)
     {
         DbContext = dbContext;
+        Services = services;
     }
 
     public record TorrentDto(
@@ -57,5 +59,26 @@ public class TorrentController : ControllerBase
                 t.LinkMagnet
             ))
             .ToListAsync();
+    }
+
+    [HttpPost("providers/{name}/fetch/{page}")]
+    public async Task<IActionResult> FetchPage([FromRoute] string name, [FromRoute] uint page)
+    {
+        if (name == "bangumi.moe")
+        {
+            var worker = Services.GetService<Worker<Sources.BangumiSource>>()!;
+            var hasNE = await worker.GetPage(page, DbContext);
+            return Ok(new { HasNewItems = hasNE });
+        }
+        else if (name == "acg.rip")
+        {
+            var worker = Services.GetService<Worker<Sources.AcgRipSource>>()!;
+            var hasNE = await worker.GetPage(page, DbContext);
+            return Ok(new { HasNewItems = hasNE });
+        }
+        else
+        {
+            throw new Exception("unknown source, please use bangumi.moe or acg.rip");
+        }
     }
 }
