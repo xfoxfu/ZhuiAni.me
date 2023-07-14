@@ -1,9 +1,10 @@
+global using Microsoft.EntityFrameworkCore;
+
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Modules = Me.Xfox.ZhuiAnime.Modules;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
@@ -72,9 +73,9 @@ builder.Services.AddSwaggerGen(options =>
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 });
 
-builder.Services.AddSingleton<ZhuiAnime.External.Bangumi.BangumiApi>();
-Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.BangumiSource>.Option.ConfigureOn(builder);
-Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.AcgRipSource>.Option.ConfigureOn(builder);
+Modules.Bangumi.BangumiModule.ConfigureOn(builder);
+Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.BangumiSource>.ConfigureOn(builder);
+Modules.TorrentDirectory.Worker<Modules.TorrentDirectory.Sources.AcgRipSource>.ConfigureOn(builder);
 
 var app = builder.Build();
 

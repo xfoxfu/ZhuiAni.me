@@ -1,4 +1,4 @@
-namespace Me.Xfox.ZhuiAnime.External.Bangumi.Models;
+namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 
 public enum SubjectType
 {

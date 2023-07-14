@@ -1,9 +1,9 @@
 using System.Net;
 using System.Text.Json;
-using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 using RestSharp;
 
-namespace Me.Xfox.ZhuiAnime.External.Bangumi;
+namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Client;
 
 public class BangumiException : Exception
 {

@@ -1,8 +1,8 @@
 using System.Runtime.CompilerServices;
-using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 using RestSharp;
 
-namespace Me.Xfox.ZhuiAnime.External.Bangumi;
+namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Client;
 
 public partial class BangumiApi
 {

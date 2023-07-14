@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Me.Xfox.ZhuiAnime.External.Bangumi.Models;
+namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 
 public record Subject
 (
@@ -25,15 +25,9 @@ public record Subject
     [property:JsonPropertyName("locked")]
     bool Locked,
 
-    /// <summary>
-    /// air date in `YYYY-MM-DD` format
-    /// </summary>
     [property:JsonPropertyName("date")]
     string Date,
 
-    /// <summary>
-    /// TV, Web, 欧美剧, PS4...
-    /// </summary>
     [property:JsonPropertyName("platform")]
     string Platform,
 
@@ -43,21 +37,12 @@ public record Subject
     [property:JsonPropertyName("infobox")]
      ICollection<Item> Infobox,
 
-    /// <summary>
-    /// 书籍条目的册数，由旧服务端从wiki中解析
-    /// </summary>
     [property:JsonPropertyName("volumes")]
     int Volumes,
 
-    /// <summary>
-    /// 由旧服务端从wiki中解析，对于书籍条目为`话数`
-    /// </summary>
     [property:JsonPropertyName("eps")]
     int Eps,
 
-    /// <summary>
-    /// 数据库中的章节数量
-    /// </summary>
     [property:JsonPropertyName("total_episodes")]
     int TotalEpisodes,
 

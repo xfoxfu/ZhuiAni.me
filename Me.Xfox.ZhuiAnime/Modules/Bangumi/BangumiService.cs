@@ -1,34 +1,25 @@
-using Me.Xfox.ZhuiAnime.External.Bangumi;
-using Me.Xfox.ZhuiAnime.External.Bangumi.Models;
-using Me.Xfox.ZhuiAnime.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
+using AppModels = Me.Xfox.ZhuiAnime.Models;
 
-namespace Me.Xfox.ZhuiAnime.Controllers;
+namespace Me.Xfox.ZhuiAnime.Modules.Bangumi;
 
-/// <summary>
-/// Get items.
-/// </summary>
-[ApiController, Route("api/external/bangumi")]
-public class BangumiController : ControllerBase
+public class BangumiService
 {
-    protected ZAContext DbContext { get; init; }
-    protected BangumiApi BgmApi { get; init; }
+    public IServiceProvider Services { get; init; }
+    public Client.BangumiApi BgmApi { get; init; }
 
-    public BangumiController(ZAContext dbContext, BangumiApi bgmApi)
+    public BangumiService(IServiceProvider services, Client.BangumiApi bgmApi)
     {
-        DbContext = dbContext;
+        Services = services;
         BgmApi = bgmApi;
     }
 
-    public record ImportSubjectDto(int Id);
-
-    [HttpPost("import_subject")]
-    public async Task<ItemController.ItemDto> ImportSubject(ImportSubjectDto req)
+    public async Task<AppModels.Item> ImportSubject(int id)
     {
-        var id = req.Id;
+        using var scope = Services.CreateScope();
+        using var DbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
 
-        Category category;
+        AppModels.Category category;
         using (var tx = DbContext.Database.BeginTransaction())
         {
             var anime = await DbContext.Category.Where(a => a.Title == "アニメ").FirstOrDefaultAsync();
@@ -48,7 +39,7 @@ public class BangumiController : ControllerBase
         var bgmAnime = await BgmApi.GetSubjectAsync(id);
         if (bgmAnime.Type != SubjectType.Anime) throw new Exception($"subject {id} is not anime");
 
-        Models.Item item;
+        AppModels.Item item;
         using (var tx = DbContext.Database.BeginTransaction())
         {
             var address = new Uri($"https://bgm.tv/subject/{id}");
@@ -135,6 +126,6 @@ public class BangumiController : ControllerBase
             await tx.CommitAsync();
         }
 
-        return new ItemController.ItemDto(item);
+        return item;
     }
 }
