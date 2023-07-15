@@ -17,7 +17,7 @@ public partial class BangumiApi
     {
         Client = new FlurlClient(baseUrl)
             .WithHeader("User-Agent", userAgent)
-            .OnError(async call => throw await BangumiException.FromResponse(new FlurlHttpException(call, call.Exception)));
+            .UseBangumiExceptionHandler();
     }
 
     #region /v0/subjects

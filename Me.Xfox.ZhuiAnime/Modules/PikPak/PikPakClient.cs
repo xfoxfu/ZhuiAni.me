@@ -34,9 +34,11 @@ public class PikPakClient
         Options = options;
         Bangumi = bangumi;
         AuthClient = new FlurlClient("https://user.mypikpak.com/v1")
-            .WithHeader("User-Agent", "");
+            .WithHeader("User-Agent", "")
+            .UsePikPakExceptionHandler();
         Client = new FlurlClient("https://api-drive.mypikpak.com/drive/v1")
-            .WithHeader("User-Agent", "");
+            .WithHeader("User-Agent", "")
+            .UsePikPakExceptionHandler();
     }
 
     public class Option
@@ -68,10 +70,10 @@ public class PikPakClient
                 Password = Password,
             })
             .ReceiveJson<Types.LoginResponse>();
-        RefreshToken = res?.RefreshToken ?? throw new Exception("Login failed");
-        AccessToken = res?.AccessToken ?? throw new Exception("Login failed");
+        RefreshToken = res.RefreshToken;
+        AccessToken = res.AccessToken;
         Client = Client.WithOAuthBearerToken(AccessToken);
-        return res ?? throw new Exception("Login failed");
+        return res;
     }
 
     public class PikPakException : Exception
@@ -93,7 +95,7 @@ public class PikPakClient
                 },
             })
             .ReceiveJson<Types.UploadResponse>();
-        return res?.Task ?? throw new Exception("API request failed");
+        return res.Task!;
     }
 
     public async Task<Types.TaskResponse> Download(string url, string parentId)
@@ -107,7 +109,7 @@ public class PikPakClient
                 Url = new Types.UploadRequest.DownloadRequestUrl { Url = url },
             })
             .ReceiveJson<Types.UploadResponse>();
-        return res?.Task ?? throw new Exception("API request failed");
+        return res.Task!;
     }
 
     public async Task<Types.FileResponse> CreateFolder(string name, string? parentId)
@@ -120,7 +122,7 @@ public class PikPakClient
                 ParentId = parentId,
             })
             .ReceiveJson<Types.UploadResponse>();
-        return res?.File ?? throw new Exception("API request failed");
+        return res.File!;
     }
 
     public async Task<bool> WaitForTask(string taskId)
@@ -141,13 +143,13 @@ public class PikPakClient
     public async Task<bool> WaitForTask(string taskId, TimeSpan interval, uint threshold)
     {
         var res = await Client.Request($"/tasks/{taskId}").GetJsonAsync<Types.TaskResponse>();
-        while (res?.Phase != "PHASE_TYPE_COMPLETE" && res?.Phase != "PHASE_TYPE_ERROR" && threshold > 0)
+        while (res.Phase != "PHASE_TYPE_COMPLETE" && res.Phase != "PHASE_TYPE_ERROR" && threshold > 0)
         {
             threshold -= 1;
             await Task.Delay(interval);
             res = await Client.Request($"/tasks/{taskId}").GetJsonAsync<Types.TaskResponse>();
         }
-        return res?.Phase == "PHASE_TYPE_COMPLETE" || res?.Phase == "PHASE_TYPE_ERROR";
+        return res.Phase == "PHASE_TYPE_COMPLETE" || res.Phase == "PHASE_TYPE_ERROR";
     }
 
     public async Task<IEnumerable<Types.FileResponse>> List(string? folderId)
@@ -155,13 +157,13 @@ public class PikPakClient
         var res = await Client.Request($"/files")
             .SetQueryParam("parent_id", folderId)
             .GetJsonAsync<Types.ListFileResponse>();
-        return res?.Files ?? throw new Exception("API request failed");
+        return res.Files;
     }
 
     public async Task<Types.FileResponse> GetFile(string fileId)
     {
         var res = await Client.Request("file", fileId).GetJsonAsync<Types.FileResponse>();
-        return res ?? throw new Exception("API request failed");
+        return res;
     }
 
     public async Task<Types.TaskResponse> MoveFile(string fileId, string parentId)
@@ -173,7 +175,7 @@ public class PikPakClient
                 To = new Types.MoveRequest.MoveTarget { ParentId = parentId },
             })
             .ReceiveJson<Types.TaskResponse>();
-        return res ?? throw new Exception("API request failed");
+        return res;
     }
     #endregion
 

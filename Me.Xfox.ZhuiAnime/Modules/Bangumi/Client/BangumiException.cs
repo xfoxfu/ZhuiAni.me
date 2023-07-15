@@ -15,7 +15,12 @@ public class BangumiException : Exception
     public static async Task<BangumiException> FromResponse(FlurlHttpException response)
     {
         // HTTP network exception
-        if (response.StatusCode == null || response.StatusCode < 300) throw response;
+        if (response.StatusCode == null
+            || response.StatusCode < 300
+            || response is FlurlHttpTimeoutException
+            || response is FlurlParsingException
+        ) throw response;
+
         try
         {
             var error = await response.GetResponseJsonAsync<Error>();
@@ -29,5 +34,17 @@ public class BangumiException : Exception
         {
             throw new Exception("Bangumi responded with HTTP error but JSON deserialization failed.", e);
         }
+    }
+}
+
+public static class BangumiExceptionExtensions
+{
+    public static IFlurlClient UseBangumiExceptionHandler(this IFlurlClient client)
+    {
+        return client.OnError(async call =>
+            {
+                var exception = call.Exception as FlurlHttpException ?? new FlurlHttpException(call, call.Exception);
+                throw await BangumiException.FromResponse(exception);
+            });
     }
 }
