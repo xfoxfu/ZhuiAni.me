@@ -314,9 +314,6 @@ public class PikPakClient
                 [PikPakTorrentAddress] = source,
             }
         };
-        db.Link.Add(link);
-        config.LastFetchedAt = torrent.PublishedAt;
-        await db.SaveChangesAsync();
 
         return link;
     }

@@ -69,11 +69,19 @@ public class PikPakWorker : IHostedService, IDisposable
                     (await db.Item.FindAsync(await Client.ImportBangumiSubject(config.Bangumi)))!;
             }
 
+            List<Models.Link> links = new();
             foreach (var torrent in torrents)
             {
-                await Client.ImportLink(config, torrent, db, bangumi);
+                var link = await Client.ImportLink(config, torrent, db, bangumi);
+                links.Add(link);
+
                 Logger.LogInformation("Imported torrent {@TorrentId} to anime {@AnimeId}", torrent.Id, config.Id);
             }
+            using var tx = db.Database.BeginTransaction();
+            db.Link.AddRange(links);
+            config.LastFetchedAt = torrents.Select(t => t.PublishedAt).Max();
+            await db.SaveChangesAsync();
+            await tx.CommitAsync();
             Logger.LogInformation("Updated anime {@AnimeId}", config.Id);
         }
     }
