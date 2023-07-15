@@ -146,16 +146,16 @@ public class PikPakError
     public required string Error { get; set; }
 
     [JsonPropertyName("error_code")]
-    public required int ErrorCode { get; set; }
+    public int? ErrorCode { get; set; }
 
     [JsonPropertyName("error_url")]
-    public required string ErrorUrl { get; set; }
+    public string? ErrorUrl { get; set; }
 
     [JsonPropertyName("error_description")]
-    public required string ErrorDescription { get; set; }
+    public string? ErrorDescription { get; set; }
 
     [JsonPropertyName("error_details")]
-    public required IEnumerable<ErrorDetail> ErrorDetails { get; set; }
+    public IEnumerable<ErrorDetail>? ErrorDetails { get; set; }
 
     public class ErrorDetail
     {
