@@ -89,12 +89,16 @@ public class PikPakWorker : IHostedService, IDisposable
 
                 Logger.LogInformation("Imported torrent {@TorrentId} to anime {@AnimeId}", torrent.Id, config.Id);
             }
-            using var tx = db.Database.BeginTransaction();
-            db.Link.AddRange(links);
-            config.LastFetchedAt = torrents.Select(t => t.PublishedAt).Max();
-            await db.SaveChangesAsync();
-            await tx.CommitAsync();
-            Logger.LogInformation("Updated anime {@AnimeId}", config.Id);
+
+            if (links.Count > 0)
+            {
+                using var tx = db.Database.BeginTransaction();
+                db.Link.AddRange(links);
+                config.LastFetchedAt = torrents.Select(t => t.PublishedAt).Max();
+                await db.SaveChangesAsync();
+                await tx.CommitAsync();
+            }
+            Logger.LogInformation("Updated anime {@AnimeId}, {@Count} new items.", config.Id, links.Count);
         }
     }
 
