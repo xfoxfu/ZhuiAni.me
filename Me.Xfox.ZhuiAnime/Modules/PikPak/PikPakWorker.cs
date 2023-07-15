@@ -32,12 +32,24 @@ public class PikPakWorker : IHostedService, IDisposable
     public Task StartAsync(CancellationToken ct)
     {
         var span = Options.CurrentValue.IntervalBetweenFetch;
-        Timer = new Timer(UpdateData, null, TimeSpan.Zero, span);
+        Timer = new Timer(TimerWork, null, TimeSpan.Zero, span);
         Logger.LogInformation("Started PikPak service every {@Span}", span);
         return Task.CompletedTask;
     }
 
-    protected async void UpdateData(object? state)
+    protected async void TimerWork(object? state)
+    {
+        try
+        {
+            await UpdateData();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while updating data.");
+        }
+    }
+
+    protected async Task UpdateData()
     {
         using var scope = Services.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();

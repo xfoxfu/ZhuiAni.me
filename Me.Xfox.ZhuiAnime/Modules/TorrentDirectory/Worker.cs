@@ -27,7 +27,7 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         if (Options.CurrentValue.Sources.TryGetValue(Source.Name, out var value) && value == true)
         {
             var span = Options.CurrentValue.IntervalBetweenFetch;
-            Timer = new Timer(UpdateData, null, TimeSpan.Zero, span);
+            Timer = new Timer(TimerWork, null, TimeSpan.Zero, span);
             Logger.LogInformation("Started timed service for {@Source} every {@Span}", Source.Name, span);
         }
         else
@@ -37,7 +37,19 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         return Task.CompletedTask;
     }
 
-    protected async void UpdateData(object? state)
+    protected async void TimerWork(object? state)
+    {
+        try
+        {
+            await UpdateData();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while updating data.");
+        }
+    }
+
+    protected async Task UpdateData()
     {
         using var db = ServiceProvider.CreateScope().ServiceProvider.GetRequiredService<ZAContext>();
         uint nextPage = 1;
