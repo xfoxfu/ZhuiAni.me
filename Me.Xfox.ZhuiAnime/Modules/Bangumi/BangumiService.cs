@@ -14,6 +14,12 @@ public class BangumiService
         BgmApi = bgmApi;
     }
 
+    public async Task<uint> ImportSubjectGetId(int id)
+    {
+        var item = await ImportSubject(id);
+        return item.Id;
+    }
+
     public async Task<AppModels.Item> ImportSubject(int id)
     {
         using var scope = Services.CreateScope();

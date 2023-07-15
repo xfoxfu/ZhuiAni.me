@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.Extensions.Options;
+using static Me.Xfox.ZhuiAnime.Models.Link.CommonAnnotations;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
@@ -18,7 +19,7 @@ public class PikPakClient
 
     protected Bangumi.BangumiService Bangumi { get; init; }
 
-    protected IServiceProvider Services { get; init; }
+    protected ILogger<PikPakClient> Logger { get; init; }
 
     private string Username => Options.CurrentValue.Username;
     private string Password => Options.CurrentValue.Password;
@@ -32,7 +33,7 @@ public class PikPakClient
 
     protected TimeSpan FolderCacheDuration { get; set; } = TimeSpan.FromMinutes(5);
 
-    public PikPakClient(IOptionsMonitor<Option> options, Bangumi.BangumiService bangumi, IServiceProvider services)
+    public PikPakClient(IOptionsMonitor<Option> options, Bangumi.BangumiService bangumi, ILogger<PikPakClient> logger)
     {
         Options = options;
         Bangumi = bangumi;
@@ -42,7 +43,7 @@ public class PikPakClient
         Client = new FlurlClient("https://api-drive.mypikpak.com/drive/v1")
             .WithHeader("User-Agent", "")
             .UsePikPakExceptionHandler();
-        Services = services;
+        Logger = logger;
     }
 
     public class Option
@@ -54,16 +55,20 @@ public class PikPakClient
         public required string Password { get; set; }
 
         public required string AccessAddressTemplate { get; set; }
+
+        public required TimeSpan IntervalBetweenFetch { get; set; }
     }
 
-    public async Task<Item> ImportBangumiSubject(uint id)
+    public async Task<uint> ImportBangumiSubject(uint id)
     {
-        return await Bangumi.ImportSubject((int)id);
+        Logger.LogInformation("Importing Bangumi subject {Id}", id);
+        return await Bangumi.ImportSubjectGetId((int)id);
     }
 
     #region API
     public async Task<Types.LoginResponse> Login()
     {
+        Logger.LogInformation("Log in to PikPak.");
         var res = await AuthClient.Request("/auth/signin")
             .PostJsonAsync(new Types.LoginRequest
             {
@@ -80,14 +85,22 @@ public class PikPakClient
         return res;
     }
 
-    public class PikPakException : Exception
+    // TODO: use refresh_token
+    public async Task<Types.LoginResponse> RefreshLogin()
     {
-        public Types.PikPakError Error { get; init; }
-
-        public PikPakException(Types.PikPakError error, Exception inner) : base(error.Error, inner)
-        {
-            Error = error;
-        }
+        var res = await AuthClient.Request("/auth/token")
+            .PostJsonAsync(new Types.RefreshLoginRequest
+            {
+                ClientId = "YNxT9w7GMdWvEOKa",
+                ClientSecret = "dbw2OtmVEeuUvIptb1Coyg",
+                GrantType = "refresh_token",
+                RefreshToken = RefreshToken,
+            })
+            .ReceiveJson<Types.LoginResponse>();
+        RefreshToken = res.RefreshToken;
+        AccessToken = res.AccessToken;
+        Client = Client.WithOAuthBearerToken(AccessToken);
+        return res;
     }
 
     public async Task<Types.TaskResponse> Download(string url)
@@ -123,6 +136,7 @@ public class PikPakClient
 
     public async Task<Types.FileResponse> CreateFolder(string name, string? parentId)
     {
+        Logger.LogInformation("Creating folder {Name} in {ParentId}", name, parentId);
         var res = await Client.Request("/files")
             .PostJsonAsync(new Types.UploadRequest
             {
@@ -194,6 +208,14 @@ public class PikPakClient
         {
             await Login();
         }
+        try
+        {
+            await List(null);
+        }
+        catch (PikPakException)
+        {
+            await Login();
+        }
     }
 
     protected ConcurrentDictionary<string, string> Cache { get; } = new();
@@ -209,14 +231,16 @@ public class PikPakClient
             }
             catch (PikPakException e)
             {
-                if (e.Error.Error != "file_not_found") throw e;
+                if (e.Error?.Error != "file_not_found") throw e;
             }
         }
 
+        Logger.LogInformation("Resolving path {Path}", string.Join('/', path));
         Types.FileResponse? file = null;
         if (!path.Any()) throw new Exception("Path is empty");
         foreach (var seg in path)
         {
+            Logger.LogDebug("Resolving path segment {Segment}", seg);
             var parent = file?.Id;
             var files = await List(parent);
             file = files.FirstOrDefault(f => f.Name == seg && !f.Trashed);
@@ -238,26 +262,45 @@ public class PikPakClient
         return await GetFile(task.FileId);
     }
 
-    public async Task<Link> ImportLink(Anime config, TorrentDirectory.Torrent torrent)
+    public async Task<Link> ImportLink(Anime config, TorrentDirectory.Torrent torrent, ZAContext db, Item anime)
     {
-        if (torrent.LinkMagnet == null && torrent.LinkTorrent == null)
-            throw new ArgumentNullException(
+        var source = (torrent.LinkMagnet ?? torrent.LinkTorrent) ?? throw new ArgumentNullException(
                 message: $"{nameof(torrent)} does not have LinkMagnet nor LinkTorrent.", null);
 
-        using var scope = Services.CreateScope();
-        using var DbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
+        // Matching item in database
+        var ep = Regex.Match(torrent.Title, config.Regex).Groups[(int)config.MatchGroup.Ep].Value;
+        await db.Entry(anime).Collection(i => i.ChildItems!).LoadAsync();
+        var episode = anime.ChildItems
+            ?.FirstOrDefault(i => double.Parse(i.Annotations["https://bgm.tv/ep/:id/sort"]) == double.Parse(ep));
+
+        // Check if link exists
+        Link? existing = null;
+        if (episode != null)
+        {
+            await db.Entry(episode).Collection(i => i.Links!).LoadAsync();
+            existing = episode.Links!
+                .FirstOrDefault(l => l.Annotations.TryGetValue(PikPakTorrentAddress, out var addr) && addr == source);
+        }
+        if (existing == null)
+        {
+            await db.Entry(anime).Collection(i => i.Links!).LoadAsync();
+            existing = anime.Links!
+                .FirstOrDefault(l => l.Annotations.TryGetValue(PikPakTorrentAddress, out var addr) && addr == source);
+        }
+        if (existing != null)
+        {
+            Logger.LogInformation(
+                "Using existing {Link} for Anime {Anime}, Torrent {Torrent}.", existing.Id, config.Id, torrent.Id);
+            config.LastFetchedAt = torrent.PublishedAt;
+            await db.SaveChangesAsync();
+            return existing;
+        }
 
         // Download torrent
         var path = config.Target.Split("/").Where(x => !string.IsNullOrWhiteSpace(x));
-        var file = await DownloadLink((torrent.LinkMagnet ?? torrent.LinkTorrent)!, path);
+        var file = await DownloadLink(source, path);
         var addr = Flurl.Url.Combine(path.Append(file.Name).ToArray());
         var linkAddress = string.Format(AccessAddressTemplate, addr);
-
-        // Import items
-        var anime = await ImportBangumiSubject(config.Bangumi);
-        var ep = Regex.Match(torrent.Title, config.Regex).Groups[(int)config.MatchGroup.Ep].Value;
-        var episode = anime.ChildItems
-            ?.FirstOrDefault(i => double.Parse(i.Annotations["https://bgm.tv/ep/:id/sort"]) == double.Parse(ep));
 
         // Add link
         var link = new Link
@@ -265,9 +308,15 @@ public class PikPakClient
             ItemId = episode?.Id ?? anime.Id,
             Address = new Uri(linkAddress),
             MimeType = file.MimeType,
+            Annotations = new Dictionary<string, string>
+            {
+                [PikPakFileId] = file.Id,
+                [PikPakTorrentAddress] = source,
+            }
         };
-        DbContext.Link.Add(link);
-        await DbContext.SaveChangesAsync();
+        db.Link.Add(link);
+        config.LastFetchedAt = torrent.PublishedAt;
+        await db.SaveChangesAsync();
 
         return link;
     }

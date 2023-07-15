@@ -20,6 +20,21 @@ public class LoginRequest
     public required string Password { get; set; }
 }
 
+public class RefreshLoginRequest
+{
+    [JsonPropertyName("client_id")]
+    public required string ClientId { get; set; }
+
+    [JsonPropertyName("client_secret")]
+    public required string ClientSecret { get; set; }
+
+    [JsonPropertyName("grant_type")]
+    public required string GrantType { get; set; }
+
+    [JsonPropertyName("refresh_token")]
+    public required string RefreshToken { get; set; }
+}
+
 public class LoginResponse
 {
     [JsonPropertyName("refresh_token")]

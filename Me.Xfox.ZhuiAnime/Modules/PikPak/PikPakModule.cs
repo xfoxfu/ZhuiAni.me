@@ -6,6 +6,7 @@ public class PikPakModule : IModule
     {
         builder.Services.Configure<PikPakClient.Option>(builder.Configuration.GetSection(PikPakClient.Option.LOCATION));
         builder.Services.AddSingleton<PikPakClient>();
+        builder.Services.AddHostedService<PikPakWorker>();
         return builder;
     }
 }

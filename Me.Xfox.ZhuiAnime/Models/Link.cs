@@ -40,4 +40,10 @@ public class Link
                 .HasColumnType("jsonb");
         }
     }
+
+    public static class CommonAnnotations
+    {
+        public const string PikPakTorrentAddress = "me.xfox.zhuianime.modules.pikpak.torrent_address";
+        public const string PikPakFileId = "https://api-drive.mypikpak.com/drive/v1/files/:id";
+    }
 }

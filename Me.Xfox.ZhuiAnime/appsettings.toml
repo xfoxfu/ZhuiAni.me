@@ -37,3 +37,4 @@ FetchPageThreshold = 20
 Username = ""
 Password = ""
 AccessAddressTemplate = "{0}"
+IntervalBetweenFetch = 01:00:00
