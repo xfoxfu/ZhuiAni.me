@@ -9,6 +9,18 @@
  * ---------------------------------------------------------------
  */
 
+export interface Anime {
+  /** @format int32 */
+  id: number;
+  /** @format int32 */
+  bangumi: number;
+  target: string;
+  regex: string;
+  match_group: MatchGroups;
+  /** @format date-time */
+  last_fetched_at: string;
+}
+
 /** Category information. */
 export interface CategoryDto {
   /**
@@ -18,6 +30,15 @@ export interface CategoryDto {
   id: number;
   /** user-friendly name */
   title: string;
+}
+
+export interface CreateAnimeDto {
+  /** @format int32 */
+  bangumi: number;
+  target: string;
+  regex: string;
+  /** @format int32 */
+  match_group_ep: number;
 }
 
 export interface CreateItemDto {
@@ -112,6 +133,14 @@ export interface LinkDto {
    * @format int32
    */
   parent_link_id?: number | null;
+}
+
+export interface MatchGroups {
+  /**
+   * `0` means disabled.
+   * @format int32
+   */
+  ep: number;
 }
 
 export interface TorrentDto {
@@ -370,12 +399,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Bangumi
-     * @name PostExternalBangumiImportSubject
-     * @request POST:/api/external/bangumi/import_subject
+     * @name PostModulesBangumiImportSubject
+     * @request POST:/api/modules/bangumi/import_subject
      */
-    postExternalBangumiImportSubject: (data: ImportSubjectDto, params: RequestParams = {}) =>
+    postModulesBangumiImportSubject: (data: ImportSubjectDto, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
-        path: `/api/external/bangumi/import_subject`,
+        path: `/api/modules/bangumi/import_subject`,
         method: "POST",
         body: data,
         type: ContentType.Json,
@@ -854,6 +883,89 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   };
+  pikPak = {
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PostModulesPikpakAnimes
+     * @request POST:/api/modules/pikpak/animes
+     */
+    postModulesPikpakAnimes: (data: CreateAnimeDto, params: RequestParams = {}) =>
+      this.request<Anime, ErrorProdResponse>({
+        path: `/api/modules/pikpak/animes`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name GetModulesPikpakAnime
+     * @request GET:/api/modules/pikpak/animes/{id}
+     */
+    getModulesPikpakAnime: (id: number, params: RequestParams = {}) =>
+      this.request<Anime, ErrorProdResponse>({
+        path: `/api/modules/pikpak/animes/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name GetModulesPikpakAnime
+     * @request GET:/api/modules/pikpak/animes/{id}
+     */
+    useGetModulesPikpakAnime: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<Anime, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/animes/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name GetModulesPikpakAnime
+     * @request GET:/api/modules/pikpak/animes/{id}
+     */
+    mutateGetModulesPikpakAnime: (id: number, data?: Anime | Promise<Anime>, options?: MutatorOptions) =>
+      mutate<Anime>(`/api/modules/pikpak/animes/${id}`, data, options),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PostModulesPikpakAnime
+     * @request POST:/api/modules/pikpak/animes/{id}
+     */
+    postModulesPikpakAnime: (id: number, data: CreateAnimeDto, params: RequestParams = {}) =>
+      this.request<Anime, ErrorProdResponse>({
+        path: `/api/modules/pikpak/animes/${id}`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name DeleteModulesPikpakAnime
+     * @request DELETE:/api/modules/pikpak/animes/{id}
+     */
+    deleteModulesPikpakAnime: (id: number, params: RequestParams = {}) =>
+      this.request<void, ErrorProdResponse>({
+        path: `/api/modules/pikpak/animes/${id}`,
+        method: "DELETE",
+        ...params,
+      }),
+  };
   torrent = {
     /**
      * No description
@@ -920,6 +1032,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       data?: TorrentDto[] | Promise<TorrentDto[]>,
       options?: MutatorOptions,
     ) => mutate<TorrentDto[]>([`/api/modules/torrent_directory/torrents`, query], data, options),
+
+    /**
+     * No description
+     *
+     * @tags Torrent
+     * @name PostModulesTorrentDirectoryProviderFetch
+     * @request POST:/api/modules/torrent_directory/providers/{name}/fetch/{page}
+     */
+    postModulesTorrentDirectoryProviderFetch: (name: string, page: number, params: RequestParams = {}) =>
+      this.request<void, ErrorProdResponse>({
+        path: `/api/modules/torrent_directory/providers/${name}/fetch/${page}`,
+        method: "POST",
+        ...params,
+      }),
   };
 }
 
