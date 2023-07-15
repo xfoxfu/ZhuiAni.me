@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json;
+using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
-using RestSharp;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Client;
 
@@ -9,34 +9,25 @@ public class BangumiException : Exception
 {
     public HttpStatusCode StatusCode { get; set; }
     public Error? Error { get; set; }
-    public bool IsNetworkError { get => StatusCode == 0; }
 
-    public BangumiException(string message, Exception innerException) : base(message, innerException) { }
+    public BangumiException(string message, FlurlHttpException innerException) : base(message, innerException) { }
 
-    public static BangumiException FromResponse(RestResponse response)
+    public static async Task<BangumiException> FromResponse(FlurlHttpException response)
     {
-        if (response.ErrorException == null && response.ErrorMessage == null && response.IsSuccessful)
+        // HTTP network exception
+        if (response.StatusCode == null) throw response;
+        try
         {
-            throw new ArgumentException("cannot construct exception from success response", nameof(response));
+            var error = await response.GetResponseJsonAsync<Error>();
+            return new BangumiException($"BangumiError ({response.StatusCode}): {error.Title}", response)
+            {
+                Error = error,
+                StatusCode = (HttpStatusCode)response.StatusCode,
+            };
         }
-
-        System.Diagnostics.Debug.Assert(response.ErrorException != null, "ErrorException should not be null");
-
-        if (response.StatusCode == 0)
+        catch (Exception e)
         {
-            return new BangumiException(
-                response.ErrorMessage ?? response.ErrorException.Message,
-                response.ErrorException);
+            throw new Exception("Bangumi responded with HTTP error but JSON deserialization failed.", e);
         }
-
-        var error = response.Content != null ? JsonSerializer.Deserialize<Error>(response.Content) : null;
-        var message = error?.Description ?? response.StatusDescription;
-        return new BangumiException(
-            $"BangumiError ({response.StatusDescription}): {message}",
-            response.ErrorException)
-        {
-            Error = error,
-            StatusCode = response.StatusCode,
-        };
     }
 }

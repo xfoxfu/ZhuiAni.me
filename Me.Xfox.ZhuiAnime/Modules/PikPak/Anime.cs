@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
 public class Anime
@@ -12,6 +14,7 @@ public class Anime
 
     public string Regex { get; set; } = string.Empty;
 
+    [Column(TypeName = "jsonb")]
     public MatchGroups MatchGroup { get; set; } = new MatchGroups();
 
     public DateTimeOffset LastFetchedAt { get; set; } = DateTimeOffset.MinValue;

@@ -18,13 +18,13 @@ public interface ISource
 
         foreach (var item in response)
         {
-            var hasExisting = await db.TorrentDirectoryTorrent
+            var hasExisting = await db.Torrent
                 .Where(e => e.OriginSite == item.OriginSite && e.OriginId == item.OriginId)
                 .AnyAsync();
             if (!hasExisting)
             {
                 hasNonExistent = true;
-                db.TorrentDirectoryTorrent.Add(item);
+                db.Torrent.Add(item);
             }
         }
         await db.SaveChangesAsync();

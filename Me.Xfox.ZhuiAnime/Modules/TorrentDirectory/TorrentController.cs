@@ -33,7 +33,7 @@ public class TorrentController : ControllerBase
         [FromQuery] int? count,
         [FromQuery] DateTimeOffset? until)
     {
-        var linq = DbContext.TorrentDirectoryTorrent.AsQueryable();
+        var linq = DbContext.Torrent.AsQueryable();
         if (!string.IsNullOrWhiteSpace(query))
         {
             linq = linq.Where(t => Regex.IsMatch(t.Title, query));

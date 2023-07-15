@@ -1,21 +1,17 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using RestSharp;
+using Flurl.Http;
 
 namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Sources;
 
 public class BangumiSource : ISource
 {
-    private readonly RestClient _client;
+    private readonly IFlurlClient _client;
 
     public BangumiSource()
     {
-        var options = new RestClientOptions
-        {
-            BaseUrl = new Uri("https://bangumi.moe/api/"),
-            UserAgent = "xfoxfu/ZhuiAni.me (https://github.com/xfoxfu/ZhuiAni.me)",
-        };
-        _client = new(options);
+        _client = new FlurlClient("https://bangumi.moe/api/")
+            .WithHeader("User-Agent", "xfoxfu/ZhuiAni.me (https://github.com/xfoxfu/ZhuiAni.me)");
     }
 
     public string Name => "bangumi.moe";
@@ -24,8 +20,9 @@ public class BangumiSource : ISource
 
     public async Task<IList<Torrent>> GetPageAsync(uint id)
     {
-        var request = new RestRequest($"torrent/page/{id}");
-        var response = await _client.GetAsync<BangumiResponse>(request) ?? throw new Exception("Bangumi responded with null");
+        var response = await _client.Request($"torrent/page/{id}")
+            .GetAsync()
+            .ReceiveJson<BangumiResponse>();
         return response.Torrents.Select(ConvertItem).ToList();
     }
 

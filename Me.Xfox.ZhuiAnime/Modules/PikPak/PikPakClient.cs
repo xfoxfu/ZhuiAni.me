@@ -1,9 +1,7 @@
 using System.Collections.Concurrent;
-using System.Text.Json;
+using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.Extensions.Options;
-using RestSharp;
-using RestSharp.Authenticators;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
@@ -26,8 +24,8 @@ public class PikPakClient
     protected string RefreshToken { get; set; } = string.Empty;
     protected string AccessToken { get; set; } = string.Empty;
 
-    protected RestClient AuthClient { get; set; }
-    protected RestClient Client { get; set; }
+    protected IFlurlClient AuthClient { get; set; }
+    protected IFlurlClient Client { get; set; }
 
     protected TimeSpan FolderCacheDuration { get; set; } = TimeSpan.FromMinutes(5);
 
@@ -35,17 +33,10 @@ public class PikPakClient
     {
         Options = options;
         Bangumi = bangumi;
-        AuthClient = new RestClient(new RestClientOptions
-        {
-            BaseUrl = new Uri("https://user.mypikpak.com/v1"),
-            UserAgent = "",
-        });
-        Client = new RestClient(new RestClientOptions
-        {
-            BaseUrl = new Uri("https://api-drive.mypikpak.com/drive/v1"),
-            UserAgent = "",
-            Authenticator = new JwtAuthenticator("INVALID_TOKEN"),
-        });
+        AuthClient = new FlurlClient("https://user.mypikpak.com/v1")
+            .WithHeader("User-Agent", "");
+        Client = new FlurlClient("https://api-drive.mypikpak.com/drive/v1")
+            .WithHeader("User-Agent", "");
     }
 
     public class Option
@@ -67,19 +58,19 @@ public class PikPakClient
     #region API
     public async Task<Types.LoginResponse> Login()
     {
-        var req = new RestRequest("/auth/signin")
-            .AddJsonBody(new Types.LoginRequest
+        var res = await AuthClient.Request("/auth/signin")
+            .PostJsonAsync(new Types.LoginRequest
             {
                 CaptchaToken = "",
                 ClientId = "YNxT9w7GMdWvEOKa",
                 ClientSecret = "dbw2OtmVEeuUvIptb1Coyg",
                 Username = Username,
                 Password = Password,
-            });
-        var res = await AuthClient.PostAsync<Types.LoginResponse>(req);
+            })
+            .ReceiveJson<Types.LoginResponse>();
         RefreshToken = res?.RefreshToken ?? throw new Exception("Login failed");
         AccessToken = res?.AccessToken ?? throw new Exception("Login failed");
-        (Client.Options.Authenticator as JwtAuthenticator)?.SetBearerToken(AccessToken);
+        Client = Client.WithOAuthBearerToken(AccessToken);
         return res ?? throw new Exception("Login failed");
     }
 
@@ -90,8 +81,8 @@ public class PikPakClient
 
     public async Task<Types.TaskResponse> Download(string url)
     {
-        var req = new RestRequest("/files")
-            .AddJsonBody(new Types.UploadRequest
+        var res = await Client.Request("/files")
+            .PostJsonAsync(new Types.UploadRequest
             {
                 Kind = "drive#file",
                 FolderType = "DOWNLOAD",
@@ -100,35 +91,35 @@ public class PikPakClient
                 {
                     Url = url,
                 },
-            });
-        var res = await Client.PostAsync<Types.UploadResponse>(req);
+            })
+            .ReceiveJson<Types.UploadResponse>();
         return res?.Task ?? throw new Exception("API request failed");
     }
 
     public async Task<Types.TaskResponse> Download(string url, string parentId)
     {
-        var req = new RestRequest("/files")
-            .AddJsonBody(new Types.UploadRequest
+        var res = await Client.Request("/files")
+            .PostJsonAsync(new Types.UploadRequest
             {
                 Kind = "drive#file",
                 ParentId = parentId,
                 UploadType = "UPLOAD_TYPE_URL",
                 Url = new Types.UploadRequest.DownloadRequestUrl { Url = url },
-            });
-        var res = await Client.PostAsync<Types.UploadResponse>(req);
+            })
+            .ReceiveJson<Types.UploadResponse>();
         return res?.Task ?? throw new Exception("API request failed");
     }
 
     public async Task<Types.FileResponse> CreateFolder(string name, string? parentId)
     {
-        var req = new RestRequest("/files")
-            .AddJsonBody(new Types.UploadRequest
+        var res = await Client.Request("/files")
+            .PostJsonAsync(new Types.UploadRequest
             {
                 Kind = "drive#folder",
                 Name = name,
                 ParentId = parentId,
-            });
-        var res = await Client.PostAsync<Types.UploadResponse>(req);
+            })
+            .ReceiveJson<Types.UploadResponse>();
         return res?.File ?? throw new Exception("API request failed");
     }
 
@@ -149,44 +140,39 @@ public class PikPakClient
 
     public async Task<bool> WaitForTask(string taskId, TimeSpan interval, uint threshold)
     {
-        var req = new RestRequest($"/tasks/{taskId}");
-        var res = await Client.GetAsync<Types.TaskResponse>(req);
+        var res = await Client.Request($"/tasks/{taskId}").GetJsonAsync<Types.TaskResponse>();
         while (res?.Phase != "PHASE_TYPE_COMPLETE" && res?.Phase != "PHASE_TYPE_ERROR" && threshold > 0)
         {
             threshold -= 1;
             await Task.Delay(interval);
-            res = await Client.GetAsync<Types.TaskResponse>(req);
+            res = await Client.Request($"/tasks/{taskId}").GetJsonAsync<Types.TaskResponse>();
         }
         return res?.Phase == "PHASE_TYPE_COMPLETE" || res?.Phase == "PHASE_TYPE_ERROR";
     }
 
     public async Task<IEnumerable<Types.FileResponse>> List(string? folderId)
     {
-        var req = new RestRequest($"/files");
-        if (!string.IsNullOrEmpty(folderId))
-        {
-            req = req.AddQueryParameter("parent_id", folderId);
-        }
-        var res = await Client.GetAsync<Types.ListFileResponse>(req);
+        var res = await Client.Request($"/files")
+            .SetQueryParam("parent_id", folderId)
+            .GetJsonAsync<Types.ListFileResponse>();
         return res?.Files ?? throw new Exception("API request failed");
     }
 
     public async Task<Types.FileResponse> GetFile(string fileId)
     {
-        var req = new RestRequest($"/files/{fileId}", Method.Get);
-        var res = await Client.ExecuteGetAsync<Types.FileResponse>(req);
-        return res.Data ?? throw new Exception("API request failed");
+        var res = await Client.Request("file", fileId).GetJsonAsync<Types.FileResponse>();
+        return res ?? throw new Exception("API request failed");
     }
 
     public async Task<Types.TaskResponse> MoveFile(string fileId, string parentId)
     {
-        var req = new RestRequest($"/files/{fileId}/move")
-            .AddJsonBody(new Types.MoveRequest
+        var res = await Client.Request($"/files/{fileId}/move")
+            .PostJsonAsync(new Types.MoveRequest
             {
                 Ids = new[] { fileId },
                 To = new Types.MoveRequest.MoveTarget { ParentId = parentId },
-            });
-        var res = await Client.PostAsync<Types.TaskResponse>(req);
+            })
+            .ReceiveJson<Types.TaskResponse>();
         return res ?? throw new Exception("API request failed");
     }
     #endregion
