@@ -42,7 +42,7 @@ public class PikPakWorker : IHostedService, IDisposable
         using var scope = Services.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
 
-        var configs = await db.PikPakAnime.ToListAsync();
+        var configs = await db.PikPakAnime.Where(a => a.Enabled).ToListAsync();
         foreach (var config in configs)
         {
             Logger.LogInformation("Updating anime {@AnimeId}", config.Id);
@@ -50,6 +50,7 @@ public class PikPakWorker : IHostedService, IDisposable
                 .Where(t => t.OriginSite == "https://bangumi.moe")
                 .Where(t => t.PublishedAt > config.LastFetchedAt)
                 .Where(t => Regex.IsMatch(t.Title, config.Regex))
+                .OrderByDescending(t => t.PublishedAt)
                 .ToListAsync();
 
             Models.Item bangumi;

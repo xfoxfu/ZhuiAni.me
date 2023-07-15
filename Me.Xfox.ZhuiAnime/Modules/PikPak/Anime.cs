@@ -17,6 +17,8 @@ public class Anime
 
     public DateTimeOffset LastFetchedAt { get; set; } = DateTimeOffset.MinValue;
 
+    public bool Enabled { get; set; } = true;
+
     public class MatchGroups
     {
         /// <summary>
