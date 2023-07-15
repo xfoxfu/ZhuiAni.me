@@ -17,7 +17,7 @@ public partial class BangumiApi
     {
         Client = new FlurlClient(baseUrl)
             .WithHeader("User-Agent", userAgent)
-            .AllowAnyHttpStatus();
+            .OnError(async call => throw await BangumiException.FromResponse(new FlurlHttpException(call, call.Exception)));
     }
 
     #region /v0/subjects
@@ -49,7 +49,6 @@ public partial class BangumiApi
             }
             offset = response.Offset + response.Limit;
             total = response.Total;
-            Console.WriteLine($"O={offset} T={total}");
         } while (offset < total);
     }
     #endregion

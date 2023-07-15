@@ -15,7 +15,7 @@ public class BangumiException : Exception
     public static async Task<BangumiException> FromResponse(FlurlHttpException response)
     {
         // HTTP network exception
-        if (response.StatusCode == null) throw response;
+        if (response.StatusCode == null || response.StatusCode < 300) throw response;
         try
         {
             var error = await response.GetResponseJsonAsync<Error>();
