@@ -19,6 +19,15 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "7.0.0"
         }
       },
+      "Flurl.Http": {
+        "type": "Direct",
+        "requested": "[4.0.0-pre3, )",
+        "resolved": "4.0.0-pre3",
+        "contentHash": "2N01ftKNnl5dhPvEYITn+DhrPrpxL+i/725aBOJkLHAT3LdKliwnybJKDqUDVR8CbLgBf6IcfhYnaLU7fTq0dw==",
+        "dependencies": {
+          "Flurl": "3.0.7"
+        }
+      },
       "InfluxDB.Client": {
         "type": "Direct",
         "requested": "[4.12.0, )",
@@ -188,6 +197,11 @@
         "type": "Transitive",
         "resolved": "30.0.1",
         "contentHash": "rcZtgbWR+As4G3Vpgx0AMNmShGuQLFjkHAPIIflzrfkJCx8/AOd4m96ZRmiU1Wi39qS5UVjV0P8qdgqOo5Cwyg=="
+      },
+      "Flurl": {
+        "type": "Transitive",
+        "resolved": "3.0.7",
+        "contentHash": "W3zHc8m6/yqOAedHwpFQv5VT8t0W/jkS3AVlv1Tj520KDNjUa31at0zMc3XYJy8f9qdOmUcvSUarf6G2nK1ZIg=="
       },
       "Humanizer": {
         "type": "Transitive",
@@ -1321,8 +1335,8 @@
       },
       "RestSharp": {
         "type": "Transitive",
-        "resolved": "110.2.0",
-        "contentHash": "FXGw0IMcqY7yO/hzS9QrD3iNswNgb9UxJnxWmfOxmGs4kRlZWqdtBoGPLuhlbgsDzX1RFo4WKui8TGGKXWKalw==",
+        "resolved": "110.1.0",
+        "contentHash": "h9ERwfMeLp+BJ3cEwxxe1KIkTjB/yokJAjj3JNO5tKcMZI2Rx+bJe//DkVG3aX5g669Pi5Ifc4kFPrNKtTinsg==",
         "dependencies": {
           "System.Text.Json": "7.0.2"
         }
@@ -2413,12 +2427,6 @@
           "System.Text.Encoding": "4.3.0",
           "System.Threading": "4.3.0",
           "System.Xml.ReaderWriter": "4.3.0"
-        }
-      },
-      "me.xfox.zhuianime.external.bangumi": {
-        "type": "Project",
-        "dependencies": {
-          "RestSharp": "[110.2.0, )"
         }
       }
     }

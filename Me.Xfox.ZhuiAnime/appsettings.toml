@@ -32,3 +32,8 @@ FetchPageThreshold = 20
 [Modules.TorrentDirectory.Sources]
 "bangumi.moe" = true
 "acg.rip" = true
+
+[Modules.PikPak]
+Username = ""
+Password = ""
+AddressPrefix = ""

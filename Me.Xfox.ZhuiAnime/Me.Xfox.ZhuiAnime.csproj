@@ -27,6 +27,7 @@
   <ItemGroup>
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
+    <PackageReference Include="Flurl.Http" Version="4.0.0-pre3" />
     <PackageReference Include="InfluxDB.Client" Version="4.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
