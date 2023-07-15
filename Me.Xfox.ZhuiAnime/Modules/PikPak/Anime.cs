@@ -8,7 +8,7 @@ public class Anime
 
     public string Source { get; set; } = string.Empty;
 
-    public string Bangumi { get; set; } = string.Empty;
+    public uint Bangumi { get; set; }
 
     public string Target { get; set; } = string.Empty;
 

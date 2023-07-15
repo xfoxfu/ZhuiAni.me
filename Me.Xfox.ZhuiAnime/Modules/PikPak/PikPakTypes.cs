@@ -96,6 +96,9 @@ public class FileResponse
     [JsonPropertyName("name")]
     public required string Name { get; set; }
 
+    [JsonPropertyName("mime_type")]
+    public required string MimeType { get; set; }
+
     [JsonPropertyName("trashed")]
     public required bool Trashed { get; set; }
 }

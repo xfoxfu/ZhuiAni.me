@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.Extensions.Options;
@@ -17,9 +18,11 @@ public class PikPakClient
 
     protected Bangumi.BangumiService Bangumi { get; init; }
 
+    protected IServiceProvider Services { get; init; }
+
     private string Username => Options.CurrentValue.Username;
     private string Password => Options.CurrentValue.Password;
-    private string AddressPrefix => Options.CurrentValue.AddressPrefix;
+    private string AccessAddressTemplate => Options.CurrentValue.AccessAddressTemplate;
 
     protected string RefreshToken { get; set; } = string.Empty;
     protected string AccessToken { get; set; } = string.Empty;
@@ -29,7 +32,7 @@ public class PikPakClient
 
     protected TimeSpan FolderCacheDuration { get; set; } = TimeSpan.FromMinutes(5);
 
-    public PikPakClient(IOptionsMonitor<Option> options, Bangumi.BangumiService bangumi)
+    public PikPakClient(IOptionsMonitor<Option> options, Bangumi.BangumiService bangumi, IServiceProvider services)
     {
         Options = options;
         Bangumi = bangumi;
@@ -39,6 +42,7 @@ public class PikPakClient
         Client = new FlurlClient("https://api-drive.mypikpak.com/drive/v1")
             .WithHeader("User-Agent", "")
             .UsePikPakExceptionHandler();
+        Services = services;
     }
 
     public class Option
@@ -49,7 +53,7 @@ public class PikPakClient
 
         public required string Password { get; set; }
 
-        public required string AddressPrefix { get; set; }
+        public required string AccessAddressTemplate { get; set; }
     }
 
     public async Task<Item> ImportBangumiSubject(uint id)
@@ -78,7 +82,12 @@ public class PikPakClient
 
     public class PikPakException : Exception
     {
-        public PikPakException(Types.PikPakError error, Exception inner) : base(error.Error, inner) { }
+        public Types.PikPakError Error { get; init; }
+
+        public PikPakException(Types.PikPakError error, Exception inner) : base(error.Error, inner)
+        {
+            Error = error;
+        }
     }
 
     public async Task<Types.TaskResponse> Download(string url)
@@ -162,7 +171,7 @@ public class PikPakClient
 
     public async Task<Types.FileResponse> GetFile(string fileId)
     {
-        var res = await Client.Request("file", fileId).GetJsonAsync<Types.FileResponse>();
+        var res = await Client.Request("/files", fileId).GetJsonAsync<Types.FileResponse>();
         return res;
     }
 
@@ -191,11 +200,17 @@ public class PikPakClient
 
     public async Task<Types.FileResponse> ResolveFolder(IEnumerable<string> path)
     {
-        await GetFile("INVALID");
         if (Cache.TryGetValue(string.Join('/', path), out var cachedFileId))
         {
-            var cachedFile = await GetFile("INVALID");
-            if (cachedFile != null && !cachedFile.Trashed) return cachedFile;
+            try
+            {
+                var cachedFile = await GetFile(cachedFileId);
+                if (!cachedFile.Trashed) return cachedFile;
+            }
+            catch (PikPakException e)
+            {
+                if (e.Error.Error != "file_not_found") throw e;
+            }
         }
 
         Types.FileResponse? file = null;
@@ -221,5 +236,39 @@ public class PikPakClient
             throw new Exception("Download failed");
         }
         return await GetFile(task.FileId);
+    }
+
+    public async Task<Link> ImportLink(Anime config, TorrentDirectory.Torrent torrent)
+    {
+        if (torrent.LinkMagnet == null && torrent.LinkTorrent == null)
+            throw new ArgumentNullException(
+                message: $"{nameof(torrent)} does not have LinkMagnet nor LinkTorrent.", null);
+
+        using var scope = Services.CreateScope();
+        using var DbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
+
+        // Download torrent
+        var path = config.Target.Split("/").Where(x => !string.IsNullOrWhiteSpace(x));
+        var file = await DownloadLink((torrent.LinkMagnet ?? torrent.LinkTorrent)!, path);
+        var addr = Flurl.Url.Combine(path.Append(file.Name).ToArray());
+        var linkAddress = string.Format(AccessAddressTemplate, addr);
+
+        // Import items
+        var anime = await ImportBangumiSubject(config.Bangumi);
+        var ep = Regex.Match(torrent.Title, config.Regex).Groups[(int)config.MatchGroup.Ep].Value;
+        var episode = anime.ChildItems
+            ?.FirstOrDefault(i => double.Parse(i.Annotations["https://bgm.tv/ep/:id/sort"]) == double.Parse(ep));
+
+        // Add link
+        var link = new Link
+        {
+            ItemId = episode?.Id ?? anime.Id,
+            Address = new Uri(linkAddress),
+            MimeType = file.MimeType,
+        };
+        DbContext.Link.Add(link);
+        await DbContext.SaveChangesAsync();
+
+        return link;
     }
 }

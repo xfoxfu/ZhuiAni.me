@@ -36,4 +36,4 @@ FetchPageThreshold = 20
 [Modules.PikPak]
 Username = ""
 Password = ""
-AddressPrefix = ""
+AccessAddressTemplate = "{0}"
