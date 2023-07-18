@@ -2,6 +2,7 @@ import { Alert, AlertIcon, AlertDescription, Tag, HStack, Icon, Link, Progress, 
 import React from "react";
 import api from "../../api";
 import { LinkIcon, ViewIcon } from "@chakra-ui/icons";
+import { parse } from "whatwg-mimetype";
 
 export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
   const { data: links, error } = api.itemLink.useGetItemLinks(id);
@@ -25,7 +26,8 @@ export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
                     <LinkIcon />
                     <Text>bgm.tv</Text>
                   </HStack>
-                ) : i.mime_type === "text/html;kind=video" ? (
+                ) : parse(i.mime_type)?.type === "video" ||
+                  parse(i.mime_type)?.parameters.get("kind") === "text/html;kind=video" ? (
                   <ViewIcon />
                 ) : (
                   <Icon />
