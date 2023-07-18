@@ -56,5 +56,7 @@ jobs:
           keep-tags: |
             latest
             main
-          keep-last: 5
+          # multiply keep-last by the number of platforms
+          # see https://github.com/vlaurin/action-ghcr-prune/issues/75
+          keep-last: 20
           prune-untagged: true
