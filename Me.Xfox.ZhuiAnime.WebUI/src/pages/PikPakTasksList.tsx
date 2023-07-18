@@ -69,7 +69,9 @@ export const PikPakTasksList: React.FunctionComponent = () => {
                       {t.bangumi}
                     </Link>
                   </Td>
-                  <Td>{t.target}</Td>
+                  <Td>
+                    <Text whiteSpace="normal">{t.target}</Text>
+                  </Td>
                   <Td>
                     <Text whiteSpace="normal">{t.regex}</Text>
                   </Td>

@@ -95,7 +95,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
     }
   }, [isDirty, setValue, task]);
   const onEscapeRegex = () => {
-    setValue("regex", escape(getValues("regex")));
+    setValue("regex", escape(getValues("regex")), { shouldDirty: true });
   };
 
   return (
