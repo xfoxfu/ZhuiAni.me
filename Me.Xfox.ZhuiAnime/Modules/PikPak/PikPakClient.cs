@@ -247,7 +247,7 @@ public class PikPakClient
         return await GetFile(task.FileId);
     }
 
-    public async Task<Link> ImportLink(Anime config, TorrentDirectory.Torrent torrent, ZAContext db, Item anime)
+    public async Task<Link> ImportLink(PikPakJob config, TorrentDirectory.Torrent torrent, ZAContext db, Item anime)
     {
         var source = (torrent.LinkMagnet ?? torrent.LinkTorrent) ?? throw new ArgumentNullException(
                 message: $"{nameof(torrent)} does not have LinkMagnet nor LinkTorrent.", null);

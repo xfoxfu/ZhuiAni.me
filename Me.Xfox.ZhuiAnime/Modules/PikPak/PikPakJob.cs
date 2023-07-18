@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
-public class Anime
+public class PikPakJob
 {
     public uint Id { get; set; }
 
@@ -26,5 +27,15 @@ public class Anime
         /// </summary>
         /// <returns></returns>
         public uint Ep { get; set; }
+    }
+
+    public class AnimeConfiguration : IEntityTypeConfiguration<PikPakJob>
+    {
+        public void Configure(EntityTypeBuilder<PikPakJob> builder)
+        {
+            builder.ToTable("pikpak_job");
+
+            builder.OwnsOne(a => a.MatchGroup);
+        }
     }
 }

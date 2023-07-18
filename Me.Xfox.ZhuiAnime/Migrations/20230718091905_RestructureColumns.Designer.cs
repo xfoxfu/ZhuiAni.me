@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using Me.Xfox.ZhuiAnime;
-using Me.Xfox.ZhuiAnime.Modules.PikPak;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -15,8 +14,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Me.Xfox.ZhuiAnime.Migrations
 {
     [DbContext(typeof(ZAContext))]
-    [Migration("20230715185334_AddPikPak")]
-    partial class AddPikPak
+    [Migration("20230718091905_RestructureColumns")]
+    partial class RestructureColumns
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -131,7 +130,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     b.ToTable("link", (string)null);
                 });
 
-            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Modules.PikPak.Anime", b =>
+            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Modules.PikPak.PikPakJob", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,14 +143,13 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("bangumi");
 
+                    b.Property<bool>("Enabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("enabled");
+
                     b.Property<DateTimeOffset>("LastFetchedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_fetched_at");
-
-                    b.Property<PikPakJob.MatchGroups>("MatchGroup")
-                        .IsRequired()
-                        .HasColumnType("jsonb")
-                        .HasColumnName("match_group");
 
                     b.Property<string>("Regex")
                         .IsRequired()
@@ -164,9 +162,9 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("target");
 
                     b.HasKey("Id")
-                        .HasName("pk_pik_pak_anime");
+                        .HasName("pk_pikpak_job");
 
-                    b.ToTable("pik_pak_anime", (string)null);
+                    b.ToTable("pikpak_job", (string)null);
                 });
 
             modelBuilder.Entity("Me.Xfox.ZhuiAnime.Modules.TorrentDirectory.Torrent", b =>
@@ -264,6 +262,31 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("ParentLink");
+                });
+
+            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Modules.PikPak.PikPakJob", b =>
+                {
+                    b.OwnsOne("Me.Xfox.ZhuiAnime.Modules.PikPak.PikPakJob+MatchGroups", "MatchGroup", b1 =>
+                        {
+                            b1.Property<long>("PikPakJobId")
+                                .HasColumnType("bigint")
+                                .HasColumnName("id");
+
+                            b1.Property<long>("Ep")
+                                .HasColumnType("bigint")
+                                .HasColumnName("match_group_ep");
+
+                            b1.HasKey("PikPakJobId");
+
+                            b1.ToTable("pikpak_job");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PikPakJobId")
+                                .HasConstraintName("fk_pikpak_job_pikpak_job_id");
+                        });
+
+                    b.Navigation("MatchGroup")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.Category", b =>

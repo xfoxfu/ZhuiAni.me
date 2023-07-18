@@ -22,7 +22,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     bangumi = table.Column<long>(type: "bigint", nullable: false),
                     target = table.Column<string>(type: "text", nullable: false),
                     regex = table.Column<string>(type: "text", nullable: false),
-                    match_group = table.Column<Anime.MatchGroups>(type: "jsonb", nullable: false),
+                    match_group = table.Column<PikPakJob.MatchGroups>(type: "jsonb", nullable: false),
                     last_fetched_at = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

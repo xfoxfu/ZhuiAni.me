@@ -152,7 +152,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_fetched_at");
 
-                    b.Property<Anime.MatchGroups>("MatchGroup")
+                    b.Property<PikPakJob.MatchGroups>("MatchGroup")
                         .IsRequired()
                         .HasColumnType("jsonb")
                         .HasColumnName("match_group");

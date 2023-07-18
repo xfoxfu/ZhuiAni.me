@@ -18,6 +18,32 @@ public class PikPakController : ControllerBase
         Db = db;
     }
 
+    public record AnimeDto(
+        uint Id,
+        uint Bangumi,
+        string Target,
+        string Regex,
+        uint MatchGroupEp,
+        bool Enabled
+    )
+    {
+        public AnimeDto(PikPakJob anime) : this(
+            anime.Id,
+            anime.Bangumi,
+            anime.Target,
+            anime.Regex,
+            anime.MatchGroup.Ep,
+            anime.Enabled
+        )
+        { }
+    }
+
+    [HttpGet("jobs")]
+    public async Task<IEnumerable<AnimeDto>> List()
+    {
+        return await Db.PikPakJob.Select(a => new AnimeDto(a)).ToListAsync();
+    }
+
     public record CreateAnimeDto(
         uint Bangumi,
         string Target,
@@ -25,47 +51,58 @@ public class PikPakController : ControllerBase
         uint MatchGroupEp
     );
 
-    [HttpPost("animes")]
-    public async Task<Anime> Create(CreateAnimeDto req)
+    [HttpPost("jobs")]
+    public async Task<AnimeDto> Create(CreateAnimeDto req)
     {
-        var anime = new Anime
+        var anime = new PikPakJob
         {
             Bangumi = req.Bangumi,
             Target = req.Target,
             Regex = req.Regex,
-            MatchGroup = new Anime.MatchGroups
+            MatchGroup = new PikPakJob.MatchGroups
             {
                 Ep = req.MatchGroupEp
             }
         };
-        Db.PikPakAnime.Add(anime);
+        Db.PikPakJob.Add(anime);
         await Db.SaveChangesAsync();
-        return anime;
+        return new AnimeDto(anime);
     }
 
-    [HttpGet("animes/{id}")]
-    public async Task<Anime> Get(uint id)
+    [HttpGet("jobs/{id}")]
+    public async Task<AnimeDto> Get(uint id)
     {
-        return await Db.PikPakAnime.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
+        return new AnimeDto(
+            await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.")
+        );
     }
 
-    [HttpPost("animes/{id}")]
-    public async Task<Anime> Update(uint id, CreateAnimeDto req)
+    public record UpdateAnimeDto(
+        uint Bangumi,
+        string Target,
+        string Regex,
+        uint MatchGroupEp,
+        bool Enabled
+    );
+
+    [HttpPost("jobs/{id}")]
+    public async Task<AnimeDto> Update(uint id, UpdateAnimeDto req)
     {
-        var anime = await Db.PikPakAnime.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
+        var anime = await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
         anime.Bangumi = req.Bangumi;
         anime.Target = req.Target;
         anime.Regex = req.Regex;
-        anime.MatchGroup.Ep = req.MatchGroupEp;
+        anime.MatchGroup = new PikPakJob.MatchGroups { Ep = req.MatchGroupEp };
+        anime.Enabled = req.Enabled;
         await Db.SaveChangesAsync();
-        return anime;
+        return new AnimeDto(anime);
     }
 
-    [HttpDelete("animes/{id}")]
+    [HttpDelete("jobs/{id}")]
     public async Task Delete(uint id)
     {
-        var anime = await Db.PikPakAnime.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
-        Db.PikPakAnime.Remove(anime);
+        var anime = await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
+        Db.PikPakJob.Remove(anime);
         await Db.SaveChangesAsync();
     }
 }

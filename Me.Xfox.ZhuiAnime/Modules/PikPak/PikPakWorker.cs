@@ -56,7 +56,7 @@ public class PikPakWorker : IHostedService, IDisposable
         using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
         var bangumiService = scope.ServiceProvider.GetRequiredService<BangumiService>();
 
-        var configs = await db.PikPakAnime.Where(a => a.Enabled).ToListAsync();
+        var configs = await db.PikPakJob.Where(a => a.Enabled).ToListAsync();
         foreach (var config in configs)
         {
             Logger.LogInformation("Updating anime {@AnimeId}", config.Id);
