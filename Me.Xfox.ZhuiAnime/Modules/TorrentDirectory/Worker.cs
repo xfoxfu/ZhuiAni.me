@@ -6,14 +6,14 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
 {
     private ILogger<Worker<S>> Logger { get; init; }
     private S Source { get; init; }
-    private IServiceProvider ServiceProvider { get; init; }
+    private IServiceScopeFactory ServiceProvider { get; init; }
     private Timer? Timer { get; set; }
     private IOptionsMonitor<Option> Options { get; set; }
 
     private TimeSpan IntervalBetweenPages => Options.CurrentValue.IntervalBetweenPages;
     private uint FetchPageThreshold => Options.CurrentValue.FetchPageThreshold;
 
-    public Worker(ILogger<Worker<S>> logger, IServiceProvider serviceProvider, IOptionsMonitor<Option> options)
+    public Worker(ILogger<Worker<S>> logger, IServiceScopeFactory serviceProvider, IOptionsMonitor<Option> options)
     {
         Logger = logger;
         ServiceProvider = serviceProvider;

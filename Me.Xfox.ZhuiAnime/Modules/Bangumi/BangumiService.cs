@@ -5,13 +5,13 @@ namespace Me.Xfox.ZhuiAnime.Modules.Bangumi;
 
 public class BangumiService
 {
-    public IServiceProvider Services { get; init; }
-    public Client.BangumiApi BgmApi { get; init; }
+    protected ZAContext DbContext { get; init; }
+    protected Client.BangumiApi BgmApi { get; init; }
 
-    public BangumiService(IServiceProvider services, Client.BangumiApi bgmApi)
+    public BangumiService(Client.BangumiApi bgmApi, ZAContext dbContext)
     {
-        Services = services;
         BgmApi = bgmApi;
+        DbContext = dbContext;
     }
 
     public async Task<uint> ImportSubjectGetId(int id)
@@ -22,9 +22,6 @@ public class BangumiService
 
     public async Task<AppModels.Item> ImportSubject(int id)
     {
-        using var scope = Services.CreateScope();
-        using var DbContext = scope.ServiceProvider.GetRequiredService<ZAContext>();
-
         AppModels.Category category;
         using (var tx = DbContext.Database.BeginTransaction())
         {

@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi;
 using Microsoft.Extensions.Options;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
@@ -9,7 +10,7 @@ public class PikPakWorker : IHostedService, IDisposable
 
     protected IOptionsMonitor<PikPakClient.Option> Options { get; set; }
 
-    protected IServiceProvider Services { get; init; }
+    protected IServiceScopeFactory Services { get; init; }
 
     protected PikPakClient Client { get; init; }
 
@@ -20,7 +21,7 @@ public class PikPakWorker : IHostedService, IDisposable
     public PikPakWorker(
         ILogger<PikPakWorker> logger,
         IOptionsMonitor<PikPakClient.Option> options,
-        IServiceProvider services,
+        IServiceScopeFactory services,
         PikPakClient client)
     {
         Logger = logger;
@@ -53,6 +54,7 @@ public class PikPakWorker : IHostedService, IDisposable
     {
         using var scope = Services.CreateScope();
         using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
+        var bangumiService = scope.ServiceProvider.GetRequiredService<BangumiService>();
 
         var configs = await db.PikPakAnime.Where(a => a.Enabled).ToListAsync();
         foreach (var config in configs)
@@ -68,7 +70,7 @@ public class PikPakWorker : IHostedService, IDisposable
             Models.Item bangumi;
             if (torrents.Count > 0)
             {
-                var imported = await Client.ImportBangumiSubject(config.Bangumi);
+                var imported = await bangumiService.ImportSubject((int)config.Bangumi);
                 bangumi = (await db.Item.FindAsync(imported))!;
             }
             else
@@ -78,7 +80,7 @@ public class PikPakWorker : IHostedService, IDisposable
                         .Include(l => l.Item)
                         .FirstOrDefaultAsync(l => l.Address == uri);
                 bangumi = existing?.Item ??
-                    (await db.Item.FindAsync(await Client.ImportBangumiSubject(config.Bangumi)))!;
+                    (await db.Item.FindAsync(await bangumiService.ImportSubject((int)config.Bangumi)))!;
             }
 
             List<Models.Link> links = new();

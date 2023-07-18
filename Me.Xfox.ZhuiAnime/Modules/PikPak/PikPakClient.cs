@@ -9,15 +9,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
 public class PikPakClient
 {
-    public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
-    {
-        builder.Services.Configure<Option>(builder.Configuration.GetSection(Option.LOCATION));
-        return builder;
-    }
-
     protected IOptionsMonitor<Option> Options { get; init; }
-
-    protected Bangumi.BangumiService Bangumi { get; init; }
 
     protected ILogger<PikPakClient> Logger { get; init; }
 
@@ -33,10 +25,9 @@ public class PikPakClient
 
     protected TimeSpan FolderCacheDuration { get; set; } = TimeSpan.FromMinutes(5);
 
-    public PikPakClient(IOptionsMonitor<Option> options, Bangumi.BangumiService bangumi, ILogger<PikPakClient> logger)
+    public PikPakClient(IOptionsMonitor<Option> options, ILogger<PikPakClient> logger)
     {
         Options = options;
-        Bangumi = bangumi;
         AuthClient = new FlurlClient("https://user.mypikpak.com/v1")
             .WithHeader("User-Agent", "")
             .UsePikPakExceptionHandler();
@@ -57,12 +48,6 @@ public class PikPakClient
         public required string AccessAddressTemplate { get; set; }
 
         public required TimeSpan IntervalBetweenFetch { get; set; }
-    }
-
-    public async Task<uint> ImportBangumiSubject(uint id)
-    {
-        Logger.LogInformation("Importing Bangumi subject {Id}", id);
-        return await Bangumi.ImportSubjectGetId((int)id);
     }
 
     #region API
