@@ -11,10 +11,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Docker setup QEMU
-        uses: docker/setup-qemu-action@v2
-      
+
       - name: Docker setup Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -35,7 +32,7 @@ jobs:
             latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
             type=ref,event=branch
             type=semver,pattern={{raw}}
-            type=sha,enable=true,priority=100,prefix=,suffix=,format=short
+            type=sha,enable=true,priority=100,prefix=commit-,suffix=,format=short
 
       - name: Publish images
         uses: docker/build-push-action@v4
@@ -45,3 +42,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           platforms: linux/amd64,linux/arm64
           push: true
+
+      - name: Prune old packages
+        uses: vlaurin/action-ghcr-prune@v0.5.0
+        with:
+          dry-run: false
+          token: ${{ secrets.PACKAGE_TOKEN }}
+          container: "zhuianime"
+          keep-tags-regexes: ^v(.)*
+          prune-tags-regexes: (commit-)?^[0-9a-f]{6,40}
+          keep-tags: |
+            latest
+            main
+          keep-last: 5
+          prune-untagged: true
