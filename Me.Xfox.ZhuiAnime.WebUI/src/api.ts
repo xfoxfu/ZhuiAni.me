@@ -9,16 +9,16 @@
  * ---------------------------------------------------------------
  */
 
-export interface Anime {
+export interface AnimeDto {
   /** @format int32 */
   id: number;
   /** @format int32 */
   bangumi: number;
   target: string;
   regex: string;
-  match_group: MatchGroups;
-  /** @format date-time */
-  last_fetched_at: string;
+  /** @format int32 */
+  match_group_ep: number;
+  enabled: boolean;
 }
 
 /** Category information. */
@@ -135,14 +135,6 @@ export interface LinkDto {
   parent_link_id?: number | null;
 }
 
-export interface MatchGroups {
-  /**
-   * `0` means disabled.
-   * @format int32
-   */
-  ep: number;
-}
-
 export interface TorrentDto {
   /** @format int32 */
   id: number;
@@ -153,6 +145,16 @@ export interface TorrentDto {
   published_at: string;
   link_torrent?: string | null;
   link_magnet?: string | null;
+}
+
+export interface UpdateAnimeDto {
+  /** @format int32 */
+  bangumi: number;
+  target: string;
+  regex: string;
+  /** @format int32 */
+  match_group_ep: number;
+  enabled: boolean;
 }
 
 export interface UpdateItemDto {
@@ -282,7 +284,7 @@ export class HttpClient<SecurityDataType = unknown> {
             ? property
             : typeof property === "object" && property !== null
             ? JSON.stringify(property)
-            : `${property}`,
+            : `${property}`
         );
         return formData;
       }, new FormData()),
@@ -425,7 +427,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         someBool?: boolean;
       },
-      params: RequestParams = {},
+      params: RequestParams = {}
     ) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
@@ -447,7 +449,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       options?: SWRConfiguration,
-      doFetch: boolean = true,
+      doFetch: boolean = true
     ) => useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? [`/api/categories`, query] : null, options),
 
     /**
@@ -463,7 +465,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       data?: CategoryDto[] | Promise<CategoryDto[]>,
-      options?: MutatorOptions,
+      options?: MutatorOptions
     ) => mutate<CategoryDto[]>([`/api/categories`, query], data, options),
 
     /**
@@ -888,29 +890,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name PostModulesPikpakAnimes
-     * @request POST:/api/modules/pikpak/animes
+     * @name GetModulesPikpakJobs
+     * @request GET:/api/modules/pikpak/jobs
      */
-    postModulesPikpakAnimes: (data: CreateAnimeDto, params: RequestParams = {}) =>
-      this.request<Anime, ErrorProdResponse>({
-        path: `/api/modules/pikpak/animes`,
-        method: "POST",
-        body: data,
-        type: ContentType.Json,
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
-     * @tags PikPak
-     * @name GetModulesPikpakAnime
-     * @request GET:/api/modules/pikpak/animes/{id}
-     */
-    getModulesPikpakAnime: (id: number, params: RequestParams = {}) =>
-      this.request<Anime, ErrorProdResponse>({
-        path: `/api/modules/pikpak/animes/${id}`,
+    getModulesPikpakJobs: (params: RequestParams = {}) =>
+      this.request<AnimeDto[], ErrorProdResponse>({
+        path: `/api/modules/pikpak/jobs`,
         method: "GET",
         format: "json",
         ...params,
@@ -919,32 +904,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakAnime
-     * @request GET:/api/modules/pikpak/animes/{id}
+     * @name GetModulesPikpakJobs
+     * @request GET:/api/modules/pikpak/jobs
      */
-    useGetModulesPikpakAnime: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<Anime, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/animes/${id}` : null, options),
+    useGetModulesPikpakJobs: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<AnimeDto[], ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs` : null, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakAnime
-     * @request GET:/api/modules/pikpak/animes/{id}
+     * @name GetModulesPikpakJobs
+     * @request GET:/api/modules/pikpak/jobs
      */
-    mutateGetModulesPikpakAnime: (id: number, data?: Anime | Promise<Anime>, options?: MutatorOptions) =>
-      mutate<Anime>(`/api/modules/pikpak/animes/${id}`, data, options),
+    mutateGetModulesPikpakJobs: (data?: AnimeDto[] | Promise<AnimeDto[]>, options?: MutatorOptions) =>
+      mutate<AnimeDto[]>(`/api/modules/pikpak/jobs`, data, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name PostModulesPikpakAnime
-     * @request POST:/api/modules/pikpak/animes/{id}
+     * @name PostModulesPikpakJobs
+     * @request POST:/api/modules/pikpak/jobs
      */
-    postModulesPikpakAnime: (id: number, data: CreateAnimeDto, params: RequestParams = {}) =>
-      this.request<Anime, ErrorProdResponse>({
-        path: `/api/modules/pikpak/animes/${id}`,
+    postModulesPikpakJobs: (data: CreateAnimeDto, params: RequestParams = {}) =>
+      this.request<AnimeDto, ErrorProdResponse>({
+        path: `/api/modules/pikpak/jobs`,
         method: "POST",
         body: data,
         type: ContentType.Json,
@@ -956,12 +941,63 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name DeleteModulesPikpakAnime
-     * @request DELETE:/api/modules/pikpak/animes/{id}
+     * @name GetModulesPikpakJob
+     * @request GET:/api/modules/pikpak/jobs/{id}
      */
-    deleteModulesPikpakAnime: (id: number, params: RequestParams = {}) =>
+    getModulesPikpakJob: (id: number, params: RequestParams = {}) =>
+      this.request<AnimeDto, ErrorProdResponse>({
+        path: `/api/modules/pikpak/jobs/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name GetModulesPikpakJob
+     * @request GET:/api/modules/pikpak/jobs/{id}
+     */
+    useGetModulesPikpakJob: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<AnimeDto, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name GetModulesPikpakJob
+     * @request GET:/api/modules/pikpak/jobs/{id}
+     */
+    mutateGetModulesPikpakJob: (id: number, data?: AnimeDto | Promise<AnimeDto>, options?: MutatorOptions) =>
+      mutate<AnimeDto>(`/api/modules/pikpak/jobs/${id}`, data, options),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PostModulesPikpakJob
+     * @request POST:/api/modules/pikpak/jobs/{id}
+     */
+    postModulesPikpakJob: (id: number, data: UpdateAnimeDto, params: RequestParams = {}) =>
+      this.request<AnimeDto, ErrorProdResponse>({
+        path: `/api/modules/pikpak/jobs/${id}`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name DeleteModulesPikpakJob
+     * @request DELETE:/api/modules/pikpak/jobs/{id}
+     */
+    deleteModulesPikpakJob: (id: number, params: RequestParams = {}) =>
       this.request<void, ErrorProdResponse>({
-        path: `/api/modules/pikpak/animes/${id}`,
+        path: `/api/modules/pikpak/jobs/${id}`,
         method: "DELETE",
         ...params,
       }),
@@ -982,7 +1018,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         /** @format date-time */
         until?: string;
       },
-      params: RequestParams = {},
+      params: RequestParams = {}
     ) =>
       this.request<TorrentDto[], ErrorProdResponse>({
         path: `/api/modules/torrent_directory/torrents`,
@@ -1007,11 +1043,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         until?: string;
       },
       options?: SWRConfiguration,
-      doFetch: boolean = true,
+      doFetch: boolean = true
     ) =>
       useSWR<TorrentDto[], ErrorProdResponse>(
         doFetch ? [`/api/modules/torrent_directory/torrents`, query] : null,
-        options,
+        options
       ),
 
     /**
@@ -1030,7 +1066,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         until?: string;
       },
       data?: TorrentDto[] | Promise<TorrentDto[]>,
-      options?: MutatorOptions,
+      options?: MutatorOptions
     ) => mutate<TorrentDto[]>([`/api/modules/torrent_directory/torrents`, query], data, options),
 
     /**
@@ -1058,6 +1094,7 @@ export const fetcher = async (arg: string | [string, Record<string, unknown>?]) 
     .request({ path, query })
     .then((res) => res.json())
     .catch(async (err) => {
-      throw await err.json();
+      if (err.json) throw await err.json();
+      throw err;
     });
 };

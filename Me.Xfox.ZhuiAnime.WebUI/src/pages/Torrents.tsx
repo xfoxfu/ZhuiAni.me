@@ -10,12 +10,22 @@ import {
   InputGroup,
   InputLeftElement,
   Tooltip,
+  Icon,
+  IconButton,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import Api, { ApiError, TorrentDto } from "../api";
-import { CopyIcon, LinkIcon, SearchIcon } from "@chakra-ui/icons";
 import { useCopyToClipboard, useDebounce } from "usehooks-ts";
 import useSWRInfinite from "swr/infinite";
+import {
+  IoMagnetOutline,
+  IoCopyOutline,
+  IoSearchOutline,
+  IoShareSocialOutline,
+  IoCodeDownloadOutline,
+  IoDownloadOutline,
+} from "react-icons/io5";
+
 export const TorrentsList: React.FunctionComponent = () => {
   const [rawQuery, setQuery] = useState("");
   const query = useDebounce(rawQuery, 300);
@@ -62,7 +72,7 @@ export const TorrentsList: React.FunctionComponent = () => {
         )}
         <InputGroup>
           <InputLeftElement pointerEvents="none">
-            <SearchIcon color="gray.300" />
+            <Icon color="gray.300" as={IoSearchOutline} />
           </InputLeftElement>
           <Input placeholder="Query (regexp)" onChange={(e) => setQuery(e.target.value)} />
         </InputGroup>
@@ -71,23 +81,28 @@ export const TorrentsList: React.FunctionComponent = () => {
             {a.link_torrent && (
               <a href={a.link_torrent} target="_blank" rel="noreferrer">
                 <Tooltip label={a.link_torrent} placement="top">
-                  <Button variant="solid" colorScheme="teal" size="xs">
-                    <LinkIcon />
-                  </Button>
+                  <IconButton
+                    variant="solid"
+                    colorScheme="teal"
+                    size="sm"
+                    fontSize="1.125rem"
+                    icon={<IoDownloadOutline />}
+                    aria-label="Download"
+                  />
                 </Tooltip>
               </a>
             )}
             {a.link_magnet && (
               <Tooltip label={a.link_magnet} placement="top">
-                <Button
+                <IconButton
                   variant="solid"
                   colorScheme="teal"
-                  size="xs"
-                  // eslint-disable-next-line @typescript-eslint/no-misused-promises
-                  onClick={() => copy(a.link_magnet ?? "")}
-                >
-                  <CopyIcon />
-                </Button>
+                  size="sm"
+                  fontSize="1.125rem"
+                  onClick={() => void copy(a.link_magnet ?? "")}
+                  icon={<IoMagnetOutline />}
+                  aria-label="Copy Magnet link"
+                />
               </Tooltip>
             )}
             <Heading as="h3" size="sm" noOfLines={1}>
@@ -95,8 +110,13 @@ export const TorrentsList: React.FunctionComponent = () => {
             </Heading>
           </HStack>
         ))}
-        {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-        <Button variant="solid" colorScheme="teal" size="xs" onClick={() => setSize(size + 1)} disabled={isLoading}>
+        <Button
+          variant="solid"
+          colorScheme="teal"
+          size="xs"
+          onClick={() => void setSize(size + 1)}
+          disabled={isLoading}
+        >
           Load More
         </Button>
       </Stack>

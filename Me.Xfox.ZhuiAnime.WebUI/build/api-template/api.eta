@@ -11,6 +11,7 @@ export const fetcher = async (arg: string | [string, Record<string, unknown>?]) 
     .request({ path, query })
     .then((res) => res.json())
     .catch(async (err) => {
-      throw await err.json();
+      if (err.json) throw await err.json();
+      throw err;
     });
 };
