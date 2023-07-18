@@ -17,11 +17,12 @@ import {
   HStack,
   Tag,
   Text,
+  Wrap,
 } from "@chakra-ui/react";
 import React from "react";
 import Api from "../api";
 import { Edit } from "../components/pikpak/Edit";
-import { IoCheckmarkCircleOutline, IoCloseCircleOutline } from "react-icons/io5";
+import { IoCheckmarkCircleOutline, IoCloseCircleOutline, IoCloudOfflineOutline, IoSyncOutline } from "react-icons/io5";
 
 export const PikPakTasksList: React.FunctionComponent = () => {
   const { data: tasks, error } = Api.pikPak.useGetModulesPikpakJobs();
@@ -56,7 +57,11 @@ export const PikPakTasksList: React.FunctionComponent = () => {
                   <Td>
                     <HStack>
                       <Text>{t.id}</Text>
-                      {t.enabled ? <Icon as={IoCheckmarkCircleOutline} /> : <Icon as={IoCloseCircleOutline} />}
+                      {t.enabled ? (
+                        <Icon as={IoSyncOutline} color="green.500" />
+                      ) : (
+                        <Icon as={IoCloudOfflineOutline} color="orange.500" />
+                      )}
                     </HStack>
                   </Td>
                   <Td>
@@ -65,7 +70,9 @@ export const PikPakTasksList: React.FunctionComponent = () => {
                     </Link>
                   </Td>
                   <Td>{t.target}</Td>
-                  <Td>{t.regex}</Td>
+                  <Td>
+                    <Text whiteSpace="normal">{t.regex}</Text>
+                  </Td>
                   <Td>
                     <Edit id={t.id} />
                   </Td>

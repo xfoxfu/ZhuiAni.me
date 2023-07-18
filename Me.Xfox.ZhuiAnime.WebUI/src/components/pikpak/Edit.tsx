@@ -20,6 +20,7 @@ import {
   InputRightAddon,
   InputGroup,
   InputRightElement,
+  Textarea,
 } from "@chakra-ui/react";
 import React, { useEffect } from "react";
 import { IoCodeWorkingOutline, IoCreateOutline } from "react-icons/io5";
@@ -127,7 +128,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
               <FormControl isInvalid={!!formErrs.regex}>
                 <FormLabel>RegExp</FormLabel>
                 <InputGroup>
-                  <Input {...register("regex", { required: true })} />
+                  <Textarea {...register("regex", { required: true })} />
                   <InputRightElement>
                     <IconButton
                       icon={<IoCodeWorkingOutline />}
