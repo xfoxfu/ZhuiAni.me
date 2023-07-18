@@ -3,8 +3,7 @@ name: Container
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    tags: ["v*"]
 
 jobs:
   build:
@@ -44,5 +43,5 @@ jobs:
           context: .
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: true

@@ -1,4 +1,6 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+
+ARG TARGETARCH
 
 RUN apt update && \
     apt install -y wget && \
@@ -8,11 +10,17 @@ RUN apt update && \
 
 RUN npm i -g pnpm
 
-COPY [".", "/src/"]
+COPY "Me.Xfox.ZhuiAnime.sln" "/src/"
+COPY "Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj" "/src/Me.Xfox.ZhuiAnime/"
+COPY "Me.Xfox.ZhuiAnime/packages.lock.json" "/src/Me.Xfox.ZhuiAnime/"
+COPY "Me.Xfox.ZhuiAnime.WebUI/package.json" "/src/Me.Xfox.ZhuiAnime.WebUI/"
+COPY "Me.Xfox.ZhuiAnime.WebUI/pnpm-lock.yaml" "/src/Me.Xfox.ZhuiAnime.WebUI/"
 WORKDIR "/src"
-RUN dotnet restore "Me.Xfox.ZhuiAnime"
-RUN dotnet build "Me.Xfox.ZhuiAnime" -c Release --no-restore
-RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish -r linux-x64 --no-self-contained
+RUN dotnet restore "Me.Xfox.ZhuiAnime" --locked-mode -a $TARGETARCH
+
+COPY "." "/src/"
+RUN dotnet build "Me.Xfox.ZhuiAnime" -c Release --no-self-contained --no-restore -a $TARGETARCH
+RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish --no-self-contained  --no-restore -a $TARGETARCH
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
 WORKDIR /app
