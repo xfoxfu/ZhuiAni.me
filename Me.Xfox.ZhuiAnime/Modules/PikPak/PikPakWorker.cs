@@ -71,7 +71,7 @@ public class PikPakWorker : IHostedService, IDisposable
             if (torrents.Count > 0)
             {
                 var imported = await bangumiService.ImportSubject((int)config.Bangumi);
-                bangumi = (await db.Item.FindAsync(imported))!;
+                bangumi = (await db.Item.FindAsync(imported.Id))!;
             }
             else
             {
