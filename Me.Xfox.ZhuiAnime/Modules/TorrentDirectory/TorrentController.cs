@@ -36,7 +36,8 @@ public class TorrentController : ControllerBase
         var linq = DbContext.Torrent.AsQueryable();
         if (!string.IsNullOrWhiteSpace(query))
         {
-            linq = linq.Where(t => Regex.IsMatch(t.Title, query, RegexOptions.IgnoreCase));
+            DbContext.Database.SetCommandTimeout(TimeSpan.FromSeconds(10));
+            linq = linq.Where(t => Regex.IsMatch(t.Title, query, RegexOptions.IgnoreCase | RegexOptions.NonBacktracking));
         }
         if (until != null)
         {
