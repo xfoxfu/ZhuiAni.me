@@ -63,7 +63,7 @@ public class ItemController : ControllerBase
     {
         return await DbContext.Item
             .Where(i => i.ParentItemId == null)
-            .OrderByDescending(a => a.Id)
+            .OrderByDescending(x => x.UpdatedAt)
             .Select(i => new ItemDto(i))
             .ToListAsync();
     }

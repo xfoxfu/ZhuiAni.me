@@ -97,6 +97,7 @@ public class PikPakWorker : IHostedService, IDisposable
                 using var tx = db.Database.BeginTransaction();
                 db.Link.AddRange(links);
                 config.LastFetchedAt = torrents.Select(t => t.PublishedAt).Max();
+                bangumi.UpdatedAt = DateTimeOffset.Now;
                 await db.SaveChangesAsync();
                 await tx.CommitAsync();
             }

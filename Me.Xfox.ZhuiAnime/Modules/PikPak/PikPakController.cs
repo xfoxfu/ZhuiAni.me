@@ -24,7 +24,8 @@ public class PikPakController : ControllerBase
         string Target,
         string Regex,
         uint MatchGroupEp,
-        bool Enabled
+        bool Enabled,
+        DateTimeOffset LastFetchedAt
     )
     {
         public AnimeDto(PikPakJob anime) : this(
@@ -33,7 +34,8 @@ public class PikPakController : ControllerBase
             anime.Target,
             anime.Regex,
             anime.MatchGroup.Ep,
-            anime.Enabled
+            anime.Enabled,
+            anime.LastFetchedAt
         )
         { }
     }
@@ -41,7 +43,10 @@ public class PikPakController : ControllerBase
     [HttpGet("jobs")]
     public async Task<IEnumerable<AnimeDto>> List()
     {
-        return await Db.PikPakJob.Select(a => new AnimeDto(a)).ToListAsync();
+        return await Db.PikPakJob
+            .OrderByDescending(x => x.LastFetchedAt)
+            .Select(a => new AnimeDto(a))
+            .ToListAsync();
     }
 
     public record CreateAnimeDto(
