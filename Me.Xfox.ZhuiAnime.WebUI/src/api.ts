@@ -284,7 +284,7 @@ export class HttpClient<SecurityDataType = unknown> {
             ? property
             : typeof property === "object" && property !== null
             ? JSON.stringify(property)
-            : `${property}`
+            : `${property}`,
         );
         return formData;
       }, new FormData()),
@@ -427,7 +427,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       query?: {
         someBool?: boolean;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
@@ -449,7 +449,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       options?: SWRConfiguration,
-      doFetch: boolean = true
+      doFetch: boolean = true,
     ) => useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? [`/api/categories`, query] : null, options),
 
     /**
@@ -465,7 +465,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         someBool?: boolean;
       },
       data?: CategoryDto[] | Promise<CategoryDto[]>,
-      options?: MutatorOptions
+      options?: MutatorOptions,
     ) => mutate<CategoryDto[]>([`/api/categories`, query], data, options),
 
     /**
@@ -1018,7 +1018,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         /** @format date-time */
         until?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<TorrentDto[], ErrorProdResponse>({
         path: `/api/modules/torrent_directory/torrents`,
@@ -1043,11 +1043,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         until?: string;
       },
       options?: SWRConfiguration,
-      doFetch: boolean = true
+      doFetch: boolean = true,
     ) =>
       useSWR<TorrentDto[], ErrorProdResponse>(
         doFetch ? [`/api/modules/torrent_directory/torrents`, query] : null,
-        options
+        options,
       ),
 
     /**
@@ -1066,7 +1066,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         until?: string;
       },
       data?: TorrentDto[] | Promise<TorrentDto[]>,
-      options?: MutatorOptions
+      options?: MutatorOptions,
     ) => mutate<TorrentDto[]>([`/api/modules/torrent_directory/torrents`, query], data, options),
 
     /**

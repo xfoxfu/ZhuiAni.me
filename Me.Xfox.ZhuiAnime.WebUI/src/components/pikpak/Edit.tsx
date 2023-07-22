@@ -17,7 +17,6 @@ import {
   Switch,
   FormErrorMessage,
   useToast,
-  InputRightAddon,
   InputGroup,
   InputRightElement,
   Textarea,

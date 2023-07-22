@@ -18,5 +18,5 @@ root.render(
         </BrowserRouter>
       </SWRConfig>
     </ChakraProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

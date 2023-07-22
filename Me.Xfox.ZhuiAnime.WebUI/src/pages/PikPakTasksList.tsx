@@ -12,17 +12,14 @@ import {
   Thead,
   Tr,
   Link,
-  Button,
   Icon,
   HStack,
-  Tag,
   Text,
-  Wrap,
 } from "@chakra-ui/react";
 import React from "react";
 import Api from "../api";
 import { Edit } from "../components/pikpak/Edit";
-import { IoCheckmarkCircleOutline, IoCloseCircleOutline, IoCloudOfflineOutline, IoSyncOutline } from "react-icons/io5";
+import { IoCloudOfflineOutline, IoSyncOutline } from "react-icons/io5";
 
 export const PikPakTasksList: React.FunctionComponent = () => {
   const { data: tasks, error } = Api.pikPak.useGetModulesPikpakJobs();
