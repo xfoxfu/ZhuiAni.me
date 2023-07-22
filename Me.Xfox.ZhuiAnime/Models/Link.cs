@@ -25,6 +25,10 @@ public class Link
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Link>? ChildLinks { get; set; }
 
+    public DateTimeOffset CreatedAt { get; set; }
+
+    public DateTimeOffset UpdatedAt { get; set; }
+
     public class LinkConfiguration : IEntityTypeConfiguration<Link>
     {
         public void Configure(EntityTypeBuilder<Link> builder)
@@ -38,6 +42,13 @@ public class Link
 
             builder.Property(e => e.Annotations)
                 .HasColumnType("jsonb");
+
+            builder.Property(x => x.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.Property(x => x.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .ValueGeneratedOnUpdate();
         }
     }
 

@@ -39,7 +39,7 @@ public class CategoryController : ControllerBase
     /// </summary>
     /// <returns>List of categories.</returns>
     [HttpGet]
-    public async Task<IEnumerable<CategoryDto>> ListAsync([FromQuery] bool someBool)
+    public async Task<IEnumerable<CategoryDto>> ListAsync()
     {
         return await DbContext.Category
             .OrderBy(a => a.Id)
@@ -70,11 +70,8 @@ public class CategoryController : ControllerBase
 
     protected async Task<Category> LoadCategory(uint id)
     {
-        var category = await DbContext.Category.FindAsync(id);
-        if (category == null)
-        {
+        var category = await DbContext.Category.FindAsync(id) ??
             throw new ZhuiAnimeError.CategoryNotFound(id);
-        }
         return category;
     }
 
