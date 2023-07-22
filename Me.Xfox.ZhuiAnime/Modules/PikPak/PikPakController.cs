@@ -18,7 +18,7 @@ public class PikPakController : ControllerBase
         Db = db;
     }
 
-    public record AnimeDto(
+    public record JobDto(
         uint Id,
         uint Bangumi,
         string Target,
@@ -28,7 +28,7 @@ public class PikPakController : ControllerBase
         DateTimeOffset LastFetchedAt
     )
     {
-        public AnimeDto(PikPakJob anime) : this(
+        public JobDto(PikPakJob anime) : this(
             anime.Id,
             anime.Bangumi,
             anime.Target,
@@ -41,15 +41,15 @@ public class PikPakController : ControllerBase
     }
 
     [HttpGet("jobs")]
-    public async Task<IEnumerable<AnimeDto>> List()
+    public async Task<IEnumerable<JobDto>> List()
     {
         return await Db.PikPakJob
             .OrderByDescending(x => x.LastFetchedAt)
-            .Select(a => new AnimeDto(a))
+            .Select(a => new JobDto(a))
             .ToListAsync();
     }
 
-    public record CreateAnimeDto(
+    public record CreateJobDto(
         uint Bangumi,
         string Target,
         string Regex,
@@ -57,7 +57,7 @@ public class PikPakController : ControllerBase
     );
 
     [HttpPost("jobs")]
-    public async Task<AnimeDto> Create(CreateAnimeDto req)
+    public async Task<JobDto> Create(CreateJobDto req)
     {
         var anime = new PikPakJob
         {
@@ -71,18 +71,19 @@ public class PikPakController : ControllerBase
         };
         Db.PikPakJob.Add(anime);
         await Db.SaveChangesAsync();
-        return new AnimeDto(anime);
+        return new JobDto(anime);
     }
 
     [HttpGet("jobs/{id}")]
-    public async Task<AnimeDto> Get(uint id)
+    public async Task<JobDto> Get(uint id)
     {
-        return new AnimeDto(
-            await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.")
+        return new JobDto(
+            await Db.PikPakJob.FindAsync(id) ??
+                throw new ZhuiAnimeError.PikPakJobNotFound(id)
         );
     }
 
-    public record UpdateAnimeDto(
+    public record UpdateJobDto(
         uint Bangumi,
         string Target,
         string Regex,
@@ -91,22 +92,24 @@ public class PikPakController : ControllerBase
     );
 
     [HttpPost("jobs/{id}")]
-    public async Task<AnimeDto> Update(uint id, UpdateAnimeDto req)
+    public async Task<JobDto> Update(uint id, UpdateJobDto req)
     {
-        var anime = await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
+        var anime = await Db.PikPakJob.FindAsync(id) ??
+            throw new ZhuiAnimeError.PikPakJobNotFound(id);
         anime.Bangumi = req.Bangumi;
         anime.Target = req.Target;
         anime.Regex = req.Regex;
         anime.MatchGroup = new PikPakJob.MatchGroups { Ep = req.MatchGroupEp };
         anime.Enabled = req.Enabled;
         await Db.SaveChangesAsync();
-        return new AnimeDto(anime);
+        return new JobDto(anime);
     }
 
     [HttpDelete("jobs/{id}")]
     public async Task Delete(uint id)
     {
-        var anime = await Db.PikPakJob.FindAsync(id) ?? throw new Exception($"Anime {id} not found.");
+        var anime = await Db.PikPakJob.FindAsync(id) ??
+            throw new ZhuiAnimeError.PikPakJobNotFound(id);
         Db.PikPakJob.Remove(anime);
         await Db.SaveChangesAsync();
     }

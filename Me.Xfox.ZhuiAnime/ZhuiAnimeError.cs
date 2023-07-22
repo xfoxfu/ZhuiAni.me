@@ -207,4 +207,15 @@ public class ZhuiAnimeError : Exception
             ExtraData.Add("link_id", id);
         }
     }
+
+    public class PikPakJobNotFound : ZhuiAnimeError
+    {
+        public PikPakJobNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "PIKPAK_JOB_NOT_FOUND",
+            $"PikPak job {id} not found.")
+        {
+            ExtraData.Add("pikpak_job_id", id);
+        }
+    }
 }
