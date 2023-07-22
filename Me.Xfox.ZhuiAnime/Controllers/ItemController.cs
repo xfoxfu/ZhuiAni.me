@@ -26,12 +26,16 @@ public class ItemController : ControllerBase
     /// <param name="Title">original title of the item</param>
     /// <param name="Annotations">additional information</param>
     /// <param name="ParentItemId">the id of the parent item, if this item belongs to a parent item</param>
+    /// <param name="CreatedAt">created time</param>
+    /// <param name="UpdatedAt">last updated time</param>
     public record ItemDto(
         uint Id,
         uint CategoryId,
         string Title,
         IDictionary<string, string> Annotations,
-        uint? ParentItemId
+        uint? ParentItemId,
+        DateTimeOffset CreatedAt,
+        DateTimeOffset UpdatedAt
     )
     {
         public ItemDto(Item item) : this(
@@ -39,7 +43,9 @@ public class ItemController : ControllerBase
             item.CategoryId,
             item.Title,
             item.Annotations,
-            item.ParentItemId)
+            item.ParentItemId,
+            item.CreatedAt,
+            item.UpdatedAt)
         {
         }
     }

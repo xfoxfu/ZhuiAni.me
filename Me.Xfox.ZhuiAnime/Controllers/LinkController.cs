@@ -27,13 +27,17 @@ public class ItemLinkController : ControllerBase
     /// <param name="MimeType">the MIME type of the target of this link</param>
     /// <param name="Annotations">extra information for this link</param>
     /// <param name="ParentLinkId">id of parent link, if exists</param>
+    /// <param name="CreatedAt">created time</param>
+    /// <param name="UpdatedAt">last updated time</param>
     public record LinkDto(
         uint Id,
         uint ItemId,
         Uri Address,
         string MimeType,
         IDictionary<string, string> Annotations,
-        uint? ParentLinkId
+        uint? ParentLinkId,
+        DateTimeOffset CreatedAt,
+        DateTimeOffset UpdatedAt
     )
     {
         public LinkDto(Link link) : this(
@@ -42,7 +46,9 @@ public class ItemLinkController : ControllerBase
             link.Address,
             link.MimeType,
             link.Annotations,
-            link.ParentLinkId)
+            link.ParentLinkId,
+            link.CreatedAt,
+            link.UpdatedAt)
         {
         }
     }

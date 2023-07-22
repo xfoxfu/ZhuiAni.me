@@ -24,12 +24,20 @@ public class CategoryController : ControllerBase
     /// </summary>
     /// <param name="Id">id</param>
     /// <param name="Title">user-friendly name</param>
+    /// <param name="CreatedAt">created time</param>
+    /// <param name="UpdatedAt">last updated time</param>
     public record CategoryDto(
         uint Id,
-        string Title
+        string Title,
+        DateTimeOffset CreatedAt,
+        DateTimeOffset UpdatedAt
     )
     {
-        public CategoryDto(Category category) : this(category.Id, category.Title)
+        public CategoryDto(Category category) : this(
+            category.Id,
+            category.Title,
+            category.CreatedAt,
+            category.UpdatedAt)
         {
         }
     }
