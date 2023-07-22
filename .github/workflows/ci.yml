@@ -95,6 +95,9 @@ jobs:
 
   webui:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Me.Xfox.ZhuiAnime.WebUI
     steps:
       - uses: actions/checkout@v3
 
