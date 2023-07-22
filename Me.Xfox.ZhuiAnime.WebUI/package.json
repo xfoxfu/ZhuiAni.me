@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "format": "prettier --write 'src/**/*.{ts,tsx}'",
+    "format": "prettier --ignore-unknown --write 'src/**/*'",
     "build-api": "swagger-typescript-api -p http://localhost:5000/api/swagger/v1/swagger.json -t build/api-template -o src -n api.ts --module-name-first-tag"
   },
   "dependencies": {
