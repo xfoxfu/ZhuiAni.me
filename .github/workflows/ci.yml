@@ -51,35 +51,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      - name: install Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+        with: { version: 8 }
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
-      - name: get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - name: setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-      - name: install dotnet
-        uses: actions/setup-dotnet@v2
+          cache: "pnpm"
+          cache-dependency-path: "Me.Xfox.ZhuiAnime.WebUI/pnpm-lock.yaml"
+      - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "7.0.x"
+          cache: true
+          cache-dependency-path: "Me.Xfox.ZhuiAnime/packages.lock.json"
 
       - name: restore dependencies
-        run: dotnet restore
+        run: dotnet restore --locked-mode
 
       - name: build
         run: dotnet build -c Release --no-restore
@@ -87,7 +73,7 @@ jobs:
         run: dotnet test -c Release --no-build --verbosity normal
 
       - name: publish
-        run: dotnet publish -c Release
+        run: dotnet publish -c Release --no-restore
       - name: upload
         uses: actions/upload-artifact@v3
         with:
@@ -101,28 +87,13 @@ jobs:
         working-directory: Me.Xfox.ZhuiAnime.WebUI
     steps:
       - uses: actions/checkout@v3
-
-      - name: install Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+        with: { version: 8 }
+      - uses: actions/setup-node@v3
         with:
           node-version: 18
-      - name: install pnpm
-        uses: pnpm/action-setup@v2
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
-      - name: get pnpm store directory
-        id: pnpm-cache
-        run: |
-          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - name: setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: "pnpm"
+          cache-dependency-path: "Me.Xfox.ZhuiAnime.WebUI/pnpm-lock.yaml"
 
       - name: install dependencies
         run: pnpm install --frozen-lockfile
@@ -146,9 +117,9 @@ jobs:
         env:
           API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN_INFRA }}
         with:
-          source_file: 'release.json'
-          destination_repo: 'xfoxfu/infra'
-          destination_folder: ''
-          user_email: 'gitops@noha.dev'
-          user_name: 'Noha GitOps'
-          commit_message: 'Upgrade ZhuiAni.me to ${{ env.RELEASE_VERSION }}'
+          source_file: "release.json"
+          destination_repo: "xfoxfu/infra"
+          destination_folder: ""
+          user_email: "gitops@noha.dev"
+          user_name: "Noha GitOps"
+          commit_message: "Upgrade ZhuiAni.me to ${{ env.RELEASE_VERSION }}"

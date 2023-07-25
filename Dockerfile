@@ -5,10 +5,9 @@ ARG TARGETARCH
 RUN apt update && \
     apt install -y wget && \
     apt install -y gnupg2 && \
-    wget -qO- https://deb.nodesource.com/setup_20.x | bash - && \
-    apt install -y build-essential nodejs
-
-RUN npm i -g pnpm
+    wget -qO- https://deb.nodesource.com/setup_18.x | bash - && \
+    apt install -y build-essential nodejs && \
+    npm install -g pnpm
 
 COPY "Me.Xfox.ZhuiAnime.sln" "/src/"
 COPY "Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj" "/src/Me.Xfox.ZhuiAnime/"
