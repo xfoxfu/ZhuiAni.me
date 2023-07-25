@@ -13,12 +13,12 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '36 10 * * 6'
+    - cron: "36 10 * * 6"
 
 jobs:
   analyze:
@@ -38,60 +38,48 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'csharp', 'javascript' ]
+        language: ["csharp", "javascript"]
         # CodeQL supports [ 'cpp', 'csharp', 'go', 'java', 'javascript', 'python', 'ruby', 'swift' ]
         # Use only 'java' to analyze code written in Java, Kotlin or both
         # Use only 'javascript' to analyze code written in JavaScript, TypeScript or both
         # Learn more about CodeQL language support at https://aka.ms/codeql-docs/language-support
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    # Initializes the CodeQL tools for scanning.
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-        # If you wish to specify custom queries, you can do so here or in a config file.
-        # By default, queries listed here will override any specified in a config file.
-        # Prefix the list here with "+" to use these queries and those in the config file.
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          # If you wish to specify custom queries, you can do so here or in a config file.
+          # By default, queries listed here will override any specified in a config file.
+          # Prefix the list here with "+" to use these queries and those in the config file.
 
-        # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
-        # queries: security-extended,security-and-quality
+          # For more details on CodeQL's query packs, refer to: https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
+          # queries: security-extended,security-and-quality
 
+      - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with: { version: 8 }
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "pnpm"
+          cache-dependency-path: "Me.Xfox.ZhuiAnime.WebUI/pnpm-lock.yaml"
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+          cache: true
+          cache-dependency-path: "Me.Xfox.ZhuiAnime/packages.lock.json"
 
-    - name: install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: install pnpm
-      uses: pnpm/action-setup@v2
-      id: pnpm-install
-      with:
-        version: 8
-        run_install: false
-    - name: get pnpm store directory
-      id: pnpm-cache
-      run: |
-        echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-    - name: setup pnpm cache
-      uses: actions/cache@v3
-      with:
-        path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
-        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-pnpm-store-
-    - name: install dotnet
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: "7.0.x"
-    - name: restore dependencies
-      run: dotnet restore
-    - name: build
-      run: dotnet build -c Release --no-restore    
+      - name: restore dependencies
+        run: dotnet restore --locked-mode
+      - name: build
+        run: dotnet build -c Release --no-restore
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        category: "/language:${{matrix.language}}"
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"

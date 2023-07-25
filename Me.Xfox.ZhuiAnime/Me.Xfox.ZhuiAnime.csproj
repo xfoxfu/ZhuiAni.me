@@ -7,7 +7,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <RuntimeIdentifiers>linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
     <Nullable>enable</Nullable>
-    <ImplicitUsing>enable</ImplicitUsing>
+    <ImplicitUsings>enable</ImplicitUsings>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <IsPackable>false</IsPackable>
@@ -18,9 +18,8 @@
     <SpaProxyServerUrl>http://localhost:3000</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>pnpm dev</SpaProxyLaunchCommand>
     <UserSecretsId>86322a12-80fe-4f6d-b08b-b98cb0427acc</UserSecretsId>
-    
+
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -33,7 +32,7 @@
     <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
     <PackageReference Include="Flurl.Http" Version="4.0.0-pre3" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="7.0.9" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.9">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="[7.0.5,8.0.0)">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -51,6 +50,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.ReDoc" Version="6.5.0" />
     <PackageReference Include="Tomlyn" Version="0.16.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="**\*.Test.cs" />
   </ItemGroup>
 
   <ItemGroup>
