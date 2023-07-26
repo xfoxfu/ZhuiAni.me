@@ -35,8 +35,8 @@ public class ItemTest
 """)!
         .ToList().Should().BeEquivalentTo(new List<Item>
         {
-            new Item("简体中文名", new Item.StringItemValue("鲁路修·兰佩路基" )),
-            new Item("别名", new Item.KVListItemValue(new List<Item.KVItem>
+            new Item("简体中文名", "鲁路修·兰佩路基" ),
+            new Item("别名", new List<Item.KVItem>
             {
                     new Item.KVItem("L.L."),
                     new Item.KVItem("勒鲁什"),
@@ -47,13 +47,22 @@ public class ItemTest
                     new Item.KVItem("第二中文名", "鲁路修·冯·布里塔尼亚"),
                     new Item.KVItem("英文名二", "Lelouch Vie Britannia"),
                     new Item.KVItem("日文名", "ルルーシュ・ヴィ・ブリタニア"),
-            })),
-            new Item("性别", new Item.StringItemValue("男")),
-            new Item("生日", new Item.StringItemValue("12月5日")),
-            new Item("血型", new Item.StringItemValue("A型")),
-            new Item("身高", new Item.StringItemValue("178cm→181cm")),
-            new Item("体重", new Item.StringItemValue("54kg")),
-            new Item("引用来源", new Item.StringItemValue("Wikipedia")),
+            }),
+            new Item("性别", "男"),
+            new Item("生日", "12月5日"),
+            new Item("血型", "A型"),
+            new Item("身高", "178cm→181cm"),
+            new Item("体重", "54kg"),
+            new Item("引用来源", "Wikipedia"),
         });
+
+        FluentActions.Invoking(() => JsonSerializer.Deserialize<Item>("""
+        {
+          "key": "简体中文名",
+          "value": {}
+        }
+        """))
+          .Should().Throw<JsonException>()
+          .WithMessage("ItemValue should be string or array, found StartObject instead.");
     }
 }

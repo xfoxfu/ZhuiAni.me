@@ -3,105 +3,148 @@ using System.Text.Json.Serialization;
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 
 public record Subject
-(
-    [property:JsonPropertyName("id")]
-    int Id,
-
-    [property:JsonPropertyName("type")]
-    SubjectType Type,
-
-    [property:JsonPropertyName("name")]
-    string Name,
-
-    [property:JsonPropertyName("name_cn")]
-    string NameCn,
-
-    [property:JsonPropertyName("summary")]
-    string Summary,
-
-    [property:JsonPropertyName("nsfw")]
-    bool Nsfw,
-
-    [property:JsonPropertyName("locked")]
-    bool Locked,
-
-    [property:JsonPropertyName("date")]
-    string Date,
-
-    [property:JsonPropertyName("platform")]
-    string Platform,
-
-    [property:JsonPropertyName("images")]
-    Subject.ImagesData Images,
-
-    [property:JsonPropertyName("infobox")]
-     ICollection<Item> Infobox,
-
-    [property:JsonPropertyName("volumes")]
-    int Volumes,
-
-    [property:JsonPropertyName("eps")]
-    int Eps,
-
-    [property:JsonPropertyName("total_episodes")]
-    int TotalEpisodes,
-
-    [property:JsonPropertyName("rating")]
-    Subject.RatingData Rating,
-
-    [property:JsonPropertyName("collection")]
-    Subject.CollectionData Collection,
-
-    [property:JsonPropertyName("tags")]
-    IEnumerable<Subject.TagData> Tags
-)
 {
+    [JsonPropertyName("id")]
+    public required int Id { get; init; }
+
+    [JsonPropertyName("type")]
+    public required SubjectType Type { get; init; }
+
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("name_cn")]
+    public required string NameCn { get; init; }
+
+    [JsonPropertyName("summary")]
+    public required string Summary { get; init; }
+
+    [JsonPropertyName("nsfw")]
+    public required bool Nsfw { get; init; }
+
+    [JsonPropertyName("locked")]
+    public required bool Locked { get; init; }
+
+    [JsonPropertyName("date")]
+    public required string Date { get; init; }
+
+    [JsonPropertyName("platform")]
+    public required string Platform { get; init; }
+
+    [JsonPropertyName("images")]
+    public required ImagesData Images { get; init; }
+
+    [JsonPropertyName("infobox")]
+    public required ICollection<Item> Infobox { get; init; }
+
+    [JsonPropertyName("volumes")]
+    public required int Volumes { get; init; }
+
+    [JsonPropertyName("eps")]
+    public required int Eps { get; init; }
+
+    [JsonPropertyName("total_episodes")]
+    public required int TotalEpisodes { get; init; }
+
+    [JsonPropertyName("rating")]
+    public required RatingData Rating { get; init; }
+
+    [JsonPropertyName("collection")]
+    public required CollectionData Collection { get; init; }
+
+    [JsonPropertyName("tags")]
+    public required IEnumerable<TagData> Tags { get; init; }
+
     public record ImagesData
-    (
-        [property: JsonPropertyName("large")] string Large,
-        [property: JsonPropertyName("common")] string Common,
-        [property: JsonPropertyName("medium")] string Medium,
-        [property: JsonPropertyName("small")] string Small,
-        [property: JsonPropertyName("grid")] string Grid
-    );
+    {
+        [JsonPropertyName("large")]
+        public required string Large { get; init; }
+
+        [JsonPropertyName("common")]
+        public required string Common { get; init; }
+
+        [JsonPropertyName("medium")]
+        public required string Medium { get; init; }
+
+        [JsonPropertyName("small")]
+        public required string Small { get; init; }
+
+        [JsonPropertyName("grid")]
+        public required string Grid { get; init; }
+    }
 
     public record RatingData
-    (
-        [property: JsonPropertyName("rank")] int Rank,
-        [property: JsonPropertyName("total")] int Total,
-        [property: JsonPropertyName("count")] RatingData.CountData Count,
-        [property: JsonPropertyName("score")] double Score
-    )
     {
+        [JsonPropertyName("rank")]
+        public required int Rank { get; init; }
+
+        [JsonPropertyName("total")]
+        public required int Total { get; init; }
+
+        [JsonPropertyName("count")]
+        public required CountData Count { get; init; }
+
+        [JsonPropertyName("score")]
+        public required double Score { get; init; }
 
         public record CountData
-        (
-            [property: JsonPropertyName("1")]
-            int Rate1Count,
-            [property: JsonPropertyName("2")] int Rate2Count,
-            [property: JsonPropertyName("3")] int Rate3Count,
-            [property: JsonPropertyName("4")] int Rate4Count,
-            [property: JsonPropertyName("5")] int Rate5Count,
-            [property: JsonPropertyName("6")] int Rate6Count,
-            [property: JsonPropertyName("7")] int Rate7Count,
-            [property: JsonPropertyName("8")] int Rate8Count,
-            [property: JsonPropertyName("9")] int Rate9Count,
-            [property: JsonPropertyName("10")] int Rate10Count
-        );
+        {
+            [JsonPropertyName("1")]
+            public required int Rate1Count { get; init; }
+
+            [JsonPropertyName("2")]
+            public required int Rate2Count { get; init; }
+
+            [JsonPropertyName("3")]
+            public required int Rate3Count { get; init; }
+
+            [JsonPropertyName("4")]
+            public required int Rate4Count { get; init; }
+
+            [JsonPropertyName("5")]
+            public required int Rate5Count { get; init; }
+
+            [JsonPropertyName("6")]
+            public required int Rate6Count { get; init; }
+
+            [JsonPropertyName("7")]
+            public required int Rate7Count { get; init; }
+
+            [JsonPropertyName("8")]
+            public required int Rate8Count { get; init; }
+
+            [JsonPropertyName("9")]
+            public required int Rate9Count { get; init; }
+
+            [JsonPropertyName("10")]
+            public required int Rate10Count { get; init; }
+        }
     }
 
     public record CollectionData
-    (
-        [property: JsonPropertyName("wish")] int Wish,
-        [property: JsonPropertyName("collect")] int Collect,
-        [property: JsonPropertyName("doing")] int Doing,
-        [property: JsonPropertyName("on_hold")] int OnHold,
-        [property: JsonPropertyName("dropped")] int Dropped
-    );
+    {
+        [JsonPropertyName("wish")]
+        public required int Wish { get; init; }
+
+        [JsonPropertyName("collect")]
+        public required int Collect { get; init; }
+
+        [JsonPropertyName("doing")]
+        public required int Doing { get; init; }
+
+        [JsonPropertyName("on_hold")]
+        public required int OnHold { get; init; }
+
+        [JsonPropertyName("dropped")]
+        public required int Dropped { get; init; }
+    }
 
     public record TagData
-    (
-        [property: JsonPropertyName("name")] string Name,
-        [property: JsonPropertyName("count")] int Count
-    );
+    {
+        [JsonPropertyName("name")]
+        public required string Name { get; init; }
+
+        [JsonPropertyName("count")]
+        public required int Count { get; init; }
+    }
 }

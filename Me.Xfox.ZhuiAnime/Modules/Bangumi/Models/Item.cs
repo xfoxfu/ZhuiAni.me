@@ -1,17 +1,41 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 
-public record Item(
-    [property: JsonPropertyName("key")]
-    string Key,
-
-    [property:JsonPropertyName("value")]
-    [property:JsonConverter(typeof(Item.ValueJsonConverter))]
-    Item.ItemValue Value
-)
+public record Item
 {
+    [JsonPropertyName("key")]
+    public required string Key { get; init; }
+
+    [JsonPropertyName("value")]
+    [JsonConverter(typeof(ValueJsonConverter))]
+    public required ItemValue Value { get; init; }
+
+    public Item() { }
+
+    [SetsRequiredMembers]
+    public Item(string Key, ItemValue Value)
+    {
+        this.Key = Key;
+        this.Value = Value;
+    }
+
+    [SetsRequiredMembers]
+    public Item(string Key, string Value)
+    {
+        this.Key = Key;
+        this.Value = new StringItemValue(Value);
+    }
+
+    [SetsRequiredMembers]
+    public Item(string Key, ICollection<KVItem> Value)
+    {
+        this.Key = Key;
+        this.Value = new KVListItemValue(Value);
+    }
+
     public record ItemValue();
 
     public record StringItemValue(string Value) : ItemValue;
@@ -39,13 +63,19 @@ public record Item(
     {
         public override ItemValue? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var obj = JsonSerializer.Deserialize<JsonElement>(ref reader);
-            if (obj.ValueKind == JsonValueKind.String)
+            if (reader.TokenType == JsonTokenType.String)
             {
-                return new StringItemValue(obj.GetString()!);
+                return new StringItemValue(reader.GetString()!);
             }
-            var list = obj.Deserialize<ICollection<KVItem>>()!;
-            return new KVListItemValue(list);
+            else if (reader.TokenType == JsonTokenType.StartArray)
+            {
+                var list = JsonSerializer.Deserialize<ICollection<KVItem>>(ref reader, options);
+                return new KVListItemValue(list!);
+            }
+            else
+            {
+                throw new JsonException($"ItemValue should be string or array, found {reader.TokenType} instead.");
+            }
         }
 
         public override void Write(Utf8JsonWriter writer, ItemValue value, JsonSerializerOptions options)

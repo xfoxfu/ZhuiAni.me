@@ -2,44 +2,45 @@ using System.Text.Json.Serialization;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 
-public record Episode(
-    [property:JsonPropertyName("id")]
-    uint Id,
-
-    [property:JsonPropertyName("type")]
-    Episode.EpisodeType Type,
-
-    [property:JsonPropertyName("name")]
-    string Name,
-
-    [property:JsonPropertyName("name_cn")]
-    string NameCn,
-
-    [property:JsonPropertyName("sort")]
-    double? Sort,
-
-    [property:JsonPropertyName("ep")]
-    double? Ep,
-
-    [property:JsonPropertyName("airdate")]
-    string AirDate,
-
-    [property:JsonPropertyName("comment")]
-    int CommentCount,
-
-    [property:JsonPropertyName("duration")]
-    string Duration,
-
-    [property:JsonPropertyName("desc")]
-    string Description,
-
-    [property:JsonPropertyName("disc")]
-    int DiscCount,
-
-    [property:JsonPropertyName("duration_seconds")]
-    int DurationSeconds
-)
+public record Episode
 {
+    [JsonPropertyName("id")]
+    public required uint Id { get; init; }
+
+    [JsonPropertyName("type")]
+    public required EpisodeType Type { get; init; }
+
+    [JsonPropertyName("name")]
+    public required string Name { get; init; }
+
+    [JsonPropertyName("name_cn")]
+    public required string NameCn { get; init; }
+
+    [JsonPropertyName("sort")]
+    public double? Sort { get; init; }
+
+    [JsonPropertyName("ep")]
+    public double? Ep { get; init; }
+
+    [JsonPropertyName("airdate")]
+    public required string AirDate { get; init; }
+
+    [JsonPropertyName("comment")]
+    public required int CommentCount { get; init; }
+
+    [JsonPropertyName("duration")]
+    public required string Duration { get; init; }
+
+    [JsonPropertyName("desc")]
+    public required string Description { get; init; }
+
+    [JsonPropertyName("disc")]
+    public required int DiscCount { get; init; }
+
+    [JsonPropertyName("duration_seconds")]
+    public required int DurationSeconds { get; init; }
+
+
     public enum EpisodeType
     {
         Origin = 0,

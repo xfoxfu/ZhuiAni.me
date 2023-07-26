@@ -110,7 +110,7 @@ public class BangumiSource : ISource
             {
                 if (reader.TokenType != JsonTokenType.StartArray)
                 {
-                    throw new JsonException();
+                    throw new JsonException($"Content should be an array, found {reader.TokenType} instead.");
                 }
 
                 var list = new List<IEnumerable<string>>();
@@ -127,7 +127,9 @@ public class BangumiSource : ISource
                     }
                     else if (reader.TokenType != JsonTokenType.StartArray)
                     {
-                        throw new JsonException();
+                        throw new JsonException(
+                            $"Content should contain string or array, found {reader.TokenType} instead."
+                        );
                     }
                     else
                     {
@@ -142,7 +144,9 @@ public class BangumiSource : ISource
 
                             if (reader.TokenType != JsonTokenType.String)
                             {
-                                throw new JsonException();
+                                throw new JsonException(
+                                    $"Content should contain string, found {reader.TokenType} instead."
+                                );
                             }
 
                             subList.Add(reader.GetString() ?? string.Empty);

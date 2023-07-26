@@ -1,3 +1,5 @@
+using Flurl.Http.Testing;
+
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Client;
 
 public class BangumiApiTest
@@ -49,5 +51,15 @@ public class BangumiApiTest
         var client = new BangumiApi("https://localhost:53");
         var op = async () => await client.GetSubjectAsync(53397657);
         await op.Should().ThrowAsync<Flurl.Http.FlurlHttpException>();
+    }
+
+    [Test]
+    public async Task TestErrorHandlingDecodeError()
+    {
+        using var httpTest = new HttpTest();
+        httpTest.RespondWith("{}");
+        var client = new BangumiApi();
+        var op = async () => await client.GetSubjectAsync(53397657);
+        await op.Should().ThrowAsync<Flurl.Http.FlurlParsingException>();
     }
 }
