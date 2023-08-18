@@ -42,7 +42,7 @@ public class EpisodeTest
         JsonSerializer.Deserialize<Episode>("""
         {
             "airdate": "2023-03-11",
-            "name": "警察学校編　Wild Police Story　CASE. 降谷零",
+            "name": "警察学校編  Wild Police Story  CASE. 降谷零",
             "name_cn": "警察学校篇Wild Police Story CASE.降谷零",
             "duration": "",
             "desc": "由于没有总集数统计为1076.5话",
@@ -59,7 +59,7 @@ public class EpisodeTest
         .Should().BeEquivalentTo(new Episode()
         {
             AirDate = "2023-03-11",
-            Name = "警察学校編　Wild Police Story　CASE. 降谷零",
+            Name = "警察学校編  Wild Police Story  CASE. 降谷零",
             NameCn = "警察学校篇Wild Police Story CASE.降谷零",
             Duration = "",
             Description = "由于没有总集数统计为1076.5话",
@@ -74,7 +74,7 @@ public class EpisodeTest
         JsonSerializer.Deserialize<Episode>("""
         {
             "airdate": "2023-03-11",
-            "name": "警察学校編　Wild Police Story　CASE. 降谷零",
+            "name": "警察学校編  Wild Police Story  CASE. 降谷零",
             "name_cn": "警察学校篇Wild Police Story CASE.降谷零",
             "duration": "",
             "desc": "由于没有总集数统计为1076.5话",
@@ -89,7 +89,7 @@ public class EpisodeTest
         .Should().BeEquivalentTo(new Episode()
         {
             AirDate = "2023-03-11",
-            Name = "警察学校編　Wild Police Story　CASE. 降谷零",
+            Name = "警察学校編  Wild Police Story  CASE. 降谷零",
             NameCn = "警察学校篇Wild Police Story CASE.降谷零",
             Duration = "",
             Description = "由于没有总集数统计为1076.5话",
@@ -101,7 +101,7 @@ public class EpisodeTest
             DiscCount = 0,
             DurationSeconds = 0
         });
-        var act = () => JsonSerializer.Deserialize<Episode>("{}");
-        act.Should().Throw<JsonException>();
+        FluentActions.Invoking(() => JsonSerializer.Deserialize<Episode>("{}"))
+            .Should().Throw<JsonException>();
     }
 }
