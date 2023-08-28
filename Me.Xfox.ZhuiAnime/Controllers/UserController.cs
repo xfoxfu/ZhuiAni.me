@@ -1,4 +1,5 @@
 using Me.Xfox.ZhuiAnime.Models;
+using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
@@ -10,10 +11,12 @@ namespace Me.Xfox.ZhuiAnime.Controllers;
 public class UserController : ControllerBase
 {
     private ZAContext DbContext { get; init; }
+    protected TurnstileService TurnstileService { get; init; }
 
-    public UserController(ZAContext dbContext)
+    public UserController(ZAContext dbContext, TurnstileService turnstileService)
     {
         DbContext = dbContext;
+        TurnstileService = turnstileService;
     }
 
     public record UserDto
@@ -40,12 +43,14 @@ public class UserController : ControllerBase
 
     public record CreateUserDto(
         string Username,
-        string Password
+        string Password,
+        string Captcha
     );
 
     [HttpPost]
     public async Task<ActionResult<User>> Register(CreateUserDto req)
     {
+        await TurnstileService.Validate(req.Captcha);
         if (await DbContext.User.AnyAsync(x => x.Username == req.Username))
         {
             throw new ZhuiAnimeError.UsernameTaken(req.Username);

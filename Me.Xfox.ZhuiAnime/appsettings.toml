@@ -38,3 +38,8 @@ Username = ""
 Password = ""
 AccessAddressTemplate = "{0}"
 IntervalBetweenFetch = 01:00:00
+
+# See https://developers.cloudflare.com/turnstile/
+[Captcha]
+Enabled = true
+Secret = ""

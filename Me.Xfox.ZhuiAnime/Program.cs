@@ -81,6 +81,7 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
     type.GetMethod("ConfigureOn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
         ?.Invoke(null, new object[] { builder });
 }
+ZhuiAnime.Services.TurnstileService.ConfigureOn(builder);
 
 var app = builder.Build();
 
