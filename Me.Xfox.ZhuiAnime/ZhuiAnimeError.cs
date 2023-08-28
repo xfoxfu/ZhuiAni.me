@@ -218,4 +218,26 @@ public class ZhuiAnimeError : Exception
             ExtraData.Add("pikpak_job_id", id);
         }
     }
+
+    public class UserNotFound : ZhuiAnimeError
+    {
+        public UserNotFound(uint id) : base(
+            HttpStatusCode.NotFound,
+            "USER_NOT_FOUND",
+            $"User {id} not found.")
+        {
+            ExtraData.Add("user_id", id);
+        }
+    }
+
+    public class UsernameTaken : ZhuiAnimeError
+    {
+        public UsernameTaken(string username) : base(
+            HttpStatusCode.NotFound,
+            "USERNAME_TAKEN",
+            $"Username {username} is already taken.")
+        {
+            ExtraData.Add("username", username);
+        }
+    }
 }
