@@ -82,6 +82,7 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
         ?.Invoke(null, new object[] { builder });
 }
 ZhuiAnime.Services.TurnstileService.ConfigureOn(builder);
+ZhuiAnime.Services.TokenService.ConfigureOn(builder);
 
 var app = builder.Build();
 
@@ -100,6 +101,7 @@ else
 {
     app.UseHsts();
 }
+app.UseForwardedHeaders();
 
 app.UseSentryTracing();
 app.UseSerilogRequestLogging();

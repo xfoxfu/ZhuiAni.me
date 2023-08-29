@@ -245,11 +245,33 @@ public class ZhuiAnimeError : Exception
     {
         public CaptchaInvalid(string token, IEnumerable<string> codes) : base(
             HttpStatusCode.BadRequest,
-            "CAPTACH_INVALID",
+            "CAPTACHA_INVALID",
             $"Turnstile validation token is invalid since {string.Join(",", codes)}.")
         {
             ExtraData.Add("token", token);
             ExtraData.Add("codes", string.Join(",", codes));
+        }
+    }
+
+    public class InvalidGrantType : ZhuiAnimeError
+    {
+        public InvalidGrantType(string grantType) : base(
+            HttpStatusCode.BadRequest,
+            "INVALID_GRANT_TYPE",
+            $"Invalid grant type {grantType}.")
+        {
+            ExtraData.Add("grant_type", grantType);
+        }
+    }
+
+    public class InvalidUsernameOrPassword : ZhuiAnimeError
+    {
+        public InvalidUsernameOrPassword(string username) : base(
+            HttpStatusCode.Forbidden,
+            "INVALID_USERNAME_OR_PASSWORD",
+            $"Invalid username {username} or password.")
+        {
+            ExtraData.Add("username", username);
         }
     }
 }

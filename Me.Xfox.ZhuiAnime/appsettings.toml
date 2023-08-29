@@ -43,3 +43,18 @@ IntervalBetweenFetch = 01:00:00
 [Captcha]
 Enabled = true
 Secret = ""
+
+[Authentication.Jwt]
+# Generate ECC key with https://dinochiesa.github.io/jwt/
+PrivateKey = """
+-----BEGIN PRIVATE KEY-----
+......
+-----END PRIVATE KEY-----
+"""
+PublicKey = """
+-----BEGIN PUBLIC KEY-----
+......
+-----END PUBLIC KEY-----
+"""
+Issuer = "https://zhuiani.me"
+AudienceFirstParty = "https://zhuiani.me"
