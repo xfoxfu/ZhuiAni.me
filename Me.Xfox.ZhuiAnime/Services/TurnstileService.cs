@@ -47,7 +47,7 @@ public class TurnstileService
             .ReceiveJson<TurnstileResponse>();
         if (!result.Success)
         {
-            throw new ZhuiAnimeError.CaptchaInvalid(response, result.ErrorCodes);
+            throw new ZhuiAnimeError.InvalidCaptcha(response, result.ErrorCodes);
         }
     }
 

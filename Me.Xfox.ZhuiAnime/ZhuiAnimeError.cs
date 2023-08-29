@@ -246,11 +246,11 @@ public class ZhuiAnimeError : Exception
         }
     }
 
-    public class CaptchaInvalid : ZhuiAnimeError
+    public class InvalidCaptcha : ZhuiAnimeError
     {
-        public CaptchaInvalid(string token, IEnumerable<string> codes) : base(
+        public InvalidCaptcha(string token, IEnumerable<string> codes) : base(
             HttpStatusCode.BadRequest,
-            "CAPTACHA_INVALID",
+            "INVALID_CAPTCHA",
             $"Turnstile validation token is invalid since {string.Join(",", codes)}.")
         {
             ExtraData.Add("token", token);

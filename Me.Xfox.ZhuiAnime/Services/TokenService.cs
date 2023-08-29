@@ -32,6 +32,7 @@ public class TokenService
             new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new (JwtClaimNames.Scope, JwtScopes.OAuth),
+            new (JwtClaimNames.UpdatedAt, user.UpdatedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
         };
         var key = ECDsa.Create();
         key.ImportFromPem(Options.CurrentValue.PrivateKey);
@@ -64,6 +65,7 @@ public class TokenService
     public struct JwtClaimNames
     {
         public const string Scope = "scope";
+        public const string UpdatedAt = "updated_at";
     }
 
     public struct JwtScopes
