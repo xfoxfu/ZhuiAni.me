@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Me.Xfox.ZhuiAnime.Models;
@@ -27,8 +28,7 @@ public class User
     /// </summary>
     /// <param name="user">user or null</param>
     /// <param name="password">plain password</param>
-    /// <returns></returns>
-    public static bool ValidatePassword(User? user, string password)
+    public static bool ValidatePassword([NotNullWhen(true)] User? user, string password)
     {
         return BCrypt.Net.BCrypt.Verify(password, user?.HashedPassword ?? SomeInvalidPassword);
     }

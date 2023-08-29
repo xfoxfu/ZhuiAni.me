@@ -46,11 +46,11 @@ public class SessionController : ControllerBase
             throw new ZhuiAnimeError.InvalidGrantType(req.GrantType);
         }
         var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.Username);
-        if (Models.User.ValidatePassword(user, req.Password))
+        if (Models.User.ValidatePassword(user, req.Password) != true)
         {
             throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
         }
-        return new(TokenService.IssueFirstParty(user!));
+        return new(TokenService.IssueFirstParty(user));
     }
 
     public record TokenDto(
