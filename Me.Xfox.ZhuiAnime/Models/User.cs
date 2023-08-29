@@ -16,9 +16,21 @@ public class User
 
     public DateTimeOffset UpdatedAt { get; set; }
 
-    public bool ValidatePassword(string password)
+    /// <summary>
+    /// For protecting against timing side attacks. This is the hash of `HEE3KsHajmEq8bSX`.
+    /// </summary>
+    protected const string SomeInvalidPassword = "$2y$11$d3wI91tNqCkWwFiBUo6vq.UsmkxpTTHcoSvyMcTPPNvarDSNMcCyO";
+
+    /// <summary>
+    /// Validate the password of the user. This mitigates timing side attacks.
+    /// After this function, the `user` will no longer be null.
+    /// </summary>
+    /// <param name="user">user or null</param>
+    /// <param name="password">plain password</param>
+    /// <returns></returns>
+    public static bool ValidatePassword(User? user, string password)
     {
-        return BCrypt.Net.BCrypt.Verify(password, HashedPassword);
+        return BCrypt.Net.BCrypt.Verify(password, user?.HashedPassword ?? SomeInvalidPassword);
     }
 
     public class UserConfiguration : IEntityTypeConfiguration<User>

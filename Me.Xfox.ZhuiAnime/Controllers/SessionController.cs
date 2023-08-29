@@ -33,10 +33,6 @@ public class SessionController : ControllerBase
         string Token
     );
 
-    /// <summary>
-    /// For protecting against timing side attacks. This is the hash of `HEE3KsHajmEq8bSX`.
-    /// </summary>
-    protected const string SomeInvalidPassword = "$2y$11$d3wI91tNqCkWwFiBUo6vq.UsmkxpTTHcoSvyMcTPPNvarDSNMcCyO";
 
     [HttpPost]
     public async Task<LoginResDto> Login(LoginReqDto req)
@@ -46,15 +42,10 @@ public class SessionController : ControllerBase
             throw new ZhuiAnimeError.InvalidGrantType(req.GrantType);
         }
         var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.Username);
-        if (user == null)
-        {
-            BCrypt.Net.BCrypt.Verify(req.Password, SomeInvalidPassword);
-            throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
-        }
-        if (!user.ValidatePassword(req.Password))
+        if (Models.User.ValidatePassword(user, req.Password))
         {
             throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
         }
-        return new(TokenService.IssueFirstParty(user));
+        return new(TokenService.IssueFirstParty(user!));
     }
 }
