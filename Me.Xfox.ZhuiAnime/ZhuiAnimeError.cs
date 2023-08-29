@@ -46,6 +46,12 @@ public class ZhuiAnimeError : Exception
         ExtraData = extraData;
     }
 
+    public void WithHttpContext(HttpContext context)
+    {
+        ExtraData.Add("connection_id", context.Connection.Id);
+        ExtraData.Add("request_id", context.TraceIdentifier);
+    }
+
     public record ErrorProdResponse(
         [property:JsonPropertyName("error_code")]
         string ErrorCode,
@@ -118,8 +124,7 @@ public class ZhuiAnimeError : Exception
                 null => new InternalServerError(new Exception("Null exception thrown.")),
             };
 
-            error.ExtraData.Add("connection_id", context.HttpContext.Connection.Id);
-            error.ExtraData.Add("request_id", context.HttpContext.TraceIdentifier);
+            error.WithHttpContext(context.HttpContext);
             error.ExtraData.Add("action_id", context.ActionDescriptor.Id);
 
             if (isProduction)
@@ -272,6 +277,19 @@ public class ZhuiAnimeError : Exception
             $"Invalid username {username} or password.")
         {
             ExtraData.Add("username", username);
+        }
+    }
+
+    public class InvalidToken : ZhuiAnimeError
+    {
+        public InvalidToken(string? code, string? description, Exception? ex) : base(
+            HttpStatusCode.Forbidden,
+            "INVALID_TOKEN",
+            $"Invalid token {code}: {description}.",
+            ex)
+        {
+            ExtraData.Add("auth_code", code ?? string.Empty);
+            ExtraData.Add("auth_desc", description ?? string.Empty);
         }
     }
 }

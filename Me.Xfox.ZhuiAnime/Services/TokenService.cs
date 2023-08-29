@@ -46,8 +46,8 @@ public class TokenService
         var token = new JwtSecurityToken(
             issuer: Options.CurrentValue.Issuer,
             audience: Options.CurrentValue.AudienceFirstParty,
-            expires: DateTimeOffset.UtcNow.Add(Options.CurrentValue.FirstPartyExpires).DateTime,
-            notBefore: DateTimeOffset.UtcNow.DateTime,
+            expires: DateTime.Now.Add(Options.CurrentValue.FirstPartyExpires),
+            notBefore: DateTime.Now,
             claims: claims,
             signingCredentials: creds);
         return new JwtSecurityTokenHandler().WriteToken(token);
@@ -76,5 +76,25 @@ public class TokenService
         public string AudienceFirstParty { get; set; } = string.Empty;
 
         public TimeSpan FirstPartyExpires { get; set; }
+
+        public SecurityKey SecurityKey
+        {
+            get
+            {
+                var key = ECDsa.Create();
+                key.ImportFromPem(PrivateKey);
+                var secKey = new ECDsaSecurityKey(key);
+                return secKey;
+            }
+        }
+
+        public SigningCredentials Credentials =>
+            new(SecurityKey, SecurityKey.KeySize switch
+            {
+                256 => SecurityAlgorithms.EcdsaSha256,
+                384 => SecurityAlgorithms.EcdsaSha384,
+                521 => SecurityAlgorithms.EcdsaSha512,
+                _ => throw new NotSupportedException(),
+            });
     }
 }

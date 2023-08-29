@@ -1,13 +1,14 @@
 global using Microsoft.EntityFrameworkCore;
-
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Modules = Me.Xfox.ZhuiAnime.Modules;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 Log.Logger = new LoggerConfiguration()
@@ -84,6 +85,36 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
 ZhuiAnime.Services.TurnstileService.ConfigureOn(builder);
 ZhuiAnime.Services.TokenService.ConfigureOn(builder);
 
+builder.Services.AddAuthentication(opts =>
+{
+    opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+    opts.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(opts =>
+{
+    opts.SaveToken = true;
+    var config = builder.Configuration.GetSection(ZhuiAnime.Services.TokenService.Option.LOCATION)
+        .Get<ZhuiAnime.Services.TokenService.Option>();
+    opts.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = config?.Issuer,
+        ValidateIssuer = true,
+        ValidateAudience = false,
+        IssuerSigningKey = config?.SecurityKey,
+        ValidateIssuerSigningKey = true,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromSeconds(30),
+    };
+    opts.Events = new AuthenticationEventHandler();
+});
+builder.Services.AddAuthorization(opts =>
+{
+    opts.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -110,6 +141,9 @@ if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",

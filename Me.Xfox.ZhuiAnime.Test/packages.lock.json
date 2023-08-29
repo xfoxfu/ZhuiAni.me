@@ -551,6 +551,14 @@
           "Humanizer.Core": "[2.14.1]"
         }
       },
+      "Microsoft.AspNetCore.Authentication.JwtBearer": {
+        "type": "Transitive",
+        "resolved": "7.0.10",
+        "contentHash": "8/GWtq034kzrDapCHYbAnnJXIYAJzFcJoXP5OtlbjIWBQBLxEbstRv3N4DJAvlcGUXxy0DmmNVDiSlFAY8HpWw==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.15.1"
+        }
+      },
       "Microsoft.AspNetCore.Http": {
         "type": "Transitive",
         "resolved": "2.2.2",
@@ -984,6 +992,24 @@
         "contentHash": "OgXpzJVBIQNdoyYCNgFprMZGrn2aAcU08w2oqyA2RvGrYvcVWsxJsygGcrMN0vDTvCwKUlpvjqT84eEktp3Avg==",
         "dependencies": {
           "Microsoft.IdentityModel.Abstractions": "6.32.2"
+        }
+      },
+      "Microsoft.IdentityModel.Protocols": {
+        "type": "Transitive",
+        "resolved": "6.15.1",
+        "contentHash": "6nHr+4yE8vj620Vy4L0pl7kmkvWc06wBrJ+AOo/gjqzu/UD/MYgySUqRGlZYrvvNmKkUWMw4hdn78MPCb4bstA==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Logging": "6.15.1",
+          "Microsoft.IdentityModel.Tokens": "6.15.1"
+        }
+      },
+      "Microsoft.IdentityModel.Protocols.OpenIdConnect": {
+        "type": "Transitive",
+        "resolved": "6.15.1",
+        "contentHash": "WwecgT/PNrytLNUWjkYtnnG2LXMAzkINSaZM+8dPPiEpOGz1bQDBWAenTSurYICxGoA1sOPriFXk+ocnQyprKw==",
+        "dependencies": {
+          "Microsoft.IdentityModel.Protocols": "6.15.1",
+          "System.IdentityModel.Tokens.Jwt": "6.15.1"
         }
       },
       "Microsoft.IdentityModel.Tokens": {
@@ -1655,6 +1681,7 @@
           "CodeHollow.FeedReader": "[1.2.6, )",
           "EFCore.NamingConventions": "[7.0.2, )",
           "Flurl.Http": "[4.0.0-pre3, )",
+          "Microsoft.AspNetCore.Authentication.JwtBearer": "[7.0.10, )",
           "Microsoft.AspNetCore.SpaProxy": "[7.0.9, )",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "[7.0.8, )",
           "NSwag.Annotations": "[13.19.0, )",
