@@ -1,5 +1,6 @@
 using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
@@ -48,6 +49,7 @@ public class UserController : ControllerBase
     );
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<User>> Register(CreateUserDto req)
     {
         await TurnstileService.Validate(req.Captcha);

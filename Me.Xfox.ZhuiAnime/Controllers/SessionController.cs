@@ -1,5 +1,6 @@
 using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Common;
 
@@ -35,6 +36,7 @@ public class SessionController : ControllerBase
 
 
     [HttpPost]
+    [AllowAnonymous]
     public async Task<LoginResDto> Login(LoginReqDto req)
     {
         if (req.GrantType != "password")
