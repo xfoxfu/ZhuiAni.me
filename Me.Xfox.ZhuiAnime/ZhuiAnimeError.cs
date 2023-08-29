@@ -283,13 +283,23 @@ public class ZhuiAnimeError : Exception
     public class InvalidToken : ZhuiAnimeError
     {
         public InvalidToken(string? code, string? description, Exception? ex) : base(
-            HttpStatusCode.Forbidden,
+            HttpStatusCode.Unauthorized,
             "INVALID_TOKEN",
             $"Invalid token {code}: {description}.",
             ex)
         {
             ExtraData.Add("auth_code", code ?? string.Empty);
             ExtraData.Add("auth_desc", description ?? string.Empty);
+        }
+    }
+
+    public class InvalidTokenNotFirstParty : ZhuiAnimeError
+    {
+        public InvalidTokenNotFirstParty() : base(
+            HttpStatusCode.Forbidden,
+            "INVALID_TOKEN_NOT_FIRST_PARTY",
+            $"Token is not issued to first-party application.")
+        {
         }
     }
 }

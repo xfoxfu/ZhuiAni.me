@@ -53,6 +53,14 @@ public class TokenService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
+    public bool IsFirstParty(ClaimsPrincipal user)
+    {
+        return user.FindAll(JwtClaimNames.Scope)
+                .Any(x => x.Value == JwtScopes.OAuth) &&
+            user.FindAll(JwtRegisteredClaimNames.Aud)
+                .Any(x => x.Value == Options.CurrentValue.AudienceFirstParty);
+    }
+
     public struct JwtClaimNames
     {
         public const string Scope = "scope";

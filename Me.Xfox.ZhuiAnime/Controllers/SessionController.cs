@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -49,5 +51,34 @@ public class SessionController : ControllerBase
             throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
         }
         return new(TokenService.IssueFirstParty(user!));
+    }
+
+    public record TokenDto(
+        UserController.UserDto User,
+        DateTimeOffset IssuedAt,
+        DateTimeOffset ExpiresAt
+    );
+
+    [HttpGet]
+    public async Task<TokenDto> Get()
+    {
+        if (!TokenService.IsFirstParty(User))
+        {
+            throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
+        }
+        var expires = User.FindFirstValue(JwtRegisteredClaimNames.Exp) ??
+            throw new ZhuiAnimeError.InvalidToken("no_expires", "no exp in token", null);
+        var issued = User.FindFirstValue(JwtRegisteredClaimNames.Iat) ??
+            throw new ZhuiAnimeError.InvalidToken("no_issued_at", "no iat in token", null);
+        var subject = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+            throw new ZhuiAnimeError.InvalidToken("no_subject", "no sub in token", null);
+        var userId = Convert.ToUInt32(subject);
+        var user = await DbContext.User.FindAsync(userId) ??
+            throw new ZhuiAnimeError.InvalidToken("user_not_found", "user not found", null);
+        return new(
+            new(user),
+            DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(issued)),
+            DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expires))
+        );
     }
 }
