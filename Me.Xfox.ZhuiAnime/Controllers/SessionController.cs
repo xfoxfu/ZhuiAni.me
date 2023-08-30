@@ -1,10 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
@@ -33,14 +31,29 @@ public class SessionController : ControllerBase
     );
 
     public record LoginResDto(
-        string Token
+        string AccessToken,
+        uint ExpiresIn,
+        string RefreshToken,
+        string Scope,
+        string TokenType = "Bearer",
+        string IssuedTokenType = "urn:ietf:params:oauth:token-type:access_token"
     );
 
-
+    /// <summary>Login</summary>
+    /// <remarks>
+    /// Login with username and password. This API does not comply with OAuth 2.0,
+    /// and only supports first-party applications (the built-in web frontend).
+    /// </remarks>
+    /// <param name="req"></param>
+    /// <returns></returns>
+    /// <exception cref="ZhuiAnimeError.InvalidGrantType">If the grant type is invalid.</exception>
+    /// <exception cref="ZhuiAnimeError.InvalidUsernameOrPassword"></exception>
     [HttpPost]
     [AllowAnonymous]
+    [ResponseCache(NoStore = true)]
     public async Task<LoginResDto> Login(LoginReqDto req)
     {
+        await TurnstileService.Validate(req.Captcha);
         if (req.GrantType != "password")
         {
             throw new ZhuiAnimeError.InvalidGrantType(req.GrantType);
@@ -50,7 +63,15 @@ public class SessionController : ControllerBase
         {
             throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
         }
-        return new(TokenService.IssueFirstParty(user));
+        var (token, jwt) = TokenService.IssueFirstParty(user);
+        var expires = jwt.Payload.Exp ?? 0;
+        var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var scopes = jwt.Payload.Claims.FirstOrDefault(x => x.Type == TokenService.JwtClaimNames.Scope)?.Value ?? "";
+        return new(
+            AccessToken: token,
+            ExpiresIn: (uint)(expires - now),
+            RefreshToken: "",
+            Scope: scopes);
     }
 
     public record TokenDto(
@@ -66,17 +87,13 @@ public class SessionController : ControllerBase
         {
             throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
         }
-        var expires = User.FindFirstValue(JwtRegisteredClaimNames.Exp) ??
-            throw new ZhuiAnimeError.InvalidToken("no_expires", "no exp in token", null);
-        var issued = User.FindFirstValue(JwtRegisteredClaimNames.Iat) ??
-            throw new ZhuiAnimeError.InvalidToken("no_issued_at", "no iat in token", null);
-        var subject = User.FindFirstValue(ClaimTypes.NameIdentifier) ??
-            throw new ZhuiAnimeError.InvalidToken("no_subject", "no sub in token", null);
+        var expires = User.FindFirstValue(JwtRegisteredClaimNames.Exp);
+        var issued = User.FindFirstValue(JwtRegisteredClaimNames.Iat);
+        var subject = User.FindFirstValue(ClaimTypes.NameIdentifier);
         var userId = Convert.ToUInt32(subject);
-        var user = await DbContext.User.FindAsync(userId) ??
-            throw new ZhuiAnimeError.InvalidToken("user_not_found", "user not found", null);
+        var user = await DbContext.User.FindAsync(userId);
         return new(
-            new(user),
+            new(user!),
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(issued)),
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expires))
         );
