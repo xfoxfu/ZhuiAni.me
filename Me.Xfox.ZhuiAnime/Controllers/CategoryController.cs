@@ -78,8 +78,8 @@ public class CategoryController : ControllerBase
 
     protected async Task<Category> LoadCategory(string routeParam = "id")
     {
-        Request.RouteValues.TryGetValue(routeParam, out var idObj);
-        var id = (uint)(idObj ?? 0);
+        Request.RouteValues.TryGetValue(routeParam, out var idStr);
+        var id = Convert.ToUInt32(idStr ?? "0");
         var category = await DbContext.Category.FindAsync(id) ??
             throw new ZhuiAnimeError.CategoryNotFound(id);
         return category;
