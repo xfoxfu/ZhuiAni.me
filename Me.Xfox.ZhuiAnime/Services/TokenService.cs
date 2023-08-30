@@ -21,19 +21,7 @@ public class TokenService
     public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
     {
         builder.Services.Configure<Option>(builder.Configuration.GetSection(Option.LOCATION));
-        builder.Services.PostConfigure<Option>(opts =>
-        {
-            var key = ECDsa.Create();
-            key.ImportFromPem(opts.PrivateKey);
-            opts.SecurityKey = new ECDsaSecurityKey(key);
-            opts.Credentials = new(opts.SecurityKey, opts.SecurityKey.KeySize switch
-            {
-                256 => SecurityAlgorithms.EcdsaSha256,
-                384 => SecurityAlgorithms.EcdsaSha384,
-                521 => SecurityAlgorithms.EcdsaSha512,
-                _ => throw new NotSupportedException(),
-            });
-        });
+        builder.Services.ConfigureOptions<OptionConfigure>();
         builder.Services.AddSingleton<TokenService>();
         return builder;
     }
@@ -107,5 +95,27 @@ public class TokenService
         public SecurityKey SecurityKey { get; set; } = null!;
 
         public SigningCredentials Credentials { get; set; } = null!;
+
+        public void BuildKeys()
+        {
+
+        }
+    }
+
+    public class OptionConfigure : IConfigureOptions<Option>
+    {
+        public void Configure(Option opts)
+        {
+            var key = ECDsa.Create();
+            key.ImportFromPem(opts.PrivateKey);
+            opts.SecurityKey = new ECDsaSecurityKey(key);
+            opts.Credentials = new(opts.SecurityKey, opts.SecurityKey.KeySize switch
+            {
+                256 => SecurityAlgorithms.EcdsaSha256,
+                384 => SecurityAlgorithms.EcdsaSha384,
+                521 => SecurityAlgorithms.EcdsaSha512,
+                _ => throw new NotSupportedException(),
+            });
+        }
     }
 }

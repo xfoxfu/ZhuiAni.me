@@ -27,7 +27,7 @@ public class SessionController : ControllerBase
         string Username,
         string Password,
         string Captcha,
-        string GrantType
+        string Grant_Type
     );
 
     public record LoginResDto(
@@ -51,12 +51,12 @@ public class SessionController : ControllerBase
     [HttpPost]
     [AllowAnonymous]
     [ResponseCache(NoStore = true)]
-    public async Task<LoginResDto> Login(LoginReqDto req)
+    public async Task<LoginResDto> Login([FromForm] LoginReqDto req)
     {
         await TurnstileService.Validate(req.Captcha);
-        if (req.GrantType != "password")
+        if (req.Grant_Type != "password")
         {
-            throw new ZhuiAnimeError.InvalidGrantType(req.GrantType);
+            throw new ZhuiAnimeError.InvalidGrantType(req.Grant_Type);
         }
         var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.Username);
         if (Models.User.ValidatePassword(user, req.Password) != true)

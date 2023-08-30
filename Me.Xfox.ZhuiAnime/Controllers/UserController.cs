@@ -50,7 +50,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [AllowAnonymous]
-    public async Task<ActionResult<User>> Register(CreateUserDto req)
+    public async Task<ActionResult<UserDto>> Register(CreateUserDto req)
     {
         await TurnstileService.Validate(req.Captcha);
         if (await DbContext.User.AnyAsync(x => x.Username == req.Username))
