@@ -87,7 +87,7 @@ public class AuthenticationEventHandler : JwtBearerEvents
         }
     }
 
-    protected async Task Validate(TokenValidatedContext context)
+    protected Task Validate(TokenValidatedContext context)
     {
         if (context.Principal == null)
         {
@@ -95,25 +95,17 @@ public class AuthenticationEventHandler : JwtBearerEvents
         }
         var subject = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier) ??
             throw new ZhuiAnimeError.InvalidToken("za_no_subject", "no subject in token", null);
-        if (uint.TryParse(subject, out var userId) == false)
+        if (uint.TryParse(subject, out var _) == false)
         {
             throw new ZhuiAnimeError.InvalidToken("za_invalid_subject", "subject is not number", null);
         }
-        using var scope = context.HttpContext.RequestServices.CreateScope();
-        using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
-        var user = await db.User.FindAsync(userId) ??
-            throw new ZhuiAnimeError.InvalidToken("za_user_not_found", "user does not exist in database", null);
         var updatedAtStr = context.Principal.FindFirstValue(Services.TokenService.JwtClaimNames.UpdatedAt) ??
             throw new ZhuiAnimeError.InvalidToken("za_no_updated_at", "no updated_at in token", null);
-        if (long.TryParse(updatedAtStr, out var updatedAtInt) == false)
+        if (long.TryParse(updatedAtStr, out var _) == false)
         {
             throw new ZhuiAnimeError.InvalidToken("za_invalid_updated_at", "updated_at is not number", null);
         }
-        var updatedAt = DateTimeOffset.FromUnixTimeSeconds(updatedAtInt);
-        if (Math.Abs((updatedAt - user.UpdatedAt).TotalSeconds) > 30)
-        {
-            throw new ZhuiAnimeError.InvalidToken("za_user_updated", "user has been updated", null);
-        }
+        return Task.CompletedTask;
     }
 
     public override async Task TokenValidated(TokenValidatedContext context)
