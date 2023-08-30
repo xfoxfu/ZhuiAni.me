@@ -2,12 +2,14 @@ global using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
+using Me.Xfox.ZhuiAnime.Services;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Serilog;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
@@ -60,19 +62,47 @@ builder.Services.AddDbContext<ZAContext>(opt =>
     opt.UseSnakeCaseNamingConvention();
 });
 
-builder.Services.AddSwaggerGen(options =>
+builder.Services.AddSwaggerGen(opts =>
 {
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    opts.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
         Title = "ZhuiAni.me API",
     });
-    options.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
-    options.SchemaFilter<RequiredNotNullableSchemaFilter>();
-    options.SupportNonNullableReferenceTypes();
-    options.IncludeXmlComments(System.IO.Path.Combine(
+    opts.AddServer(new OpenApiServer { Url = "https://zhuiani.me", Description = "Public server" });
+    opts.AddServer(new OpenApiServer { Url = "https://localhost:5001", Description = "Local development server" });
+    opts.AddSecurityDefinition("oauth2_1p", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows
+        {
+            Password = new OpenApiOAuthFlow
+            {
+                Scopes = new Dictionary<string, string>
+                {
+                    { TokenService.JwtScopes.OAuth, "Generate other OAuth tokens." },
+                },
+                TokenUrl = new Uri("{{baseUrl}}/api/session", UriKind.Relative),
+            }
+        },
+    });
+    opts.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "oauth2_1p" }
+            },
+            Array.Empty<string>()
+        }
+    });
+    opts.IncludeXmlComments(Path.Combine(
         AppContext.BaseDirectory,
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+    opts.SupportNonNullableReferenceTypes();
+    opts.SchemaFilter<RequiredNotNullableSchemaFilter>();
+    opts.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
+    opts.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
@@ -82,8 +112,8 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
     type.GetMethod("ConfigureOn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
         ?.Invoke(null, new object[] { builder });
 }
-ZhuiAnime.Services.TurnstileService.ConfigureOn(builder);
-ZhuiAnime.Services.TokenService.ConfigureOn(builder);
+TurnstileService.ConfigureOn(builder);
+TokenService.ConfigureOn(builder);
 
 builder.Services.AddAuthentication(opts =>
 {
@@ -94,8 +124,9 @@ builder.Services.AddAuthentication(opts =>
 .AddJwtBearer(opts =>
 {
     opts.SaveToken = true;
-    var config = builder.Configuration.GetSection(ZhuiAnime.Services.TokenService.Option.LOCATION)
-        .Get<ZhuiAnime.Services.TokenService.Option>();
+    var config = builder.Configuration.GetSection(TokenService.Option.LOCATION)
+        .Get<TokenService.Option>();
+    new TokenService.OptionConfigure().Configure(config!);
     opts.TokenValidationParameters = new TokenValidationParameters
     {
         ValidIssuer = config?.Issuer,
