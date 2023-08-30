@@ -17,6 +17,8 @@ public class User
 
     public DateTimeOffset UpdatedAt { get; set; }
 
+    public IEnumerable<RefreshToken> RefreshTokens { get; set; } = null!;
+
     /// <summary>
     /// For protecting against timing side attacks. This is the hash of `HEE3KsHajmEq8bSX`.
     /// </summary>

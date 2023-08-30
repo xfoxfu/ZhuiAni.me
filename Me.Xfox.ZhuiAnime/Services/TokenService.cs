@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using Me.Xfox.ZhuiAnime.Models;
 
 namespace Me.Xfox.ZhuiAnime.Services;
 
@@ -10,12 +11,15 @@ public class TokenService
 {
     protected ILogger<TokenService> Logger { get; init; }
     protected IOptionsMonitor<Option> Options { get; set; }
+    protected IServiceScopeFactory Services { get; init; }
+
     public TimeSpan FirstPartyExpires => Options.CurrentValue.FirstPartyExpires;
 
-    public TokenService(ILogger<TokenService> logger, IOptionsMonitor<Option> options)
+    public TokenService(ILogger<TokenService> logger, IOptionsMonitor<Option> options, IServiceScopeFactory services)
     {
         Logger = logger;
         Options = options;
+        Services = services;
     }
 
     public static WebApplicationBuilder ConfigureOn(WebApplicationBuilder builder)
@@ -36,7 +40,7 @@ public class TokenService
         return scopes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
     }
 
-    public (string, JwtSecurityToken) IssueFirstParty(Models.User user)
+    public (string, JwtSecurityToken) IssueFirstParty(User user)
     {
         var claims = new List<Claim>
         {
@@ -62,6 +66,36 @@ public class TokenService
                 .Any(x => x.Value == JwtScopes.OAuth) &&
             user.FindAll(JwtRegisteredClaimNames.Aud)
                 .Any(x => x.Value == Options.CurrentValue.AudienceFirstParty);
+    }
+
+    public async Task<RefreshToken> IssueFirstPartyRefreshToken(User user, RefreshToken? oldToken)
+    {
+        var expireTime = DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(Options.CurrentValue.RefreshExpiresDays));
+        var token = new RefreshToken
+        {
+            UserId = user.Id,
+            UserUpdatedAt = user.UpdatedAt,
+            Token = Guid.NewGuid(),
+            ExpiresIn = expireTime
+        };
+        using var services = Services.CreateScope();
+        using var db = services.ServiceProvider.GetRequiredService<ZAContext>();
+        using var transaction = db.Database.BeginTransaction();
+        db.RefreshToken.Add(token);
+        if (oldToken != null)
+        {
+            var oldTokenDb = await db.RefreshToken.FindAsync(oldToken.Token);
+            db.RefreshToken.Remove(oldTokenDb!);
+        }
+        await db.SaveChangesAsync();
+        await db.RefreshToken
+            .Where(x => x.UserId == user.Id && x.ExpiresIn < expireTime)
+            .ExecuteDeleteAsync();
+        await db.RefreshToken
+            .Where(x => x.UserId == user.Id && x.UserUpdatedAt != user.UpdatedAt)
+            .ExecuteDeleteAsync();
+        await transaction.CommitAsync();
+        return token;
     }
 
     public struct JwtClaimNames
@@ -91,6 +125,8 @@ public class TokenService
         public string AudienceFirstParty { get; set; } = string.Empty;
 
         public TimeSpan FirstPartyExpires { get; set; }
+
+        public uint RefreshExpiresDays { get; set; }
 
         public SecurityKey SecurityKey { get; set; } = null!;
 

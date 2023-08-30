@@ -302,4 +302,14 @@ public class ZhuiAnimeError : Exception
         {
         }
     }
+
+    public class InvalidRefreshToken : ZhuiAnimeError
+    {
+        public InvalidRefreshToken(string code) : base(
+            HttpStatusCode.Forbidden,
+            "INVALID_REFRESH_TOKEN",
+            $"Refresh token is not valid for {code}.")
+        {
+        }
+    }
 }

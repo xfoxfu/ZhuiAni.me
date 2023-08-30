@@ -59,3 +59,4 @@ PublicKey = """
 Issuer = "https://zhuiani.me"
 AudienceFirstParty = "https://zhuiani.me"
 FirstPartyExpires = 00:10:00
+RefreshExpiresDays = 7
