@@ -6,9 +6,7 @@ using ItemDto = Me.Xfox.ZhuiAnime.Controllers.ItemController.ItemDto;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
-/// <summary>
-/// Get category.
-/// </summary>
+/// <summary>Get category.</summary>
 [ApiController, Route("api/categories")]
 public class CategoryController : ControllerBase
 {
@@ -19,9 +17,7 @@ public class CategoryController : ControllerBase
         DbContext = dbContext;
     }
 
-    /// <summary>
-    /// Category information.
-    /// </summary>
+    /// <summary>Category information.</summary>
     /// <param name="Id">id</param>
     /// <param name="Title">user-friendly name</param>
     /// <param name="CreatedAt">created time</param>
@@ -42,9 +38,7 @@ public class CategoryController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get all categories.
-    /// </summary>
+    /// <summary>List</summary>
     /// <returns>List of categories.</returns>
     [HttpGet]
     public async Task<IEnumerable<CategoryDto>> ListAsync()
@@ -58,9 +52,7 @@ public class CategoryController : ControllerBase
     /// <param name="Title">user-friendly name</param>
     public record CreateOrUpdateCategoryDto(string Title);
 
-    /// <summary>
-    /// Create a new category.
-    /// </summary>
+    /// <summary>Create</summary>
     /// <param name="category"></param>
     /// <returns></returns>
     [HttpPost]
@@ -85,9 +77,7 @@ public class CategoryController : ControllerBase
         return category;
     }
 
-    /// <summary>
-    /// Get a category.
-    /// </summary>
+    /// <summary>Get</summary>
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
@@ -97,9 +87,7 @@ public class CategoryController : ControllerBase
         return new CategoryDto(await LoadCategory());
     }
 
-    /// <summary>
-    /// Update a category.
-    /// </summary>
+    /// <summary>Update</summary>
     /// <param name="id">category id</param>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -113,9 +101,7 @@ public class CategoryController : ControllerBase
         return new CategoryDto(category);
     }
 
-    /// <summary>
-    /// Delete a category.
-    /// </summary>
+    /// <summary>Delete</summary>
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
@@ -128,9 +114,7 @@ public class CategoryController : ControllerBase
         return new CategoryDto(category);
     }
 
-    /// <summary>
-    /// Get a category's items.
-    /// </summary>
+    /// <summary>Get Belonged Items</summary>
     /// <remarks>
     /// This API will only return those are top-level, i.e. do not have a parent
     /// item. The result will be ordered by id descendingly.

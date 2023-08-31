@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi;
 
 /// <summary>
-/// Get items.
+/// Functionality related to https://bgm.tv .
 /// </summary>
 [ApiController, Route("api/modules/bangumi")]
 public class BangumiController : ControllerBase
@@ -15,8 +15,20 @@ public class BangumiController : ControllerBase
         Bangumi = bangumi;
     }
 
-    public record ImportSubjectDto(int Id);
+    public record ImportSubjectDto
+    {
+        /// <summary>
+        /// bangumi subject ID
+        /// </summary>
+        public required int Id { get; set; }
+    }
 
+    /// <summary>Import Subject</summary>
+    /// <remarks>
+    /// Import a subject from https://bgm.tv .
+    /// </remarks>
+    /// <param name="req"></param>
+    /// <returns></returns>
     [HttpPost("import_subject")]
     public async Task<ItemController.ItemDto> ImportSubject(ImportSubjectDto req)
     {
