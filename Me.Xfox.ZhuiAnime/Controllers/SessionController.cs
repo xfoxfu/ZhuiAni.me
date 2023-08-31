@@ -27,11 +27,11 @@ public class SessionController : ControllerBase
 
     public record LoginReqDto
     {
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string Captcha { get; set; } = string.Empty;
-        public string Grant_Type { get; set; } = string.Empty;
-        public string Refresh_Token { get; set; } = string.Empty;
+        public string username { get; set; } = string.Empty;
+        public string password { get; set; } = string.Empty;
+        public string captcha { get; set; } = string.Empty;
+        public string grant_type { get; set; } = string.Empty;
+        public string refresh_token { get; set; } = string.Empty;
     }
 
     public record LoginResDto(
@@ -44,12 +44,24 @@ public class SessionController : ControllerBase
     );
 
     /// <summary>Login</summary>
-    /// <remarks>
+    /// <remarks><![CDATA[
     /// Login with username and password. This API does not comply with OAuth 2.1,
     /// and only supports first-party applications (the built-in web frontend).
     /// It is based on `grant_type` `password` (which has been drooped in OAuth 2.1)
     /// or `refresh_token`. It requires additional parameters for security control.
-    /// </remarks>
+    /// 
+    /// **Request with password**
+    /// 
+    /// ```text
+    /// username=alice&password=foobar&captcha=foobar&grant_type=password
+    /// ```
+    /// 
+    /// **Request with refresh token**
+    /// 
+    /// ```text
+    /// grant_type=refresh_token&refresh_token=507f0155-577e-448d-870b-5abe98a41d3f
+    /// ```
+    /// ]]></remarks>
     /// <param name="req"></param>
     /// <returns></returns>
     /// <exception cref="ZhuiAnimeError.InvalidGrantType">If the grant type is invalid.</exception>
@@ -58,16 +70,16 @@ public class SessionController : ControllerBase
     [AllowAnonymous]
     [ResponseCache(NoStore = true)]
     [Consumes("application/x-www-form-urlencoded")]
-    [OpenApiOperation("Foo", "Bar", "Description")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.InvalidGrantType), typeof(ZhuiAnimeError.InvalidUsernameOrPassword))]
     public async Task<LoginResDto> Login([FromForm] LoginReqDto req)
     {
-        if (req.Grant_Type == "password")
+        if (req.grant_type == "password")
         {
-            await TurnstileService.Validate(req.Captcha);
-            var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.Username);
-            if (Models.User.ValidatePassword(user, req.Password) != true)
+            await TurnstileService.Validate(req.captcha);
+            var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.username);
+            if (Models.User.ValidatePassword(user, req.password) != true)
             {
-                throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
+                throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.username);
             }
             var refresh = await TokenService.IssueFirstPartyRefreshToken(user, null);
             var (token, jwt) = TokenService.IssueFirstParty(user, refresh);
@@ -80,9 +92,9 @@ public class SessionController : ControllerBase
                 RefreshToken: refresh.Token.ToString(),
                 Scope: scopes);
         }
-        else if (req.Grant_Type == "refresh_token")
+        else if (req.grant_type == "refresh_token")
         {
-            if (!Guid.TryParse(req.Refresh_Token, out var tokenId))
+            if (!Guid.TryParse(req.refresh_token, out var tokenId))
             {
                 throw new ZhuiAnimeError.InvalidRefreshToken("not_guid");
             }
@@ -111,7 +123,7 @@ public class SessionController : ControllerBase
         }
         else
         {
-            throw new ZhuiAnimeError.InvalidGrantType(req.Grant_Type);
+            throw new ZhuiAnimeError.InvalidGrantType(req.grant_type);
         }
     }
 
