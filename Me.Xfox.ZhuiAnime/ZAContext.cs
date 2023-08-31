@@ -14,7 +14,7 @@ public partial class ZAContext : DbContext
     public DbSet<Item> Item { get; set; } = null!;
     public DbSet<Link> Link { get; set; } = null!;
     public DbSet<User> User { get; set; } = null!;
-    public DbSet<RefreshToken> RefreshToken { get; set; } = null!;
+    public DbSet<Session> Session { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

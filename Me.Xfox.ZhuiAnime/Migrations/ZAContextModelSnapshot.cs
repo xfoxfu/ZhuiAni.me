@@ -163,7 +163,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     b.ToTable("link", (string)null);
                 });
 
-            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.RefreshToken", b =>
+            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.Session", b =>
                 {
                     b.Property<Guid>("Token")
                         .ValueGeneratedOnAdd()
@@ -189,12 +189,12 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("user_updated_at");
 
                     b.HasKey("Token")
-                        .HasName("pk_refresh_token");
+                        .HasName("pk_session");
 
                     b.HasIndex("UserId")
-                        .HasDatabaseName("ix_refresh_token_user_id");
+                        .HasDatabaseName("ix_session_user_id");
 
-                    b.ToTable("refresh_token", (string)null);
+                    b.ToTable("session", (string)null);
                 });
 
             modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.User", b =>
@@ -372,14 +372,14 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     b.Navigation("ParentLink");
                 });
 
-            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.RefreshToken", b =>
+            modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.Session", b =>
                 {
                     b.HasOne("Me.Xfox.ZhuiAnime.Models.User", "User")
-                        .WithMany("RefreshTokens")
+                        .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_refresh_token_user_user_id");
+                        .HasConstraintName("fk_session_user_user_id");
 
                     b.Navigation("User");
                 });
@@ -428,7 +428,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
 
             modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.User", b =>
                 {
-                    b.Navigation("RefreshTokens");
+                    b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618
         }

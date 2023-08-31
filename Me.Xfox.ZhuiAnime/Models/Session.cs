@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Me.Xfox.ZhuiAnime.Models;
 
-public class RefreshToken
+public class Session
 {
     public Guid Token { get; set; }
 
@@ -15,9 +15,9 @@ public class RefreshToken
 
     public DateTimeOffset CreatedAt { get; set; }
 
-    public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
+    public class SessionConfiguration : IEntityTypeConfiguration<Session>
     {
-        public void Configure(EntityTypeBuilder<RefreshToken> builder)
+        public void Configure(EntityTypeBuilder<Session> builder)
         {
             builder.HasKey(x => x.Token);
 
@@ -25,7 +25,7 @@ public class RefreshToken
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(x => x.User)
-                .WithMany(x => x.RefreshTokens);
+                .WithMany(x => x.Sessions);
         }
     }
 }

@@ -82,7 +82,7 @@ public class SessionController : ControllerBase
             {
                 throw new ZhuiAnimeError.InvalidRefreshToken("not_guid");
             }
-            var refresh = await DbContext.RefreshToken
+            var refresh = await DbContext.Session
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Token == tokenId) ??
                 throw new ZhuiAnimeError.InvalidRefreshToken("not_found");
@@ -146,9 +146,9 @@ public class SessionController : ControllerBase
         var refresh = User.FindFirstValue(JwtRegisteredClaimNames.Sid) ??
             throw new ZhuiAnimeError.InvalidToken("sid_not_present", "no sid in token", null);
         var tokenId = Guid.Parse(refresh);
-        var token = await DbContext.RefreshToken.FindAsync(tokenId) ??
+        var token = await DbContext.Session.FindAsync(tokenId) ??
             throw new ZhuiAnimeError.InvalidToken("refresh_token_not_found", $"refresh token {refresh} not found", null);
-        DbContext.RefreshToken.Remove(token);
+        DbContext.Session.Remove(token);
         await DbContext.SaveChangesAsync();
         return NoContent();
     }

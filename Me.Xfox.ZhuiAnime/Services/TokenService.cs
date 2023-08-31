@@ -40,7 +40,7 @@ public class TokenService
         return scopes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
     }
 
-    public (string, JwtSecurityToken) IssueFirstParty(User user, RefreshToken refresh)
+    public (string, JwtSecurityToken) IssueFirstParty(User user, Session refresh)
     {
         var claims = new List<Claim>
         {
@@ -70,10 +70,10 @@ public class TokenService
                 .Any(x => x.Value == Options.CurrentValue.AudienceFirstParty);
     }
 
-    public async Task<RefreshToken> IssueFirstPartyRefreshToken(User user, RefreshToken? oldToken)
+    public async Task<Session> IssueFirstPartyRefreshToken(User user, Session? oldToken)
     {
         var expireTime = DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(Options.CurrentValue.RefreshExpiresDays));
-        var token = new RefreshToken
+        var token = new Session
         {
             UserId = user.Id,
             UserUpdatedAt = user.UpdatedAt,
@@ -83,17 +83,17 @@ public class TokenService
         using var services = Services.CreateScope();
         using var db = services.ServiceProvider.GetRequiredService<ZAContext>();
         using var transaction = db.Database.BeginTransaction();
-        db.RefreshToken.Add(token);
+        db.Session.Add(token);
         if (oldToken != null)
         {
-            var oldTokenDb = await db.RefreshToken.FindAsync(oldToken.Token);
-            db.RefreshToken.Remove(oldTokenDb!);
+            var oldTokenDb = await db.Session.FindAsync(oldToken.Token);
+            db.Session.Remove(oldTokenDb!);
         }
         await db.SaveChangesAsync();
-        await db.RefreshToken
+        await db.Session
             .Where(x => x.UserId == user.Id && x.ExpiresIn < expireTime)
             .ExecuteDeleteAsync();
-        await db.RefreshToken
+        await db.Session
             .Where(x => x.UserId == user.Id && x.UserUpdatedAt != user.UpdatedAt)
             .ExecuteDeleteAsync();
         await transaction.CommitAsync();

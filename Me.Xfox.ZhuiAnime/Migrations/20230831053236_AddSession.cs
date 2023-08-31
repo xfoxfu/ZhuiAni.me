@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Me.Xfox.ZhuiAnime.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateRefreshToken : Migration
+    public partial class AddSession : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "refresh_token",
+                name: "session",
                 columns: table => new
                 {
                     token = table.Column<Guid>(type: "uuid", nullable: false),
@@ -23,9 +23,9 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_refresh_token", x => x.token);
+                    table.PrimaryKey("pk_session", x => x.token);
                     table.ForeignKey(
-                        name: "fk_refresh_token_user_user_id",
+                        name: "fk_session_user_user_id",
                         column: x => x.user_id,
                         principalTable: "user",
                         principalColumn: "id",
@@ -33,8 +33,8 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "ix_refresh_token_user_id",
-                table: "refresh_token",
+                name: "ix_session_user_id",
+                table: "session",
                 column: "user_id");
         }
 
@@ -42,7 +42,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "refresh_token");
+                name: "session");
         }
     }
 }
