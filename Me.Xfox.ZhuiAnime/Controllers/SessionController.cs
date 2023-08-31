@@ -65,8 +65,8 @@ public class SessionController : ControllerBase
             {
                 throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.Username);
             }
-            var (token, jwt) = TokenService.IssueFirstParty(user);
             var refresh = await TokenService.IssueFirstPartyRefreshToken(user, null);
+            var (token, jwt) = TokenService.IssueFirstParty(user, refresh);
             var expires = jwt.Payload.Exp ?? 0;
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var scopes = jwt.Payload.Claims.FirstOrDefault(x => x.Type == TokenService.JwtClaimNames.Scope)?.Value ?? "";
@@ -94,8 +94,8 @@ public class SessionController : ControllerBase
             {
                 throw new ZhuiAnimeError.InvalidRefreshToken("token_expired");
             }
-            var (token, jwt) = TokenService.IssueFirstParty(refresh.User);
             var newRefresh = await TokenService.IssueFirstPartyRefreshToken(refresh.User, refresh);
+            var (token, jwt) = TokenService.IssueFirstParty(refresh.User, newRefresh);
             var expires = jwt.Payload.Exp ?? 0;
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var scopes = jwt.Payload.Claims.FirstOrDefault(x => x.Type == TokenService.JwtClaimNames.Scope)?.Value ?? "";
@@ -134,5 +134,22 @@ public class SessionController : ControllerBase
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(issued)),
             DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(expires))
         );
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> Logout()
+    {
+        if (!TokenService.IsFirstParty(User))
+        {
+            throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
+        }
+        var refresh = User.FindFirstValue(JwtRegisteredClaimNames.Sid) ??
+            throw new ZhuiAnimeError.InvalidToken("sid_not_present", "no sid in token", null);
+        var tokenId = Guid.Parse(refresh);
+        var token = await DbContext.RefreshToken.FindAsync(tokenId) ??
+            throw new ZhuiAnimeError.InvalidToken("refresh_token_not_found", $"refresh token {refresh} not found", null);
+        DbContext.RefreshToken.Remove(token);
+        await DbContext.SaveChangesAsync();
+        return NoContent();
     }
 }

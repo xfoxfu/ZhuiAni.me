@@ -40,7 +40,7 @@ public class TokenService
         return scopes.Split(' ', StringSplitOptions.RemoveEmptyEntries);
     }
 
-    public (string, JwtSecurityToken) IssueFirstParty(User user)
+    public (string, JwtSecurityToken) IssueFirstParty(User user, RefreshToken refresh)
     {
         var claims = new List<Claim>
         {
@@ -49,6 +49,8 @@ public class TokenService
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new (JwtClaimNames.Scope, EncodeScopes(new[]{ JwtScopes.OAuth })),
             new (JwtClaimNames.UpdatedAt, user.UpdatedAt.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
+            new (JwtRegisteredClaimNames.Sid, refresh.Token.ToString()),
+            new (JwtClaimNames.ClientId, BuiltInClientId),
         };
         var token = new JwtSecurityToken(
             issuer: Options.CurrentValue.Issuer,
@@ -101,16 +103,25 @@ public class TokenService
     public struct JwtClaimNames
     {
         /// <summary>
-        /// See https://datatracker.ietf.org/doc/html/rfc8693#name-scope-scopes-claim
+        /// https://datatracker.ietf.org/doc/html/rfc8693#name-scope-scopes-claim
         /// </summary>
         public const string Scope = "scope";
+        /// <summary>
+        /// https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+        /// </summary>
         public const string UpdatedAt = "updated_at";
+        /// <summary>
+        /// https://www.rfc-editor.org/rfc/rfc8693.html#name-client_id-client-identifier
+        /// </summary>
+        public const string ClientId = "client_id";
     }
 
     public struct JwtScopes
     {
         public const string OAuth = "1p_oauth";
     }
+
+    public const string BuiltInClientId = "zhuianime";
 
     public class Option
     {
