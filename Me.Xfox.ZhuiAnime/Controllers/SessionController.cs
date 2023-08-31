@@ -153,7 +153,7 @@ public class SessionController : ControllerBase
     }
 
     [HttpDelete]
-    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Logout()
     {
         if (!TokenService.IsFirstParty(User))

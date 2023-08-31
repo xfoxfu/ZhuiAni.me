@@ -58,6 +58,7 @@ public class ItemLinkController : ControllerBase
     /// </summary>
     /// <returns>List of links.</returns>
     [HttpGet]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<IEnumerable<LinkDto>> ListAsync(uint item_id)
     {
         var item = await DbContext.Item.Include(i => i.Links)
@@ -90,7 +91,8 @@ public class ItemLinkController : ControllerBase
     /// <param name="link"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(typeof(LinkDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
     {
         var item = await DbContext.Item.FindAsync(item_id);
@@ -137,6 +139,7 @@ public class ItemLinkController : ControllerBase
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
     public async Task<LinkDto> Get(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);
@@ -167,6 +170,7 @@ public class ItemLinkController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
     public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
     {
         var link = await LoadLink(item_id, id);
@@ -184,6 +188,7 @@ public class ItemLinkController : ControllerBase
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
     public async Task<LinkDto> Delete(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);

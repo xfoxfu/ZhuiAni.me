@@ -81,7 +81,7 @@ public class ItemController : ControllerBase
     /// <param name="item"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ItemDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateItemDto item)
     {
         var newItem = new Item
@@ -105,6 +105,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<ItemDto> Get(uint id)
     {
         return new ItemDto(await LoadItem(id));
@@ -123,6 +124,7 @@ public class ItemController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
@@ -139,6 +141,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<ItemDto> Delete(uint id)
     {
         var item = await LoadItem(id);
@@ -153,6 +156,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
     public async Task<IEnumerable<ItemDto>> GetChildItems(uint id)
     {
         var item = await LoadItem(id);

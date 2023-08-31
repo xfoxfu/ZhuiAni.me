@@ -64,7 +64,7 @@ public class CategoryController : ControllerBase
     /// <param name="category"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(typeof(CategoryDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(CategoryDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateOrUpdateCategoryDto category)
     {
         var categoryDb = new Category
@@ -91,6 +91,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
     public async Task<CategoryDto> Get(uint id)
     {
         return new CategoryDto(await LoadCategory());
@@ -103,6 +104,7 @@ public class CategoryController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
     public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
         var category = await LoadCategory();
@@ -117,6 +119,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
     public async Task<CategoryDto> Delete(uint id)
     {
         var category = await LoadCategory();
@@ -135,6 +138,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
+    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
     public async Task<IEnumerable<ItemDto>> GetItems(uint id)
     {
         var category = await LoadCategory();
