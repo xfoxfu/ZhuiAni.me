@@ -36,11 +36,19 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
-    .AddControllers(options =>
+    .AddControllers(opts =>
     {
-        options.OutputFormatters.RemoveType<StringOutputFormatter>();
-        options.OutputFormatters.RemoveType<StreamOutputFormatter>();
-        options.Filters.Add<ZhuiAnimeError.ErrorExceptionFilter>();
+        opts.OutputFormatters.RemoveType<StringOutputFormatter>();
+        opts.OutputFormatters.RemoveType<StreamOutputFormatter>();
+        opts.Filters.Add<ZhuiAnimeError.ErrorExceptionFilter>();
+
+        var jsonInputFormatter = opts.InputFormatters.OfType<SystemTextJsonInputFormatter>().First();
+        jsonInputFormatter.SupportedMediaTypes.Remove("text/json");
+        jsonInputFormatter.SupportedMediaTypes.Remove("application/*+json");
+
+        var jsonOutputFormatter = opts.OutputFormatters.OfType<SystemTextJsonOutputFormatter>().First();
+        jsonOutputFormatter.SupportedMediaTypes.Remove("text/json");
+        jsonOutputFormatter.SupportedMediaTypes.Remove("application/*+json");
     })
     .AddJsonOptions(options =>
     {

@@ -9,18 +9,6 @@
  * ---------------------------------------------------------------
  */
 
-export interface AnimeDto {
-  /** @format int32 */
-  id: number;
-  /** @format int32 */
-  bangumi: number;
-  target: string;
-  regex: string;
-  /** @format int32 */
-  match_group_ep: number;
-  enabled: boolean;
-}
-
 /** Category information. */
 export interface CategoryDto {
   /**
@@ -30,15 +18,16 @@ export interface CategoryDto {
   id: number;
   /** user-friendly name */
   title: string;
-}
-
-export interface CreateAnimeDto {
-  /** @format int32 */
-  bangumi: number;
-  target: string;
-  regex: string;
-  /** @format int32 */
-  match_group_ep: number;
+  /**
+   * created time
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * last updated time
+   * @format date-time
+   */
+  updated_at: string;
 }
 
 export interface CreateItemDto {
@@ -48,6 +37,15 @@ export interface CreateItemDto {
   annotations: Record<string, string>;
   /** @format int32 */
   parent_item_id?: number | null;
+}
+
+export interface CreateJobDto {
+  /** @format int32 */
+  bangumi: number;
+  target: string;
+  regex: string;
+  /** @format int32 */
+  match_group_ep: number;
 }
 
 /** Information for creating a link. */
@@ -71,6 +69,12 @@ export interface CreateLinkDto {
 export interface CreateOrUpdateCategoryDto {
   /** user-friendly name */
   title: string;
+}
+
+export interface CreateUserDto {
+  username: string;
+  password: string;
+  captcha: string;
 }
 
 export interface ErrorProdResponse {
@@ -105,6 +109,30 @@ export interface ItemDto {
    * @format int32
    */
   parent_item_id?: number | null;
+  /**
+   * created time
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * last updated time
+   * @format date-time
+   */
+  updated_at: string;
+}
+
+export interface JobDto {
+  /** @format int32 */
+  id: number;
+  /** @format int32 */
+  bangumi: number;
+  target: string;
+  regex: string;
+  /** @format int32 */
+  match_group_ep: number;
+  enabled: boolean;
+  /** @format date-time */
+  last_fetched_at: string;
 }
 
 /** Link. */
@@ -133,6 +161,34 @@ export interface LinkDto {
    * @format int32
    */
   parent_link_id?: number | null;
+  /**
+   * created time
+   * @format date-time
+   */
+  created_at: string;
+  /**
+   * last updated time
+   * @format date-time
+   */
+  updated_at: string;
+}
+
+export interface LoginResDto {
+  access_token: string;
+  /** @format int32 */
+  expires_in: number;
+  refresh_token: string;
+  scope: string;
+  token_type: string;
+  issued_token_type: string;
+}
+
+export interface TokenDto {
+  user: UserDto;
+  /** @format date-time */
+  issued_at: string;
+  /** @format date-time */
+  expires_at: string;
 }
 
 export interface TorrentDto {
@@ -147,7 +203,14 @@ export interface TorrentDto {
   link_magnet?: string | null;
 }
 
-export interface UpdateAnimeDto {
+export interface UpdateItemDto {
+  /** @format int32 */
+  category_id?: number | null;
+  title?: string | null;
+  annotations?: Record<string, string>;
+}
+
+export interface UpdateJobDto {
   /** @format int32 */
   bangumi: number;
   target: string;
@@ -155,13 +218,6 @@ export interface UpdateAnimeDto {
   /** @format int32 */
   match_group_ep: number;
   enabled: boolean;
-}
-
-export interface UpdateItemDto {
-  /** @format int32 */
-  category_id?: number | null;
-  title?: string | null;
-  annotations?: Record<string, string>;
 }
 
 /** Information for updating a link. */
@@ -175,6 +231,16 @@ export interface UpdateLinkDto {
   mime_type: string;
   /** extra information for this link */
   annotations: Record<string, string>;
+}
+
+export interface UserDto {
+  /** @format int32 */
+  id: number;
+  username: string;
+  /** @format date-time */
+  created_at: string;
+  /** @format date-time */
+  updated_at: string;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -223,7 +289,7 @@ export enum ContentType {
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public baseUrl: string = "";
+  public baseUrl: string = "https://zhuiani.me";
   private securityData: SecurityDataType | null = null;
   private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
   private abortControllers = new Map<CancelToken, AbortController>();
@@ -354,7 +420,7 @@ export class HttpClient<SecurityDataType = unknown> {
         ...(requestParams.headers || {}),
         ...(type && type !== ContentType.FormData ? { "Content-Type": type } : {}),
       },
-      signal: cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal,
+      signal: (cancelToken ? this.createAbortSignal(cancelToken) : requestParams.signal) || null,
       body: typeof body === "undefined" || body === null ? null : payloadFormatter(body),
     }).then(async (response) => {
       const r = response as HttpResponse<T, E>;
@@ -389,50 +455,48 @@ export class HttpClient<SecurityDataType = unknown> {
 
 export class ApiError extends Error {}
 
-import useSWR, { mutate, MutatorOptions, SWRConfiguration } from "swr";
+import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
 
 /**
  * @title ZhuiAni.me API
  * @version v1
+ * @baseUrl https://zhuiani.me
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
-  bangumi = {
+  api = {
     /**
      * No description
      *
      * @tags Bangumi
-     * @name PostModulesBangumiImportSubject
+     * @name BangumiImportSubject
      * @request POST:/api/modules/bangumi/import_subject
+     * @secure
      */
-    postModulesBangumiImportSubject: (data: ImportSubjectDto, params: RequestParams = {}) =>
+    bangumiImportSubject: (data: ImportSubjectDto, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/modules/bangumi/import_subject`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
       }),
-  };
-  category = {
+
     /**
      * No description
      *
      * @tags Category
-     * @name GetCategories
+     * @name CategoryList
      * @summary Get all categories.
      * @request GET:/api/categories
+     * @secure
      */
-    getCategories: (
-      query?: {
-        someBool?: boolean;
-      },
-      params: RequestParams = {},
-    ) =>
+    categoryList: (params: RequestParams = {}) =>
       this.request<CategoryDto[], ErrorProdResponse>({
         path: `/api/categories`,
         method: "GET",
-        query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -440,47 +504,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Category
-     * @name GetCategories
+     * @name CategoryList
      * @summary Get all categories.
      * @request GET:/api/categories
+     * @secure
      */
-    useGetCategories: (
-      query?: {
-        someBool?: boolean;
-      },
-      options?: SWRConfiguration,
-      doFetch: boolean = true,
-    ) => useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? [`/api/categories`, query] : null, options),
+    useCategoryList: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<CategoryDto[], ErrorProdResponse>(doFetch ? `/api/categories` : null, options),
 
     /**
      * No description
      *
      * @tags Category
-     * @name GetCategories
+     * @name CategoryList
      * @summary Get all categories.
      * @request GET:/api/categories
+     * @secure
      */
-    mutateGetCategories: (
-      query?: {
-        someBool?: boolean;
-      },
-      data?: CategoryDto[] | Promise<CategoryDto[]>,
-      options?: MutatorOptions,
-    ) => mutate<CategoryDto[]>([`/api/categories`, query], data, options),
+    mutateCategoryList: (data?: CategoryDto[] | Promise<CategoryDto[]>, options?: MutatorOptions) =>
+      mutate<CategoryDto[]>(`/api/categories`, data, options),
 
     /**
      * No description
      *
      * @tags Category
-     * @name PostCategories
+     * @name CategoryCreate
      * @summary Create a new category.
      * @request POST:/api/categories
+     * @secure
      */
-    postCategories: (data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
+    categoryCreate: (data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
       this.request<CategoryDto, ErrorProdResponse>({
         path: `/api/categories`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -490,14 +548,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Category
-     * @name GetCategory
+     * @name CategoryGet
      * @summary Get a category.
      * @request GET:/api/categories/{id}
+     * @secure
      */
-    getCategory: (id: number, params: RequestParams = {}) =>
+    categoryGet: (id: number, params: RequestParams = {}) =>
       this.request<CategoryDto, ErrorProdResponse>({
         path: `/api/categories/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -505,37 +565,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Category
-     * @name GetCategory
+     * @name CategoryGet
      * @summary Get a category.
      * @request GET:/api/categories/{id}
+     * @secure
      */
-    useGetCategory: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useCategoryGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<CategoryDto, ErrorProdResponse>(doFetch ? `/api/categories/${id}` : null, options),
 
     /**
      * No description
      *
      * @tags Category
-     * @name GetCategory
+     * @name CategoryGet
      * @summary Get a category.
      * @request GET:/api/categories/{id}
+     * @secure
      */
-    mutateGetCategory: (id: number, data?: CategoryDto | Promise<CategoryDto>, options?: MutatorOptions) =>
+    mutateCategoryGet: (id: number, data?: CategoryDto | Promise<CategoryDto>, options?: MutatorOptions) =>
       mutate<CategoryDto>(`/api/categories/${id}`, data, options),
 
     /**
      * No description
      *
      * @tags Category
-     * @name PatchCategory
+     * @name CategoryUpdate
      * @summary Update a category.
      * @request PATCH:/api/categories/{id}
+     * @secure
      */
-    patchCategory: (id: number, data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
+    categoryUpdate: (id: number, data: CreateOrUpdateCategoryDto, params: RequestParams = {}) =>
       this.request<CategoryDto, ErrorProdResponse>({
         path: `/api/categories/${id}`,
         method: "PATCH",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -545,14 +609,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Category
-     * @name DeleteCategory
+     * @name CategoryDelete
      * @summary Delete a category.
      * @request DELETE:/api/categories/{id}
+     * @secure
      */
-    deleteCategory: (id: number, params: RequestParams = {}) =>
+    categoryDelete: (id: number, params: RequestParams = {}) =>
       this.request<CategoryDto, ErrorProdResponse>({
         path: `/api/categories/${id}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -561,14 +627,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Category
-     * @name GetCategoryItems
+     * @name CategoryGetItems
      * @summary Get a category's items.
      * @request GET:/api/categories/{id}/items
+     * @secure
      */
-    getCategoryItems: (id: number, params: RequestParams = {}) =>
+    categoryGetItems: (id: number, params: RequestParams = {}) =>
       this.request<ItemDto[], ErrorProdResponse>({
         path: `/api/categories/${id}/items`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -576,37 +644,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Category
-     * @name GetCategoryItems
+     * @name CategoryGetItems
      * @summary Get a category's items.
      * @request GET:/api/categories/{id}/items
+     * @secure
      */
-    useGetCategoryItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useCategoryGetItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/categories/${id}/items` : null, options),
 
     /**
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Category
-     * @name GetCategoryItems
+     * @name CategoryGetItems
      * @summary Get a category's items.
      * @request GET:/api/categories/{id}/items
+     * @secure
      */
-    mutateGetCategoryItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+    mutateCategoryGetItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
       mutate<ItemDto[]>(`/api/categories/${id}/items`, data, options),
-  };
-  item = {
+
     /**
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Item
-     * @name GetItems
+     * @name ItemList
      * @summary Get all items.
      * @request GET:/api/items
+     * @secure
      */
-    getItems: (params: RequestParams = {}) =>
+    itemList: (params: RequestParams = {}) =>
       this.request<ItemDto[], ErrorProdResponse>({
         path: `/api/items`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -614,37 +685,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Item
-     * @name GetItems
+     * @name ItemList
      * @summary Get all items.
      * @request GET:/api/items
+     * @secure
      */
-    useGetItems: (options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemList: (options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/items` : null, options),
 
     /**
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
      *
      * @tags Item
-     * @name GetItems
+     * @name ItemList
      * @summary Get all items.
      * @request GET:/api/items
+     * @secure
      */
-    mutateGetItems: (data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+    mutateItemList: (data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
       mutate<ItemDto[]>(`/api/items`, data, options),
 
     /**
      * No description
      *
      * @tags Item
-     * @name PostItems
+     * @name ItemCreate
      * @summary Create a new item.
      * @request POST:/api/items
+     * @secure
      */
-    postItems: (data: CreateItemDto, params: RequestParams = {}) =>
+    itemCreate: (data: CreateItemDto, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -654,14 +729,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Item
-     * @name GetItem
+     * @name ItemGet
      * @summary Get a item.
      * @request GET:/api/items/{id}
+     * @secure
      */
-    getItem: (id: number, params: RequestParams = {}) =>
+    itemGet: (id: number, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -669,37 +746,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Item
-     * @name GetItem
+     * @name ItemGet
      * @summary Get a item.
      * @request GET:/api/items/{id}
+     * @secure
      */
-    useGetItem: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto, ErrorProdResponse>(doFetch ? `/api/items/${id}` : null, options),
 
     /**
      * No description
      *
      * @tags Item
-     * @name GetItem
+     * @name ItemGet
      * @summary Get a item.
      * @request GET:/api/items/{id}
+     * @secure
      */
-    mutateGetItem: (id: number, data?: ItemDto | Promise<ItemDto>, options?: MutatorOptions) =>
+    mutateItemGet: (id: number, data?: ItemDto | Promise<ItemDto>, options?: MutatorOptions) =>
       mutate<ItemDto>(`/api/items/${id}`, data, options),
 
     /**
      * No description
      *
      * @tags Item
-     * @name PatchItem
+     * @name ItemUpdate
      * @summary Update a item.
      * @request PATCH:/api/items/{id}
+     * @secure
      */
-    patchItem: (id: number, data: UpdateItemDto, params: RequestParams = {}) =>
+    itemUpdate: (id: number, data: UpdateItemDto, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "PATCH",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -709,14 +790,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Item
-     * @name DeleteItem
+     * @name ItemDelete
      * @summary Delete a item.
      * @request DELETE:/api/items/{id}
+     * @secure
      */
-    deleteItem: (id: number, params: RequestParams = {}) =>
+    itemDelete: (id: number, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -725,14 +808,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Item
-     * @name GetItemItems
+     * @name ItemGetChildItems
      * @summary Get a item's child items.
      * @request GET:/api/items/{id}/items
+     * @secure
      */
-    getItemItems: (id: number, params: RequestParams = {}) =>
+    itemGetChildItems: (id: number, params: RequestParams = {}) =>
       this.request<ItemDto[], ErrorProdResponse>({
         path: `/api/items/${id}/items`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -740,37 +825,40 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Item
-     * @name GetItemItems
+     * @name ItemGetChildItems
      * @summary Get a item's child items.
      * @request GET:/api/items/{id}/items
+     * @secure
      */
-    useGetItemItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemGetChildItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/items/${id}/items` : null, options),
 
     /**
      * No description
      *
      * @tags Item
-     * @name GetItemItems
+     * @name ItemGetChildItems
      * @summary Get a item's child items.
      * @request GET:/api/items/{id}/items
+     * @secure
      */
-    mutateGetItemItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+    mutateItemGetChildItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
       mutate<ItemDto[]>(`/api/items/${id}/items`, data, options),
-  };
-  itemLink = {
+
     /**
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLinks
+     * @name ItemLinkList
      * @summary Get all links.
      * @request GET:/api/items/{item_id}/links
+     * @secure
      */
-    getItemLinks: (itemId: number, params: RequestParams = {}) =>
+    itemLinkList: (itemId: number, params: RequestParams = {}) =>
       this.request<LinkDto[], ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -778,37 +866,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLinks
+     * @name ItemLinkList
      * @summary Get all links.
      * @request GET:/api/items/{item_id}/links
+     * @secure
      */
-    useGetItemLinks: (itemId: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemLinkList: (itemId: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<LinkDto[], ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links` : null, options),
 
     /**
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLinks
+     * @name ItemLinkList
      * @summary Get all links.
      * @request GET:/api/items/{item_id}/links
+     * @secure
      */
-    mutateGetItemLinks: (itemId: number, data?: LinkDto[] | Promise<LinkDto[]>, options?: MutatorOptions) =>
+    mutateItemLinkList: (itemId: number, data?: LinkDto[] | Promise<LinkDto[]>, options?: MutatorOptions) =>
       mutate<LinkDto[]>(`/api/items/${itemId}/links`, data, options),
 
     /**
      * No description
      *
      * @tags ItemLink
-     * @name PostItemLinks
+     * @name ItemLinkCreate
      * @summary Create a new link.
      * @request POST:/api/items/{item_id}/links
+     * @secure
      */
-    postItemLinks: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
+    itemLinkCreate: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -818,14 +910,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLink
+     * @name ItemLinkGet
      * @summary Get a link.
      * @request GET:/api/items/{item_id}/links/{id}
+     * @secure
      */
-    getItemLink: (itemId: number, id: number, params: RequestParams = {}) =>
+    itemLinkGet: (itemId: number, id: number, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -833,37 +927,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLink
+     * @name ItemLinkGet
      * @summary Get a link.
      * @request GET:/api/items/{item_id}/links/{id}
+     * @secure
      */
-    useGetItemLink: (itemId: number, id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemLinkGet: (itemId: number, id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<LinkDto, ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links/${id}` : null, options),
 
     /**
      * No description
      *
      * @tags ItemLink
-     * @name GetItemLink
+     * @name ItemLinkGet
      * @summary Get a link.
      * @request GET:/api/items/{item_id}/links/{id}
+     * @secure
      */
-    mutateGetItemLink: (itemId: number, id: number, data?: LinkDto | Promise<LinkDto>, options?: MutatorOptions) =>
+    mutateItemLinkGet: (itemId: number, id: number, data?: LinkDto | Promise<LinkDto>, options?: MutatorOptions) =>
       mutate<LinkDto>(`/api/items/${itemId}/links/${id}`, data, options),
 
     /**
      * No description
      *
      * @tags ItemLink
-     * @name PatchItemLink
+     * @name ItemLinkUpdate
      * @summary Update a link.
      * @request PATCH:/api/items/{item_id}/links/{id}
+     * @secure
      */
-    patchItemLink: (itemId: number, id: number, data: UpdateLinkDto, params: RequestParams = {}) =>
+    itemLinkUpdate: (itemId: number, id: number, data: UpdateLinkDto, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "PATCH",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -873,30 +971,33 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags ItemLink
-     * @name DeleteItemLink
+     * @name ItemLinkDelete
      * @summary Delete a link.
      * @request DELETE:/api/items/{item_id}/links/{id}
+     * @secure
      */
-    deleteItemLink: (itemId: number, id: number, params: RequestParams = {}) =>
+    itemLinkDelete: (itemId: number, id: number, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "DELETE",
+        secure: true,
         format: "json",
         ...params,
       }),
-  };
-  pikPak = {
+
     /**
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJobs
+     * @name PikPakList
      * @request GET:/api/modules/pikpak/jobs
+     * @secure
      */
-    getModulesPikpakJobs: (params: RequestParams = {}) =>
-      this.request<AnimeDto[], ErrorProdResponse>({
+    pikPakList: (params: RequestParams = {}) =>
+      this.request<JobDto[], ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -904,34 +1005,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJobs
+     * @name PikPakList
      * @request GET:/api/modules/pikpak/jobs
+     * @secure
      */
-    useGetModulesPikpakJobs: (options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<AnimeDto[], ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs` : null, options),
+    usePikPakList: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<JobDto[], ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs` : null, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJobs
+     * @name PikPakList
      * @request GET:/api/modules/pikpak/jobs
+     * @secure
      */
-    mutateGetModulesPikpakJobs: (data?: AnimeDto[] | Promise<AnimeDto[]>, options?: MutatorOptions) =>
-      mutate<AnimeDto[]>(`/api/modules/pikpak/jobs`, data, options),
+    mutatePikPakList: (data?: JobDto[] | Promise<JobDto[]>, options?: MutatorOptions) =>
+      mutate<JobDto[]>(`/api/modules/pikpak/jobs`, data, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name PostModulesPikpakJobs
+     * @name PikPakCreate
      * @request POST:/api/modules/pikpak/jobs
+     * @secure
      */
-    postModulesPikpakJobs: (data: CreateAnimeDto, params: RequestParams = {}) =>
-      this.request<AnimeDto, ErrorProdResponse>({
+    pikPakCreate: (data: CreateJobDto, params: RequestParams = {}) =>
+      this.request<JobDto, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -941,13 +1046,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJob
+     * @name PikPakGet
      * @request GET:/api/modules/pikpak/jobs/{id}
+     * @secure
      */
-    getModulesPikpakJob: (id: number, params: RequestParams = {}) =>
-      this.request<AnimeDto, ErrorProdResponse>({
+    pikPakGet: (id: number, params: RequestParams = {}) =>
+      this.request<JobDto, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "GET",
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -955,34 +1062,38 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJob
+     * @name PikPakGet
      * @request GET:/api/modules/pikpak/jobs/{id}
+     * @secure
      */
-    useGetModulesPikpakJob: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
-      useSWR<AnimeDto, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs/${id}` : null, options),
+    usePikPakGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<JobDto, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs/${id}` : null, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name GetModulesPikpakJob
+     * @name PikPakGet
      * @request GET:/api/modules/pikpak/jobs/{id}
+     * @secure
      */
-    mutateGetModulesPikpakJob: (id: number, data?: AnimeDto | Promise<AnimeDto>, options?: MutatorOptions) =>
-      mutate<AnimeDto>(`/api/modules/pikpak/jobs/${id}`, data, options),
+    mutatePikPakGet: (id: number, data?: JobDto | Promise<JobDto>, options?: MutatorOptions) =>
+      mutate<JobDto>(`/api/modules/pikpak/jobs/${id}`, data, options),
 
     /**
      * No description
      *
      * @tags PikPak
-     * @name PostModulesPikpakJob
+     * @name PikPakUpdate
      * @request POST:/api/modules/pikpak/jobs/{id}
+     * @secure
      */
-    postModulesPikpakJob: (id: number, data: UpdateAnimeDto, params: RequestParams = {}) =>
-      this.request<AnimeDto, ErrorProdResponse>({
+    pikPakUpdate: (id: number, data: UpdateJobDto, params: RequestParams = {}) =>
+      this.request<JobDto, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "POST",
         body: data,
+        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
@@ -992,25 +1103,110 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags PikPak
-     * @name DeleteModulesPikpakJob
+     * @name PikPakDelete
      * @request DELETE:/api/modules/pikpak/jobs/{id}
+     * @secure
      */
-    deleteModulesPikpakJob: (id: number, params: RequestParams = {}) =>
+    pikPakDelete: (id: number, params: RequestParams = {}) =>
       this.request<void, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "DELETE",
+        secure: true,
         ...params,
       }),
-  };
-  torrent = {
+
+    /**
+     * @description Login with username and password. This API does not comply with OAuth 2.1, and only supports first-party applications (the built-in web frontend). It is based on `grant_type` `password` (which has been drooped in OAuth 2.1) or `refresh_token`. It requires additional parameters for security control.
+     *
+     * @tags Session
+     * @name SessionLogin
+     * @summary Login
+     * @request POST:/api/session
+     * @secure
+     */
+    sessionLogin: (
+      data: {
+        Username?: string;
+        Password?: string;
+        Captcha?: string;
+        Grant_Type?: string;
+        Refresh_Token?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<LoginResDto, ErrorProdResponse>({
+        path: `/api/session`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.UrlEncoded,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGet
+     * @request GET:/api/session
+     * @secure
+     */
+    sessionGet: (params: RequestParams = {}) =>
+      this.request<TokenDto, ErrorProdResponse>({
+        path: `/api/session`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGet
+     * @request GET:/api/session
+     * @secure
+     */
+    useSessionGet: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<TokenDto, ErrorProdResponse>(doFetch ? `/api/session` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGet
+     * @request GET:/api/session
+     * @secure
+     */
+    mutateSessionGet: (data?: TokenDto | Promise<TokenDto>, options?: MutatorOptions) =>
+      mutate<TokenDto>(`/api/session`, data, options),
+
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionLogout
+     * @request DELETE:/api/session
+     * @secure
+     */
+    sessionLogout: (params: RequestParams = {}) =>
+      this.request<void, ErrorProdResponse>({
+        path: `/api/session`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
     /**
      * No description
      *
      * @tags Torrent
-     * @name GetModulesTorrentDirectoryTorrents
+     * @name TorrentList
      * @request GET:/api/modules/torrent_directory/torrents
+     * @secure
      */
-    getModulesTorrentDirectoryTorrents: (
+    torrentList: (
       query?: {
         query?: string;
         /** @format int32 */
@@ -1024,6 +1220,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/modules/torrent_directory/torrents`,
         method: "GET",
         query: query,
+        secure: true,
         format: "json",
         ...params,
       }),
@@ -1031,10 +1228,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Torrent
-     * @name GetModulesTorrentDirectoryTorrents
+     * @name TorrentList
      * @request GET:/api/modules/torrent_directory/torrents
+     * @secure
      */
-    useGetModulesTorrentDirectoryTorrents: (
+    useTorrentList: (
       query?: {
         query?: string;
         /** @format int32 */
@@ -1054,10 +1252,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Torrent
-     * @name GetModulesTorrentDirectoryTorrents
+     * @name TorrentList
      * @request GET:/api/modules/torrent_directory/torrents
+     * @secure
      */
-    mutateGetModulesTorrentDirectoryTorrents: (
+    mutateTorrentList: (
       query?: {
         query?: string;
         /** @format int32 */
@@ -1073,15 +1272,112 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * No description
      *
      * @tags Torrent
-     * @name PostModulesTorrentDirectoryProviderFetch
+     * @name TorrentFetchPage
      * @request POST:/api/modules/torrent_directory/providers/{name}/fetch/{page}
+     * @secure
      */
-    postModulesTorrentDirectoryProviderFetch: (name: string, page: number, params: RequestParams = {}) =>
+    torrentFetchPage: (name: string, page: number, params: RequestParams = {}) =>
       this.request<void, ErrorProdResponse>({
         path: `/api/modules/torrent_directory/providers/${name}/fetch/${page}`,
         method: "POST",
+        secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserList
+     * @request GET:/api/users
+     * @secure
+     */
+    userList: (params: RequestParams = {}) =>
+      this.request<UserDto[], ErrorProdResponse>({
+        path: `/api/users`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserList
+     * @request GET:/api/users
+     * @secure
+     */
+    useUserList: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<UserDto[], ErrorProdResponse>(doFetch ? `/api/users` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserList
+     * @request GET:/api/users
+     * @secure
+     */
+    mutateUserList: (data?: UserDto[] | Promise<UserDto[]>, options?: MutatorOptions) =>
+      mutate<UserDto[]>(`/api/users`, data, options),
+
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserRegister
+     * @request POST:/api/users
+     * @secure
+     */
+    userRegister: (data: CreateUserDto, params: RequestParams = {}) =>
+      this.request<UserDto, ErrorProdResponse>({
+        path: `/api/users`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserGet
+     * @request GET:/api/users/{id}
+     * @secure
+     */
+    userGet: (id: number, params: RequestParams = {}) =>
+      this.request<UserDto, ErrorProdResponse>({
+        path: `/api/users/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserGet
+     * @request GET:/api/users/{id}
+     * @secure
+     */
+    useUserGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<UserDto, ErrorProdResponse>(doFetch ? `/api/users/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserGet
+     * @request GET:/api/users/{id}
+     * @secure
+     */
+    mutateUserGet: (id: number, data?: UserDto | Promise<UserDto>, options?: MutatorOptions) =>
+      mutate<UserDto>(`/api/users/${id}`, data, options),
   };
 }
 

@@ -37,7 +37,7 @@ type Inputs = {
 
 export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: task } = api.pikPak.useGetModulesPikpakJob(id ?? 0, {}, !!id);
+  const { data: task } = api.api.usePikPakGet(id ?? 0, {}, !!id);
   const toast = useToast();
   const {
     register,
@@ -51,23 +51,23 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
     try {
       if (id) {
-        await api.pikPak.postModulesPikpakJob(id, {
+        await api.api.pikPakUpdate(id, {
           bangumi: inputs.bangumi,
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
           enabled: inputs.enabled,
         });
-        await api.pikPak.mutateGetModulesPikpakJob(id);
+        await api.api.mutatePikPakGet(id);
       } else {
-        await api.pikPak.postModulesPikpakJobs({
+        await api.api.pikPakCreate({
           bangumi: inputs.bangumi,
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
         });
       }
-      await api.pikPak.mutateGetModulesPikpakJobs();
+      await api.api.mutatePikPakList();
       toast({
         title: "Job created.",
         status: "success",

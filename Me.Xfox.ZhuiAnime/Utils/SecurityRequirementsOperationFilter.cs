@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -18,5 +20,16 @@ public class SecurityRequirementsOperationFilter : IOperationFilter
         {
             operation.Security = new List<OpenApiSecurityRequirement>() { new() };
         }
+        var controller = context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<RouteAttribute>().FirstOrDefault();
+        operation.Extensions.Add("x-controller", new OpenApiObject
+        {
+            ["name"] = new OpenApiString(context.MethodInfo.DeclaringType?.Name ?? ""),
+            ["route-template"] = new OpenApiString(controller?.Template ?? ""),
+        });
+        operation.Extensions.Add("x-action", new OpenApiObject
+        {
+            ["name"] = new OpenApiString(context.MethodInfo.Name),
+        });
+        operation.OperationId = $"{context.MethodInfo.DeclaringType?.Name.Replace("Controller", "")}_{context.MethodInfo.Name.Replace("Async", "")}";
     }
 }

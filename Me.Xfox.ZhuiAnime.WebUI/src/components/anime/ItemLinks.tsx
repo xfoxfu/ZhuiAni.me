@@ -5,7 +5,7 @@ import MIMEType from "whatwg-mimetype";
 import { IoOpenOutline, IoLinkOutline, IoVideocamOutline } from "react-icons/io5";
 
 export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
-  const { data: links, error } = api.itemLink.useGetItemLinks(id);
+  const { data: links, error } = api.api.useItemLinkList(id);
 
   return (
     <>

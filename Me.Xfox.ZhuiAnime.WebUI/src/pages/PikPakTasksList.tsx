@@ -22,7 +22,7 @@ import { Edit } from "../components/pikpak/Edit";
 import { IoCloudOfflineOutline, IoSyncOutline } from "react-icons/io5";
 
 export const PikPakTasksList: React.FunctionComponent = () => {
-  const { data: tasks, error } = Api.pikPak.useGetModulesPikpakJobs();
+  const { data: tasks, error } = Api.api.usePikPakList();
   return (
     <>
       <Heading as="h1" size="xl" color="green.700">

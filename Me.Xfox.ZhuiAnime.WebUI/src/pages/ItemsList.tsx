@@ -16,8 +16,7 @@ import Api from "../api";
 import { Link } from "react-router-dom";
 
 export const ItemsList: React.FunctionComponent = () => {
-  const { data: animes, error } = Api.item.useGetItems();
-  console.log(animes);
+  const { data: animes, error } = Api.api.useItemList();
 
   return (
     <>

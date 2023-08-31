@@ -46,7 +46,7 @@ export const TorrentsList: React.FunctionComponent = () => {
     },
     {
       fetcher: ([, query, until]: [string, string, string | undefined]): Promise<TorrentDto[]> =>
-        Api.torrent.getModulesTorrentDirectoryTorrents({ query: query ?? "", until }).then((d) => d.data),
+        Api.api.torrentList({ query: query ?? "", until }).then((d) => d.data),
     },
   );
   const [, copy] = useCopyToClipboard();

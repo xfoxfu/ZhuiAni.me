@@ -20,8 +20,8 @@ import { ItemLinks } from "../components/anime/ItemLinks";
 
 export const Item: React.FunctionComponent = () => {
   const params = useParams();
-  const { data: anime, error: animeError } = api.item.useGetItem(Number.parseInt(params["animeId"] ?? "0", 10));
-  const { data: episodes, error: episodesError } = api.item.useGetItemItems(
+  const { data: anime, error: animeError } = api.api.useItemGet(Number.parseInt(params["animeId"] ?? "0", 10));
+  const { data: episodes, error: episodesError } = api.api.useItemGetChildItems(
     Number.parseInt(params["animeId"] ?? "0", 10),
   );
   const error = animeError ?? episodesError;

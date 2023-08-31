@@ -1,8 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using Me.Xfox.ZhuiAnime.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
@@ -45,8 +47,8 @@ public class SessionController : ControllerBase
     /// <remarks>
     /// Login with username and password. This API does not comply with OAuth 2.1,
     /// and only supports first-party applications (the built-in web frontend).
-    /// It is based on grant_type password (which has been drooped in OAuth 2.1)
-    /// or refresh_token. It requires additional parameters for security control.
+    /// It is based on `grant_type` `password` (which has been drooped in OAuth 2.1)
+    /// or `refresh_token`. It requires additional parameters for security control.
     /// </remarks>
     /// <param name="req"></param>
     /// <returns></returns>
@@ -55,6 +57,8 @@ public class SessionController : ControllerBase
     [HttpPost]
     [AllowAnonymous]
     [ResponseCache(NoStore = true)]
+    [Consumes("application/x-www-form-urlencoded")]
+    [OpenApiOperation("Foo", "Bar", "Description")]
     public async Task<LoginResDto> Login([FromForm] LoginReqDto req)
     {
         if (req.Grant_Type == "password")
@@ -137,6 +141,7 @@ public class SessionController : ControllerBase
     }
 
     [HttpDelete]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> Logout()
     {
         if (!TokenService.IsFirstParty(User))
