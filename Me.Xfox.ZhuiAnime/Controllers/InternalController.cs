@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
@@ -6,6 +7,7 @@ namespace Me.Xfox.ZhuiAnime.Controllers;
 [ApiExplorerSettings(IgnoreApi = true)]
 public class InternalController : ControllerBase
 {
+    [AllowAnonymous]
     [Route("not_found")]
     public void EndpointNotFound()
     {
