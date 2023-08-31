@@ -76,6 +76,23 @@ builder.Services.AddSwaggerGen(opts =>
     {
         Version = "v1",
         Title = "ZhuiAni.me API",
+        Description = """
+        # Error Handling
+
+        ZhuiAni.me returns normalized error responses. The response body is a JSON object with the following fields:
+
+        | Field           | Type     | Description     |
+        | --------------- | -------- | --------------- |
+        | `error_code`    | `string` | Error code.     |
+        | `message`       | `string` | Error message.  |
+        | `connection_id` | `string` | Connection ID.     |
+        | `request_id`    | `string` | Request ID. |
+
+        It may contain additional fields depending on the error code.
+
+        For details, see the examples on each API endpoint. The additional fields is denoted like `{field}` in the
+        error message example.
+        """,
     });
     opts.AddServer(new OpenApiServer { Url = "https://zhuiani.me", Description = "Public server" });
     opts.AddServer(new OpenApiServer { Url = "https://localhost:5001", Description = "Local development server" });
@@ -109,8 +126,8 @@ builder.Services.AddSwaggerGen(opts =>
         $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml"));
     opts.SupportNonNullableReferenceTypes();
     opts.SchemaFilter<RequiredNotNullableSchemaFilter>();
-    opts.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
     opts.OperationFilter<SecurityRequirementsOperationFilter>();
+    opts.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
 });
 
 foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()

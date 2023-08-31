@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
@@ -73,11 +69,13 @@ public abstract class ZhuiAnimeError : Exception
     {
         public HttpStatusCode StatusCode { get; set; }
         public string ErrorCode { get; set; }
+        public string MessageExample { get; set; }
 
-        public ErrorAttribute(HttpStatusCode statusCode, string errorCode)
+        public ErrorAttribute(HttpStatusCode statusCode, string errorCode, string messageExample = "")
         {
             StatusCode = statusCode;
             ErrorCode = errorCode;
+            MessageExample = messageExample;
         }
     }
 
@@ -135,16 +133,20 @@ public abstract class ZhuiAnimeError : Exception
 
     public class ErrorResponsesOperationFilter : IOperationFilter
     {
+        private ErrorAttribute GetErrorAttribute(Type type) =>
+            (ErrorAttribute)type.GetCustomAttributes(typeof(ErrorAttribute), true).FirstOrDefault()!;
+
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var exceptions = context.MethodInfo
                 .GetCustomAttributes(typeof(HasExceptionAttribute), true)
                 .SelectMany(x => ((HasExceptionAttribute)x).ExceptionTypes)
-                .Select(x => (ErrorAttribute)x.GetCustomAttributes(typeof(ErrorAttribute), true).FirstOrDefault()!)
+                .Select(GetErrorAttribute)
                 .Concat((IEnumerable<ErrorAttribute>)new[]
                 {
-                    new ErrorAttribute(HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR"),
-                    operation.Security.Any() ? new ErrorAttribute(HttpStatusCode.Unauthorized, "INVALID_TOKEN") : null,
+                    GetErrorAttribute(typeof(InternalServerError)),
+                    // if the security is empty, the operation uses the global policy (aka. required auth)
+                    operation.Security.Count == 0 ? GetErrorAttribute(typeof(InvalidToken)) : null,
                 }.Where(x => x != null))
                 .GroupBy(x => x.StatusCode)
                 .ToDictionary(x => x.Key, x => x.AsEnumerable());
@@ -153,6 +155,20 @@ public abstract class ZhuiAnimeError : Exception
                 operation.Responses.Add(((int)exception.Key).ToString(), new OpenApiResponse
                 {
                     Description = string.Join(", ", exception.Value.Select(x => x.ErrorCode)),
+                    Content = new Dictionary<string, OpenApiMediaType>()
+                    {
+                        ["application/json"] = new OpenApiMediaType
+                        {
+                            Examples = exception.Value.ToDictionary(x => x.ErrorCode, x => new OpenApiExample
+                            {
+                                Value = OpenApiAnyFactory.CreateFromJson(JsonSerializer.Serialize(new
+                                {
+                                    error_code = x.ErrorCode,
+                                    message = x.MessageExample,
+                                })),
+                            })
+                        },
+                    }
                 });
             }
         }
@@ -207,7 +223,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR")]
+    [Error(HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR", "An internal server error occurred.")]
     public class InternalServerError : ZhuiAnimeError
     {
         public InternalServerError(Exception innerException) : base(
@@ -216,13 +232,13 @@ public abstract class ZhuiAnimeError : Exception
         { }
     }
 
-    [Error(HttpStatusCode.NotFound, "ENDPOINT_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "ENDPOINT_NOT_FOUND", "API endpoint not found.")]
     public class EndpointNotFound : ZhuiAnimeError
     {
         public EndpointNotFound() : base("API endpoint not found.") { }
     }
 
-    [Error(HttpStatusCode.BadRequest, "BAD_REQUEST")]
+    [Error(HttpStatusCode.BadRequest, "BAD_REQUEST", "Request body is invalid.")]
     public class BadRequest : ZhuiAnimeError
     {
         public BadRequest(ModelStateDictionary state) : base(
@@ -234,7 +250,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "CATAGORY_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "CATAGORY_NOT_FOUND", "Catagory {category_id} not found.")]
     public class CategoryNotFound : ZhuiAnimeError
     {
         public CategoryNotFound(uint id) : base(
@@ -244,7 +260,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "ITEM_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "ITEM_NOT_FOUND", "Item {item_id} not found.")]
     public class ItemNotFound : ZhuiAnimeError
     {
         public ItemNotFound(uint id) : base(
@@ -254,7 +270,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "LINK_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "LINK_NOT_FOUND", "Link {link_id} not found.")]
     public class LinkNotFound : ZhuiAnimeError
     {
         public LinkNotFound(uint id) : base(
@@ -264,7 +280,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "PIKPAK_JOB_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "PIKPAK_JOB_NOT_FOUND", "PikPak job {pikpak_job_id} not found.")]
     public class PikPakJobNotFound : ZhuiAnimeError
     {
         public PikPakJobNotFound(uint id) : base(
@@ -274,7 +290,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "USER_NOT_FOUND")]
+    [Error(HttpStatusCode.NotFound, "USER_NOT_FOUND", "User {user_id} not found.")]
     public class UserNotFound : ZhuiAnimeError
     {
         public UserNotFound(uint id) : base(
@@ -284,7 +300,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.NotFound, "USERNAME_TAKEN")]
+    [Error(HttpStatusCode.NotFound, "USERNAME_TAKEN", "Username {username} is already taken.")]
     public class UsernameTaken : ZhuiAnimeError
     {
         public UsernameTaken(string username) : base(
@@ -294,7 +310,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.BadRequest, "INVALID_CAPTCHA")]
+    [Error(HttpStatusCode.BadRequest, "INVALID_CAPTCHA", "Turnstile validation token is invalid since {codes}.")]
     public class InvalidCaptcha : ZhuiAnimeError
     {
         public InvalidCaptcha(string token, IEnumerable<string> codes) : base(
@@ -305,7 +321,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.BadRequest, "INVALID_GRANT_TYPE")]
+    [Error(HttpStatusCode.BadRequest, "INVALID_GRANT_TYPE", "Invalid grant type {grant_type}.")]
     public class InvalidGrantType : ZhuiAnimeError
     {
         public InvalidGrantType(string grantType) : base(
@@ -315,7 +331,7 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.Forbidden, "INVALID_USERNAME_OR_PASSWORD")]
+    [Error(HttpStatusCode.Forbidden, "INVALID_USERNAME_OR_PASSWORD", "Invalid username {username} or password.")]
     public class InvalidUsernameOrPassword : ZhuiAnimeError
     {
         public InvalidUsernameOrPassword(string username) : base(
@@ -325,19 +341,19 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.Unauthorized, "INVALID_TOKEN")]
+    [Error(HttpStatusCode.Unauthorized, "INVALID_TOKEN", "Invalid token {oauth_code}: {oauth_desc}.")]
     public class InvalidToken : ZhuiAnimeError
     {
         public InvalidToken(string? code, string? description, Exception? ex) : base(
             $"Invalid token {code}: {description}.",
             ex)
         {
-            ExtraData.Add("auth_code", code ?? string.Empty);
-            ExtraData.Add("auth_desc", description ?? string.Empty);
+            ExtraData.Add("oauth_code", code ?? string.Empty);
+            ExtraData.Add("oauth_desc", description ?? string.Empty);
         }
     }
 
-    [Error(HttpStatusCode.Forbidden, "INVALID_TOKEN_NOT_FIRST_PARTY")]
+    [Error(HttpStatusCode.Forbidden, "INVALID_TOKEN_NOT_FIRST_PARTY", "Token is not issued to first-party application.")]
     public class InvalidTokenNotFirstParty : ZhuiAnimeError
     {
         public InvalidTokenNotFirstParty() : base(
@@ -346,12 +362,13 @@ public abstract class ZhuiAnimeError : Exception
         }
     }
 
-    [Error(HttpStatusCode.Forbidden, "INVALID_REFRESH_TOKEN")]
+    [Error(HttpStatusCode.Forbidden, "INVALID_REFRESH_TOKEN", "Refresh token is not valid for {code}.")]
     public class InvalidRefreshToken : ZhuiAnimeError
     {
         public InvalidRefreshToken(string code) : base(
             $"Refresh token is not valid for {code}.")
         {
+            ExtraData.Add("code", code);
         }
     }
 }
