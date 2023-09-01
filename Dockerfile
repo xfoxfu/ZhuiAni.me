@@ -20,7 +20,6 @@ RUN dotnet restore "Me.Xfox.ZhuiAnime" --locked-mode -a $TARGETARCH
 COPY "." "/src/"
 RUN dotnet build "Me.Xfox.ZhuiAnime" -c Release --no-self-contained --no-restore -a $TARGETARCH
 RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish --no-self-contained  --no-restore -a $TARGETARCH
-RUN dotnet ef bundle --project "Me.Xfox.ZhuiAnime" --target-runtime linux-$TARGETARCH --output /app/dbmigrate
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
 WORKDIR /app

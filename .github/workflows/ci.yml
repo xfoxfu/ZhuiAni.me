@@ -74,6 +74,15 @@ jobs:
 
       - name: publish
         run: dotnet publish -c Release --no-restore
+      - name: ef bundle
+        run: |
+          dotnet tool restore
+          dotnet ef migrations script \
+            --project Me.Xfox.ZhuiAnime \
+            --idempotent \
+            --no-build \
+            --configuration Release \
+            --output Me.Xfox.ZhuiAnime/bin/Release/net7.0/publish/migrations.sql
       - name: upload
         uses: actions/upload-artifact@v3
         with:
