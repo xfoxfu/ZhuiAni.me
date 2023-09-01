@@ -52,11 +52,15 @@ public class SessionController : ControllerBase
     /// 
     /// **Request with password**
     /// 
+    /// It requires `username`, `password`, `captcha`.
+    /// 
     /// ```text
     /// username=alice&password=foobar&captcha=foobar&grant_type=password
     /// ```
     /// 
     /// **Request with refresh token**
+    /// 
+    /// It requires `refresh_token`.
     /// 
     /// ```text
     /// grant_type=refresh_token&refresh_token=507f0155-577e-448d-870b-5abe98a41d3f
@@ -161,10 +165,10 @@ public class SessionController : ControllerBase
             throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
         }
         var refresh = User.FindFirstValue(JwtRegisteredClaimNames.Sid) ??
-            throw new ZhuiAnimeError.InvalidToken("sid_not_present", "no sid in token", null);
+            throw new ZhuiAnimeError.InvalidToken("za_sid_not_present", "no sid in token", null);
         var tokenId = Guid.Parse(refresh);
         var token = await DbContext.Session.FindAsync(tokenId) ??
-            throw new ZhuiAnimeError.InvalidToken("refresh_token_not_found", $"refresh token {refresh} not found", null);
+            throw new ZhuiAnimeError.InvalidToken("za_refresh_token_not_found", $"refresh token {refresh} not found", null);
         DbContext.Session.Remove(token);
         await DbContext.SaveChangesAsync();
         return NoContent();
