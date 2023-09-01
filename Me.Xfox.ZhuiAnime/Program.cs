@@ -168,12 +168,7 @@ builder.Services.AddAuthentication(opts =>
     };
     opts.Events = new AuthenticationEventHandler();
 });
-builder.Services.AddAuthorization(opts =>
-{
-    opts.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -207,7 +202,8 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "api/{controller}/{action=Index}/{id?}");
+    pattern: "api/{controller}/{action=Index}/{id?}")
+.RequireAuthorization();
 
 app.MapFallbackToController("/api/{**path}",
     nameof(ZhuiAnime.Controllers.InternalController.EndpointNotFound),
