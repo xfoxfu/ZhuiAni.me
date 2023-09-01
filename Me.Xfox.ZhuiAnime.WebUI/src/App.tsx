@@ -5,6 +5,7 @@ import { Item } from "./pages/Item";
 import { ItemsList } from "./pages/ItemsList";
 import { TorrentsList } from "./pages/Torrents";
 import { PikPakTasksList } from "./pages/PikPakTasksList";
+import { UserInfo } from "./components/user/UserInfo";
 
 const App: React.FunctionComponent = () => {
   return (
@@ -26,12 +27,7 @@ const App: React.FunctionComponent = () => {
           <Link to="/pikpak/tasks">PikPak</Link>
         </Heading>
         <Divider />
-        <Heading as="h2" size="md" display="inline">
-          Login
-        </Heading>
-        <Heading as="h2" size="md" display="inline">
-          Register
-        </Heading>
+        <UserInfo />
       </Stack>
       <Stack flex="3" padding="4" bg="gray.50" spacing="4">
         <Routes>

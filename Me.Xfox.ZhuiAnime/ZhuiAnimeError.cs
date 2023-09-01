@@ -177,6 +177,8 @@ public abstract class ZAError : Exception
                     {
                         ["application/json"] = new OpenApiMediaType
                         {
+                            Schema = context.SchemaGenerator.GenerateSchema(
+                                typeof(ErrorProdResponse), context.SchemaRepository),
                             Examples = exception.Value.ToDictionary(x => x.ErrorCode, x => new OpenApiExample
                             {
                                 Value = OpenApiAnyFactory.CreateFromJson(JsonSerializer.Serialize(new

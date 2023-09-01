@@ -48,7 +48,7 @@ export interface CreateJobDto {
   match_group_ep: number;
 }
 
-/** Information for creating a link. */
+/** Information for creating */
 export interface CreateLinkDto {
   /**
    * the url this link points to
@@ -84,7 +84,10 @@ export interface ErrorProdResponse {
 }
 
 export interface ImportSubjectDto {
-  /** @format int32 */
+  /**
+   * bangumi subject ID
+   * @format int32
+   */
   id: number;
 }
 
@@ -220,7 +223,7 @@ export interface UpdateJobDto {
   enabled: boolean;
 }
 
-/** Information for updating a link. */
+/** Information for updating */
 export interface UpdateLinkDto {
   /**
    * the url this link points to
@@ -456,19 +459,37 @@ export class HttpClient<SecurityDataType = unknown> {
 export class ApiError extends Error {}
 
 import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
+import { getAccessToken } from "./services/auth";
 
 /**
  * @title ZhuiAni.me API
  * @version v1
  * @baseUrl https://zhuiani.me
+ *
+ * # Error Handling
+ *
+ * ZhuiAni.me returns normalized error responses. The response body is a JSON object with the following fields:
+ *
+ * | Field           | Type     | Description     |
+ * | --------------- | -------- | --------------- |
+ * | `error_code`    | `string` | Error code.     |
+ * | `message`       | `string` | Error message.  |
+ * | `connection_id` | `string` | Connection ID.     |
+ * | `request_id`    | `string` | Request ID. |
+ *
+ * It may contain additional fields depending on the error code.
+ *
+ * For details, see the examples on each API endpoint. The additional fields is denoted like `{field}` in the
+ * error message example.
  */
 export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
   api = {
     /**
-     * No description
+     * @description Import a subject from https://bgm.tv .
      *
      * @tags Bangumi
      * @name BangumiImportSubject
+     * @summary Import Subject
      * @request POST:/api/modules/bangumi/import_subject
      * @secure
      */
@@ -488,7 +509,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryList
-     * @summary Get all categories.
+     * @summary List
      * @request GET:/api/categories
      * @secure
      */
@@ -505,7 +526,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryList
-     * @summary Get all categories.
+     * @summary List
      * @request GET:/api/categories
      * @secure
      */
@@ -517,7 +538,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryList
-     * @summary Get all categories.
+     * @summary List
      * @request GET:/api/categories
      * @secure
      */
@@ -529,7 +550,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryCreate
-     * @summary Create a new category.
+     * @summary Create
      * @request POST:/api/categories
      * @secure
      */
@@ -549,7 +570,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGet
-     * @summary Get a category.
+     * @summary Get
      * @request GET:/api/categories/{id}
      * @secure
      */
@@ -566,7 +587,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGet
-     * @summary Get a category.
+     * @summary Get
      * @request GET:/api/categories/{id}
      * @secure
      */
@@ -578,7 +599,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGet
-     * @summary Get a category.
+     * @summary Get
      * @request GET:/api/categories/{id}
      * @secure
      */
@@ -590,7 +611,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryUpdate
-     * @summary Update a category.
+     * @summary Update
      * @request PATCH:/api/categories/{id}
      * @secure
      */
@@ -610,7 +631,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryDelete
-     * @summary Delete a category.
+     * @summary Delete
      * @request DELETE:/api/categories/{id}
      * @secure
      */
@@ -628,7 +649,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGetItems
-     * @summary Get a category's items.
+     * @summary Get Child Items
      * @request GET:/api/categories/{id}/items
      * @secure
      */
@@ -645,7 +666,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGetItems
-     * @summary Get a category's items.
+     * @summary Get Child Items
      * @request GET:/api/categories/{id}/items
      * @secure
      */
@@ -657,7 +678,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Category
      * @name CategoryGetItems
-     * @summary Get a category's items.
+     * @summary Get Child Items
      * @request GET:/api/categories/{id}/items
      * @secure
      */
@@ -669,7 +690,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemList
-     * @summary Get all items.
+     * @summary List
      * @request GET:/api/items
      * @secure
      */
@@ -686,7 +707,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemList
-     * @summary Get all items.
+     * @summary List
      * @request GET:/api/items
      * @secure
      */
@@ -698,7 +719,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemList
-     * @summary Get all items.
+     * @summary List
      * @request GET:/api/items
      * @secure
      */
@@ -710,18 +731,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemCreate
-     * @summary Create a new item.
+     * @summary Create
      * @request POST:/api/items
      * @secure
      */
     itemCreate: (data: CreateItemDto, params: RequestParams = {}) =>
-      this.request<ItemDto, ErrorProdResponse>({
+      this.request<void, ErrorProdResponse>({
         path: `/api/items`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: "json",
         ...params,
       }),
 
@@ -730,7 +750,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGet
-     * @summary Get a item.
+     * @summary Get
      * @request GET:/api/items/{id}
      * @secure
      */
@@ -747,7 +767,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGet
-     * @summary Get a item.
+     * @summary Get
      * @request GET:/api/items/{id}
      * @secure
      */
@@ -759,7 +779,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGet
-     * @summary Get a item.
+     * @summary Get
      * @request GET:/api/items/{id}
      * @secure
      */
@@ -771,7 +791,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemUpdate
-     * @summary Update a item.
+     * @summary Update
      * @request PATCH:/api/items/{id}
      * @secure
      */
@@ -791,7 +811,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemDelete
-     * @summary Delete a item.
+     * @summary Delete
      * @request DELETE:/api/items/{id}
      * @secure
      */
@@ -809,7 +829,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGetChildItems
-     * @summary Get a item's child items.
+     * @summary Get Child Items
      * @request GET:/api/items/{id}/items
      * @secure
      */
@@ -826,7 +846,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGetChildItems
-     * @summary Get a item's child items.
+     * @summary Get Child Items
      * @request GET:/api/items/{id}/items
      * @secure
      */
@@ -838,7 +858,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Item
      * @name ItemGetChildItems
-     * @summary Get a item's child items.
+     * @summary Get Child Items
      * @request GET:/api/items/{id}/items
      * @secure
      */
@@ -850,7 +870,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkList
-     * @summary Get all links.
+     * @summary List
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
@@ -867,7 +887,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkList
-     * @summary Get all links.
+     * @summary List
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
@@ -879,7 +899,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkList
-     * @summary Get all links.
+     * @summary List
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
@@ -891,18 +911,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkCreate
-     * @summary Create a new link.
+     * @summary Create
      * @request POST:/api/items/{item_id}/links
      * @secure
      */
     itemLinkCreate: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
-      this.request<LinkDto, ErrorProdResponse>({
+      this.request<void, ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
-        format: "json",
         ...params,
       }),
 
@@ -911,7 +930,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkGet
-     * @summary Get a link.
+     * @summary Get
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
@@ -928,7 +947,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkGet
-     * @summary Get a link.
+     * @summary Get
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
@@ -940,7 +959,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkGet
-     * @summary Get a link.
+     * @summary Get
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
@@ -952,7 +971,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkUpdate
-     * @summary Update a link.
+     * @summary Update
      * @request PATCH:/api/items/{item_id}/links/{id}
      * @secure
      */
@@ -972,7 +991,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags ItemLink
      * @name ItemLinkDelete
-     * @summary Delete a link.
+     * @summary Delete
      * @request DELETE:/api/items/{item_id}/links/{id}
      * @secure
      */
@@ -1116,7 +1135,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Login with username and password. This API does not comply with OAuth 2.1, and only supports first-party applications (the built-in web frontend). It is based on `grant_type` `password` (which has been drooped in OAuth 2.1) or `refresh_token`. It requires additional parameters for security control.
+     * @description Login with username and password. This API does not comply with OAuth 2.1, and only supports first-party applications (the built-in web frontend). It is based on `grant_type` `password` (which has been drooped in OAuth 2.1) or `refresh_token`. It requires additional parameters for security control. **Request with password** It requires `username`, `password`, `captcha`. ```text username=alice&password=foobar&captcha=foobar&grant_type=password ``` **Request with refresh token** It requires `refresh_token`. ```text grant_type=refresh_token&refresh_token=507f0155-577e-448d-870b-5abe98a41d3f ```
      *
      * @tags Session
      * @name SessionLogin
@@ -1126,11 +1145,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     sessionLogin: (
       data: {
-        Username?: string;
-        Password?: string;
-        Captcha?: string;
-        Grant_Type?: string;
-        Refresh_Token?: string;
+        username?: string;
+        password?: string;
+        captcha?: string;
+        grant_type?: string;
+        refresh_token?: string;
       },
       params: RequestParams = {},
     ) =>
@@ -1149,6 +1168,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Session
      * @name SessionGet
+     * @summary Get Current
      * @request GET:/api/session
      * @secure
      */
@@ -1165,6 +1185,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Session
      * @name SessionGet
+     * @summary Get Current
      * @request GET:/api/session
      * @secure
      */
@@ -1176,6 +1197,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Session
      * @name SessionGet
+     * @summary Get Current
      * @request GET:/api/session
      * @secure
      */
@@ -1187,6 +1209,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      *
      * @tags Session
      * @name SessionLogout
+     * @summary Logout
      * @request DELETE:/api/session
      * @secure
      */
@@ -1381,13 +1404,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
 }
 
-const api = new Api();
+const api = new Api({
+  baseUrl: "",
+  securityWorker: () => ({
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  }),
+});
 export default api;
 
 export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
   const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };
   return await api
-    .request({ path, query })
+    .request({ path, query, secure: true })
     .then((res) => res.json())
     .catch(async (err) => {
       if (err.json) throw await err.json();
