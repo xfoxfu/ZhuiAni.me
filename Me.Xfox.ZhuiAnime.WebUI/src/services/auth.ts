@@ -35,3 +35,8 @@ export const logout = async () => {
   setRefreshToken(null);
   await mutate(() => true, undefined, true);
 };
+export const forceLogout = async () => {
+  setAccessToken(null);
+  setRefreshToken(null);
+  await mutate(() => true, undefined, true);
+};

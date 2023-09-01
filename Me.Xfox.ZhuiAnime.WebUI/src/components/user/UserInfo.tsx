@@ -18,8 +18,8 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import api, { ApiError } from "../../api";
-import { getRefreshToken, login, logout, refresh } from "../../services/auth";
+import api, { ApiError, HttpResponse } from "../../api";
+import { forceLogout, getRefreshToken, login, logout, refresh } from "../../services/auth";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Turnstile } from "@marsidev/react-turnstile";
 
@@ -50,7 +50,7 @@ export const UserInfo: React.FC = () => {
   const toastError = useCallback(
     (err: unknown) => {
       toast({
-        title: (err as Error | ApiError).message,
+        title: (err as HttpResponse<void, ApiError>).error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
@@ -81,6 +81,7 @@ export const UserInfo: React.FC = () => {
             await refresh();
           } catch (err) {
             toastError(err);
+            await forceLogout();
           }
         } else {
           onOpen();
