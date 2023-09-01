@@ -34,6 +34,7 @@ export const UserInfo: React.FC = () => {
     isLoading,
     error,
   } = api.api.useSessionGet({ shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: config } = api.api.useSessionGetConfig();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [token, setToken] = React.useState<string | null>(null);
@@ -130,7 +131,9 @@ export const UserInfo: React.FC = () => {
                     <Input type="password" {...register("password", { required: true })} />
                     <FormErrorMessage>{formErrs.password?.message}</FormErrorMessage>
                   </FormControl>
-                  <Turnstile siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY} onSuccess={setToken} />
+                  {config?.turnstile_site_key && (
+                    <Turnstile siteKey={config?.turnstile_site_key} onSuccess={setToken} />
+                  )}
                 </VStack>
               </ModalBody>
 

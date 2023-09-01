@@ -10,6 +10,7 @@ public class TurnstileService
     protected ILogger<TurnstileService> Logger { get; init; }
     protected IOptionsMonitor<Option> Options { get; set; }
     protected bool Enabled => Options.CurrentValue.Enabled;
+    public string SiteKey => Options.CurrentValue.SiteKey;
     protected string Secret => Options.CurrentValue.Secret;
 
     public TurnstileService(ILogger<TurnstileService> logger, IOptionsMonitor<Option> options)
@@ -64,6 +65,7 @@ public class TurnstileService
 
         public bool Enabled { get; set; }
 
+        public string SiteKey { get; set; } = string.Empty;
         public string Secret { get; set; } = string.Empty;
     }
 }

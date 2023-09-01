@@ -25,6 +25,21 @@ public class SessionController : ControllerBase
         TokenService = tokenService;
     }
 
+    public record ConfigurationDto
+    {
+        public required string TurnstileSiteKey { get; set; }
+    }
+
+    [HttpGet("config")]
+    [AllowAnonymous]
+    public ConfigurationDto GetConfig()
+    {
+        return new ConfigurationDto
+        {
+            TurnstileSiteKey = TurnstileService.SiteKey,
+        };
+    }
+
     public record LoginReqDto
     {
         public string username { get; set; } = string.Empty;

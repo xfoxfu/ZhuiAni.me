@@ -30,6 +30,10 @@ export interface CategoryDto {
   updated_at: string;
 }
 
+export interface ConfigurationDto {
+  turnstile_site_key: string;
+}
+
 export interface CreateItemDto {
   /** @format int32 */
   category_id: number;
@@ -1133,6 +1137,44 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGetConfig
+     * @request GET:/api/session/config
+     * @secure
+     */
+    sessionGetConfig: (params: RequestParams = {}) =>
+      this.request<ConfigurationDto, ErrorProdResponse>({
+        path: `/api/session/config`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGetConfig
+     * @request GET:/api/session/config
+     * @secure
+     */
+    useSessionGetConfig: (options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<ConfigurationDto, ErrorProdResponse>(doFetch ? `/api/session/config` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionGetConfig
+     * @request GET:/api/session/config
+     * @secure
+     */
+    mutateSessionGetConfig: (data?: ConfigurationDto | Promise<ConfigurationDto>, options?: MutatorOptions) =>
+      mutate<ConfigurationDto>(`/api/session/config`, data, options),
 
     /**
      * @description Login with username and password. This API does not comply with OAuth 2.1, and only supports first-party applications (the built-in web frontend). It is based on `grant_type` `password` (which has been drooped in OAuth 2.1) or `refresh_token`. It requires additional parameters for security control. **Request with password** It requires `username`, `password`, `captcha`. ```text username=alice&password=foobar&captcha=foobar&grant_type=password ``` **Request with refresh token** It requires `refresh_token`. ```text grant_type=refresh_token&refresh_token=507f0155-577e-448d-870b-5abe98a41d3f ```

@@ -42,6 +42,7 @@ IntervalBetweenFetch = 01:00:00
 # See https://developers.cloudflare.com/turnstile/
 [Captcha]
 Enabled = true
+SiteKey = ""
 Secret = ""
 
 [Authentication.Jwt]
