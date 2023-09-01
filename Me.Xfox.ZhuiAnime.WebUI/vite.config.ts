@@ -14,4 +14,22 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes("/node_modules/.pnpm/")) {
+            const stripped = id.split("/node_modules/.pnpm/")[1];
+            if (stripped.startsWith("react")) return "react";
+            if (stripped.startsWith("@chakra-ui+")) return "chakra";
+            if (stripped.startsWith("@emotion+")) return "chakra";
+            if (stripped.includes("framer-motion")) return "chakra";
+            return "vendor";
+          } else {
+            console.log(id);
+          }
+        },
+      },
+    },
+  },
 });
