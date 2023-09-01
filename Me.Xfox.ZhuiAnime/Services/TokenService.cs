@@ -72,6 +72,7 @@ public class TokenService
 
     public async Task<Session> IssueFirstPartyRefreshToken(User user, Session? oldToken)
     {
+        var now = DateTimeOffset.UtcNow;
         var expireTime = DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(Options.CurrentValue.RefreshExpiresDays));
         var token = new Session
         {
@@ -91,7 +92,7 @@ public class TokenService
         }
         await db.SaveChangesAsync();
         await db.Session
-            .Where(x => x.UserId == user.Id && x.ExpiresIn < expireTime)
+            .Where(x => x.UserId == user.Id && x.ExpiresIn < now)
             .ExecuteDeleteAsync();
         await db.Session
             .Where(x => x.UserId == user.Id && x.UserUpdatedAt != user.UpdatedAt)
