@@ -40,7 +40,7 @@ builder.Services
     {
         opts.OutputFormatters.RemoveType<StringOutputFormatter>();
         opts.OutputFormatters.RemoveType<StreamOutputFormatter>();
-        opts.Filters.Add<ZhuiAnimeError.ErrorExceptionFilter>();
+        opts.Filters.Add<ZAError.ErrorExceptionFilter>();
 
         var jsonInputFormatter = opts.InputFormatters.OfType<SystemTextJsonInputFormatter>().First();
         jsonInputFormatter.SupportedMediaTypes.Remove("text/json");
@@ -59,7 +59,7 @@ builder.Services
     .ConfigureApiBehaviorOptions(options =>
     {
         options.InvalidModelStateResponseFactory = context =>
-            throw new ZhuiAnimeError.BadRequest(context.ModelState);
+            throw new ZAError.BadRequest(context.ModelState);
     });
 
 builder.Services.AddDbContext<ZAContext>(opt =>
@@ -127,7 +127,7 @@ builder.Services.AddSwaggerGen(opts =>
     opts.SupportNonNullableReferenceTypes();
     opts.SchemaFilter<RequiredNotNullableSchemaFilter>();
     opts.OperationFilter<SecurityRequirementsOperationFilter>();
-    opts.OperationFilter<ZhuiAnimeError.ErrorResponsesOperationFilter>();
+    opts.OperationFilter<ZAError.ErrorResponsesOperationFilter>();
 });
 
 foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()

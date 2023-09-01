@@ -10,7 +10,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Me.Xfox.ZhuiAnime;
 
-public abstract class ZhuiAnimeError : Exception
+public abstract class ZAError : Exception
 {
     public HttpStatusCode StatusCode { get; set; }
 
@@ -18,7 +18,7 @@ public abstract class ZhuiAnimeError : Exception
 
     public IDictionary<string, object> ExtraData { get; set; }
 
-    public ZhuiAnimeError(
+    public ZAError(
         HttpStatusCode statusCode,
         string errorCode,
         string message,
@@ -31,7 +31,7 @@ public abstract class ZhuiAnimeError : Exception
     {
     }
 
-    public ZhuiAnimeError(
+    public ZAError(
         HttpStatusCode statusCode,
         string errorCode,
         string message,
@@ -43,7 +43,7 @@ public abstract class ZhuiAnimeError : Exception
         ExtraData = extraData;
     }
 
-    protected ZhuiAnimeError(
+    protected ZAError(
         string message,
         Exception? innerException = null) : this(
             message,
@@ -52,7 +52,7 @@ public abstract class ZhuiAnimeError : Exception
     {
     }
 
-    protected ZhuiAnimeError(
+    protected ZAError(
         string message,
             IDictionary<string, object> extraData,
         Exception? innerException = null) : base(message, innerException)
@@ -94,7 +94,7 @@ public abstract class ZhuiAnimeError : Exception
         IDictionary<string, object> ExtraData
     )
     {
-        public ErrorProdResponse(ZhuiAnimeError e) : this(
+        public ErrorProdResponse(ZAError e) : this(
             e.ErrorCode,
             e.Message,
             e.ExtraData)
@@ -114,7 +114,7 @@ public abstract class ZhuiAnimeError : Exception
         IDictionary<string, object> ExtraData
     )
     {
-        public ErrorDevResponse(ZhuiAnimeError e) : this(
+        public ErrorDevResponse(ZAError e) : this(
               e.ErrorCode,
               e.Message,
               e.StackTrace ?? e.InnerException?.StackTrace ?? "No stacktrace provided.",
@@ -124,10 +124,10 @@ public abstract class ZhuiAnimeError : Exception
     };
 
     [AttributeUsage(AttributeTargets.Method)]
-    public class HasExceptionAttribute : Attribute
+    public class HasAttribute : Attribute
     {
         public IEnumerable<Type> ExceptionTypes { get; set; }
-        public HasExceptionAttribute(params Type[] exceptionTypes) =>
+        public HasAttribute(params Type[] exceptionTypes) =>
             ExceptionTypes = exceptionTypes;
     }
 
@@ -139,8 +139,8 @@ public abstract class ZhuiAnimeError : Exception
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var exceptions = context.MethodInfo
-                .GetCustomAttributes(typeof(HasExceptionAttribute), true)
-                .SelectMany(x => ((HasExceptionAttribute)x).ExceptionTypes)
+                .GetCustomAttributes(typeof(HasAttribute), true)
+                .SelectMany(x => ((HasAttribute)x).ExceptionTypes)
                 .Select(GetErrorAttribute)
                 .Concat((IEnumerable<ErrorAttribute>)new[]
                 {
@@ -189,7 +189,7 @@ public abstract class ZhuiAnimeError : Exception
         {
             var error = exception switch
             {
-                ZhuiAnimeError e => e,
+                ZAError e => e,
                 Exception e => new InternalServerError(e),
                 null => new InternalServerError(new Exception("Null exception thrown.")),
             };
@@ -211,7 +211,7 @@ public abstract class ZhuiAnimeError : Exception
 
         public void OnException(ExceptionContext context)
         {
-            if (context.Exception is Exception e and not ZhuiAnimeError)
+            if (context.Exception is Exception e and not ZAError)
             {
                 Logger.Error(e, "Internal error occurred.");
             }
@@ -224,7 +224,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR", "An internal server error occurred.")]
-    public class InternalServerError : ZhuiAnimeError
+    public class InternalServerError : ZAError
     {
         public InternalServerError(Exception innerException) : base(
             $"An internal server error occurred: {innerException.Message}",
@@ -233,13 +233,13 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "ENDPOINT_NOT_FOUND", "API endpoint not found.")]
-    public class EndpointNotFound : ZhuiAnimeError
+    public class EndpointNotFound : ZAError
     {
         public EndpointNotFound() : base("API endpoint not found.") { }
     }
 
     [Error(HttpStatusCode.BadRequest, "BAD_REQUEST", "Request body is invalid.")]
-    public class BadRequest : ZhuiAnimeError
+    public class BadRequest : ZAError
     {
         public BadRequest(ModelStateDictionary state) : base(
             "Request body is invalid.")
@@ -251,7 +251,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "CATAGORY_NOT_FOUND", "Catagory {category_id} not found.")]
-    public class CategoryNotFound : ZhuiAnimeError
+    public class CategoryNotFound : ZAError
     {
         public CategoryNotFound(uint id) : base(
             $"Catagory {id} not found.")
@@ -261,7 +261,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "ITEM_NOT_FOUND", "Item {item_id} not found.")]
-    public class ItemNotFound : ZhuiAnimeError
+    public class ItemNotFound : ZAError
     {
         public ItemNotFound(uint id) : base(
             $"Item {id} not found.")
@@ -271,7 +271,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "LINK_NOT_FOUND", "Link {link_id} not found.")]
-    public class LinkNotFound : ZhuiAnimeError
+    public class LinkNotFound : ZAError
     {
         public LinkNotFound(uint id) : base(
             $"Link {id} not found.")
@@ -281,7 +281,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "PIKPAK_JOB_NOT_FOUND", "PikPak job {pikpak_job_id} not found.")]
-    public class PikPakJobNotFound : ZhuiAnimeError
+    public class PikPakJobNotFound : ZAError
     {
         public PikPakJobNotFound(uint id) : base(
             $"PikPak job {id} not found.")
@@ -291,7 +291,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "USER_NOT_FOUND", "User {user_id} not found.")]
-    public class UserNotFound : ZhuiAnimeError
+    public class UserNotFound : ZAError
     {
         public UserNotFound(uint id) : base(
             $"User {id} not found.")
@@ -301,7 +301,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "USERNAME_TAKEN", "Username {username} is already taken.")]
-    public class UsernameTaken : ZhuiAnimeError
+    public class UsernameTaken : ZAError
     {
         public UsernameTaken(string username) : base(
             $"Username {username} is already taken.")
@@ -311,7 +311,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.BadRequest, "INVALID_CAPTCHA", "Turnstile validation token is invalid since {codes}.")]
-    public class InvalidCaptcha : ZhuiAnimeError
+    public class InvalidCaptcha : ZAError
     {
         public InvalidCaptcha(string token, IEnumerable<string> codes) : base(
             $"Turnstile validation token is invalid since {string.Join(",", codes)}.")
@@ -322,7 +322,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.BadRequest, "INVALID_GRANT_TYPE", "Invalid grant type {grant_type}.")]
-    public class InvalidGrantType : ZhuiAnimeError
+    public class InvalidGrantType : ZAError
     {
         public InvalidGrantType(string grantType) : base(
             $"Invalid grant type {grantType}.")
@@ -332,7 +332,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.Forbidden, "INVALID_USERNAME_OR_PASSWORD", "Invalid username {username} or password.")]
-    public class InvalidUsernameOrPassword : ZhuiAnimeError
+    public class InvalidUsernameOrPassword : ZAError
     {
         public InvalidUsernameOrPassword(string username) : base(
             $"Invalid username {username} or password.")
@@ -342,7 +342,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.Unauthorized, "INVALID_TOKEN", "Invalid token {oauth_code}: {oauth_desc}.")]
-    public class InvalidToken : ZhuiAnimeError
+    public class InvalidToken : ZAError
     {
         public InvalidToken(string? code, string? description, Exception? ex) : base(
             $"Invalid token {code}: {description}.",
@@ -354,7 +354,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.Forbidden, "INVALID_TOKEN_NOT_FIRST_PARTY", "Token is not issued to first-party application.")]
-    public class InvalidTokenNotFirstParty : ZhuiAnimeError
+    public class InvalidTokenNotFirstParty : ZAError
     {
         public InvalidTokenNotFirstParty() : base(
             $"Token is not issued to first-party application.")
@@ -363,7 +363,7 @@ public abstract class ZhuiAnimeError : Exception
     }
 
     [Error(HttpStatusCode.Forbidden, "INVALID_REFRESH_TOKEN", "Refresh token is not valid for {code}.")]
-    public class InvalidRefreshToken : ZhuiAnimeError
+    public class InvalidRefreshToken : ZAError
     {
         public InvalidRefreshToken(string code) : base(
             $"Refresh token is not valid for {code}.")

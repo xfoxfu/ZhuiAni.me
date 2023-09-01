@@ -51,13 +51,13 @@ public class UserController : ControllerBase
     [HttpPost]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.UsernameTaken))]
+    [ZAError.Has(typeof(ZAError.UsernameTaken))]
     public async Task<ActionResult<UserDto>> Register(CreateUserDto req)
     {
         await TurnstileService.Validate(req.Captcha);
         if (await DbContext.User.AnyAsync(x => x.Username == req.Username))
         {
-            throw new ZhuiAnimeError.UsernameTaken(req.Username);
+            throw new ZAError.UsernameTaken(req.Username);
         }
 
         var user = new User
@@ -72,9 +72,9 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.UserNotFound))]
+    [ZAError.Has(typeof(ZAError.UserNotFound))]
     public async Task<UserDto> Get(uint id)
     {
-        return new UserDto(await DbContext.User.FindAsync(id) ?? throw new ZhuiAnimeError.UserNotFound(id));
+        return new UserDto(await DbContext.User.FindAsync(id) ?? throw new ZAError.UserNotFound(id));
     }
 }

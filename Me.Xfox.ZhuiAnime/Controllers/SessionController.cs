@@ -68,13 +68,13 @@ public class SessionController : ControllerBase
     /// ]]></remarks>
     /// <param name="req"></param>
     /// <returns></returns>
-    /// <exception cref="ZhuiAnimeError.InvalidGrantType">If the grant type is invalid.</exception>
-    /// <exception cref="ZhuiAnimeError.InvalidUsernameOrPassword"></exception>
+    /// <exception cref="ZAError.InvalidGrantType">If the grant type is invalid.</exception>
+    /// <exception cref="ZAError.InvalidUsernameOrPassword"></exception>
     [HttpPost]
     [AllowAnonymous]
     [ResponseCache(NoStore = true)]
     [Consumes("application/x-www-form-urlencoded")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.InvalidGrantType), typeof(ZhuiAnimeError.InvalidUsernameOrPassword))]
+    [ZAError.Has(typeof(ZAError.InvalidGrantType), typeof(ZAError.InvalidUsernameOrPassword))]
     public async Task<LoginResDto> Login([FromForm] LoginReqDto req)
     {
         if (req.grant_type == "password")
@@ -83,7 +83,7 @@ public class SessionController : ControllerBase
             var user = await DbContext.User.FirstOrDefaultAsync(x => x.Username == req.username);
             if (Models.User.ValidatePassword(user, req.password) != true)
             {
-                throw new ZhuiAnimeError.InvalidUsernameOrPassword(req.username);
+                throw new ZAError.InvalidUsernameOrPassword(req.username);
             }
             var refresh = await TokenService.IssueFirstPartyRefreshToken(user, null);
             var (token, jwt) = TokenService.IssueFirstParty(user, refresh);
@@ -100,19 +100,19 @@ public class SessionController : ControllerBase
         {
             if (!Guid.TryParse(req.refresh_token, out var tokenId))
             {
-                throw new ZhuiAnimeError.InvalidRefreshToken("not_guid");
+                throw new ZAError.InvalidRefreshToken("not_guid");
             }
             var refresh = await DbContext.Session
                 .Include(x => x.User)
                 .FirstOrDefaultAsync(x => x.Token == tokenId) ??
-                throw new ZhuiAnimeError.InvalidRefreshToken("not_found");
+                throw new ZAError.InvalidRefreshToken("not_found");
             if (refresh.UserUpdatedAt != refresh.User.UpdatedAt)
             {
-                throw new ZhuiAnimeError.InvalidRefreshToken("user_updated");
+                throw new ZAError.InvalidRefreshToken("user_updated");
             }
             if (refresh.ExpiresIn < DateTimeOffset.Now)
             {
-                throw new ZhuiAnimeError.InvalidRefreshToken("token_expired");
+                throw new ZAError.InvalidRefreshToken("token_expired");
             }
             var newRefresh = await TokenService.IssueFirstPartyRefreshToken(refresh.User, refresh);
             var (token, jwt) = TokenService.IssueFirstParty(refresh.User, newRefresh);
@@ -127,7 +127,7 @@ public class SessionController : ControllerBase
         }
         else
         {
-            throw new ZhuiAnimeError.InvalidGrantType(req.grant_type);
+            throw new ZAError.InvalidGrantType(req.grant_type);
         }
     }
 
@@ -137,12 +137,16 @@ public class SessionController : ControllerBase
         DateTimeOffset ExpiresAt
     );
 
+    /// <summary>Get Current</summary>
+    /// <returns></returns>
+    /// <exception cref="ZAError.InvalidTokenNotFirstParty"></exception>
     [HttpGet]
+    [ZAError.Has(typeof(ZAError.InvalidTokenNotFirstParty))]
     public async Task<TokenDto> Get()
     {
         if (!TokenService.IsFirstParty(User))
         {
-            throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
+            throw new ZAError.InvalidTokenNotFirstParty();
         }
         var expires = User.FindFirstValue(JwtRegisteredClaimNames.Exp);
         var issued = User.FindFirstValue(JwtRegisteredClaimNames.Iat);
@@ -156,19 +160,24 @@ public class SessionController : ControllerBase
         );
     }
 
+    /// <summary>Logout</summary>
+    /// <returns></returns>
+    /// <exception cref="ZAError.InvalidTokenNotFirstParty"></exception>
+    /// <exception cref="ZAError.InvalidToken"></exception>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ZAError.Has(typeof(ZAError.InvalidTokenNotFirstParty))]
     public async Task<IActionResult> Logout()
     {
         if (!TokenService.IsFirstParty(User))
         {
-            throw new ZhuiAnimeError.InvalidTokenNotFirstParty();
+            throw new ZAError.InvalidTokenNotFirstParty();
         }
         var refresh = User.FindFirstValue(JwtRegisteredClaimNames.Sid) ??
-            throw new ZhuiAnimeError.InvalidToken("za_sid_not_present", "no sid in token", null);
+            throw new ZAError.InvalidToken("za_sid_not_present", "no sid in token", null);
         var tokenId = Guid.Parse(refresh);
         var token = await DbContext.Session.FindAsync(tokenId) ??
-            throw new ZhuiAnimeError.InvalidToken("za_refresh_token_not_found", $"refresh token {refresh} not found", null);
+            throw new ZAError.InvalidToken("za_refresh_token_not_found", $"refresh token {refresh} not found", null);
         DbContext.Session.Remove(token);
         await DbContext.SaveChangesAsync();
         return NoContent();

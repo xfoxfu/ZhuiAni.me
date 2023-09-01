@@ -1,7 +1,5 @@
-using System.Net;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ItemDto = Me.Xfox.ZhuiAnime.Controllers.ItemController.ItemDto;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
@@ -73,7 +71,7 @@ public class CategoryController : ControllerBase
         Request.RouteValues.TryGetValue(routeParam, out var idStr);
         var id = Convert.ToUInt32(idStr ?? "0");
         var category = await DbContext.Category.FindAsync(id) ??
-            throw new ZhuiAnimeError.CategoryNotFound(id);
+            throw new ZAError.CategoryNotFound(id);
         return category;
     }
 
@@ -81,7 +79,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
+    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
     public async Task<CategoryDto> Get(uint id)
     {
         return new CategoryDto(await LoadCategory());
@@ -92,7 +90,7 @@ public class CategoryController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
+    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
     public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
         var category = await LoadCategory();
@@ -105,7 +103,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
+    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
     public async Task<CategoryDto> Delete(uint id)
     {
         var category = await LoadCategory();
@@ -114,7 +112,7 @@ public class CategoryController : ControllerBase
         return new CategoryDto(category);
     }
 
-    /// <summary>Get Belonged Items</summary>
+    /// <summary>Get Child Items</summary>
     /// <remarks>
     /// This API will only return those are top-level, i.e. do not have a parent
     /// item. The result will be ordered by id descendingly.
@@ -122,7 +120,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.CategoryNotFound))]
+    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
     public async Task<IEnumerable<ItemDto>> GetItems(uint id)
     {
         var category = await LoadCategory();

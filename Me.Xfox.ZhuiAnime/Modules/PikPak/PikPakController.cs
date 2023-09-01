@@ -79,7 +79,7 @@ public class PikPakController : ControllerBase
     {
         return new JobDto(
             await Db.PikPakJob.FindAsync(id) ??
-                throw new ZhuiAnimeError.PikPakJobNotFound(id)
+                throw new ZAError.PikPakJobNotFound(id)
         );
     }
 
@@ -95,7 +95,7 @@ public class PikPakController : ControllerBase
     public async Task<JobDto> Update(uint id, UpdateJobDto req)
     {
         var anime = await Db.PikPakJob.FindAsync(id) ??
-            throw new ZhuiAnimeError.PikPakJobNotFound(id);
+            throw new ZAError.PikPakJobNotFound(id);
         anime.Bangumi = req.Bangumi;
         anime.Target = req.Target;
         anime.Regex = req.Regex;
@@ -109,7 +109,7 @@ public class PikPakController : ControllerBase
     public async Task Delete(uint id)
     {
         var anime = await Db.PikPakJob.FindAsync(id) ??
-            throw new ZhuiAnimeError.PikPakJobNotFound(id);
+            throw new ZAError.PikPakJobNotFound(id);
         Db.PikPakJob.Remove(anime);
         await Db.SaveChangesAsync();
     }

@@ -8,7 +8,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Client;
 public class BangumiException : Exception
 {
     public HttpStatusCode StatusCode { get; set; }
-    public Error? Error { get; set; }
+    public Models.Error? Error { get; set; }
 
     public BangumiException(string message, FlurlHttpException innerException) : base(message, innerException) { }
 
@@ -23,7 +23,7 @@ public class BangumiException : Exception
 
         try
         {
-            var error = await response.GetResponseJsonAsync<Error>();
+            var error = await response.GetResponseJsonAsync<Models.Error>();
             return new BangumiException($"BangumiError ({response.StatusCode}): {error.Title}", response)
             {
                 Error = error,

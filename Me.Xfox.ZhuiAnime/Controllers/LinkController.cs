@@ -1,13 +1,9 @@
-using System.Net;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
-/// <summary>
-/// Operate links under an item.
-/// </summary>
+/// <summary>Operate links under an item.</summary>
 [ApiController, Route("api/items/{item_id}/links")]
 public class ItemLinkController : ControllerBase
 {
@@ -18,9 +14,7 @@ public class ItemLinkController : ControllerBase
         DbContext = dbContext;
     }
 
-    /// <summary>
-    /// Link.
-    /// </summary>
+    /// <summary>Link.</summary>
     /// <param name="Id">id</param>
     /// <param name="ItemId">id of the item this link belongs to</param>
     /// <param name="Address">the url this link points to</param>
@@ -53,26 +47,22 @@ public class ItemLinkController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get all links.
-    /// </summary>
+    /// <summary>List</summary>
     /// <returns>List of links.</returns>
     [HttpGet]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<IEnumerable<LinkDto>> ListAsync(uint item_id)
     {
         var item = await DbContext.Item.Include(i => i.Links)
             .FirstOrDefaultAsync(i => i.Id == item_id);
         if (item == null)
         {
-            throw new ZhuiAnimeError.ItemNotFound(item_id);
+            throw new ZAError.ItemNotFound(item_id);
         }
         return item.Links!.Select(l => new LinkDto(l));
     }
 
-    /// <summary>
-    /// Information for creating a link.
-    /// </summary>
+    /// <summary>Information for creating</summary>
     /// <param name="Address">the url this link points to</param>
     /// <param name="MimeType">the MIME type of the target of this link</param>
     /// <param name="Annotations">extra information for this link</param>
@@ -84,21 +74,19 @@ public class ItemLinkController : ControllerBase
         uint? ParentLinkId
     );
 
-    /// <summary>
-    /// Create a new link.
-    /// </summary>
+    /// <summary>Create</summary>
     /// <param name="item_id"></param>
     /// <param name="link"></param>
     /// <returns></returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
     {
         var item = await DbContext.Item.FindAsync(item_id);
         if (item == null)
         {
-            throw new ZhuiAnimeError.ItemNotFound(item_id);
+            throw new ZAError.ItemNotFound(item_id);
         }
         var newLink = new Link
         {
@@ -118,7 +106,7 @@ public class ItemLinkController : ControllerBase
         var item = await DbContext.Item.FindAsync(item_id);
         if (item == null)
         {
-            throw new ZhuiAnimeError.ItemNotFound(item_id);
+            throw new ZAError.ItemNotFound(item_id);
         }
         var link = await DbContext.Entry(item)
             .Collection(i => i.Links!)
@@ -126,33 +114,29 @@ public class ItemLinkController : ControllerBase
             .FirstOrDefaultAsync(l => l.Id == id);
         if (link == null)
         {
-            throw new ZhuiAnimeError.LinkNotFound(id);
+            throw new ZAError.LinkNotFound(id);
         }
         await TryUpdateModelAsync<Link>(link);
         return link;
     }
 
-    /// <summary>
-    /// Get a link.
-    /// </summary>
+    /// <summary>Get</summary>
     /// <param name="item_id">item id, which this link belongs to</param>
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
     public async Task<LinkDto> Get(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);
         if (link == null)
         {
-            throw new ZhuiAnimeError.LinkNotFound(id);
+            throw new ZAError.LinkNotFound(id);
         }
         return new LinkDto(link);
     }
 
-    /// <summary>
-    /// Information for updating a link.
-    /// </summary>
+    /// <summary>Information for updating</summary>
     /// <param name="Address">the url this link points to</param>
     /// <param name="MimeType">the MIME type of the target of this link</param>
     /// <param name="Annotations">extra information for this link</param>
@@ -162,15 +146,13 @@ public class ItemLinkController : ControllerBase
         IDictionary<string, string> Annotations
     );
 
-    /// <summary>
-    /// Update a link.
-    /// </summary>
+    /// <summary>Update</summary>
     /// <param name="item_id">item id, which this link belongs to</param>
     /// <param name="id">link id</param>
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
     public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
     {
         var link = await LoadLink(item_id, id);
@@ -181,14 +163,12 @@ public class ItemLinkController : ControllerBase
         return new LinkDto(link);
     }
 
-    /// <summary>
-    /// Delete a link.
-    /// </summary>
+    /// <summary>Delete</summary>
     /// <param name="item_id">item id, which this link belongs to</param>
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound), typeof(ZhuiAnimeError.LinkNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
     public async Task<LinkDto> Delete(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);

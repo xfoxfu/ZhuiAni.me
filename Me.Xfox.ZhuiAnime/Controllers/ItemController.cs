@@ -1,13 +1,9 @@
-using System.Net;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime.Controllers;
 
-/// <summary>
-/// Get items.
-/// </summary>
+/// <summary>Get items.</summary>
 [ApiController, Route("api/items")]
 public class ItemController : ControllerBase
 {
@@ -18,9 +14,7 @@ public class ItemController : ControllerBase
         DbContext = dbContext;
     }
 
-    /// <summary>
-    /// An item, like an anime, a manga, a episode in an anime, etc.
-    /// </summary>
+    /// <summary>An item, like an anime, a manga, a episode in an anime, etc.</summary>
     /// <param name="Id">id</param>
     /// <param name="CategoryId">the id of category this item belongs to</param>
     /// <param name="Title">original title of the item</param>
@@ -50,9 +44,7 @@ public class ItemController : ControllerBase
         }
     }
 
-    /// <summary>
-    /// Get all items.
-    /// </summary>
+    /// <summary>List</summary>
     /// <remarks>
     /// This API will only return those are top-level, i.e. do not have a parent
     /// item. The result will be ordered by id descendingly.
@@ -75,9 +67,7 @@ public class ItemController : ControllerBase
         uint? ParentItemId
     );
 
-    /// <summary>
-    /// Create a new item.
-    /// </summary>
+    /// <summary>Create</summary>
     /// <param name="item"></param>
     /// <returns></returns>
     [HttpPost]
@@ -97,15 +87,13 @@ public class ItemController : ControllerBase
     }
 
     protected async Task<Item> LoadItem(uint id) => await DbContext.Item.FindAsync(id)
-        ?? throw new ZhuiAnimeError.ItemNotFound(id);
+        ?? throw new ZAError.ItemNotFound(id);
 
-    /// <summary>
-    /// Get a item.
-    /// </summary>
+    /// <summary>Get</summary>
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<ItemDto> Get(uint id)
     {
         return new ItemDto(await LoadItem(id));
@@ -117,14 +105,12 @@ public class ItemController : ControllerBase
         IDictionary<string, string>? Annotations
     );
 
-    /// <summary>
-    /// Update a item.
-    /// </summary>
+    /// <summary>Update</summary>
     /// <param name="id">item id</param>
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
@@ -135,13 +121,11 @@ public class ItemController : ControllerBase
         return new ItemDto(item);
     }
 
-    /// <summary>
-    /// Delete a item.
-    /// </summary>
+    /// <summary>Delete</summary>
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<ItemDto> Delete(uint id)
     {
         var item = await LoadItem(id);
@@ -150,13 +134,11 @@ public class ItemController : ControllerBase
         return new ItemDto(item);
     }
 
-    /// <summary>
-    /// Get a item's child items.
-    /// </summary>
+    /// <summary>Get Child Items</summary>
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
-    [ZhuiAnimeError.HasException(typeof(ZhuiAnimeError.ItemNotFound))]
+    [ZAError.Has(typeof(ZAError.ItemNotFound))]
     public async Task<IEnumerable<ItemDto>> GetChildItems(uint id)
     {
         var item = await LoadItem(id);

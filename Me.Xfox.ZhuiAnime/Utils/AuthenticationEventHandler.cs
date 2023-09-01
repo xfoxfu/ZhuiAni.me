@@ -11,10 +11,10 @@ public class AuthenticationEventHandler : JwtBearerEvents
     {
         context.HandleResponse();
 
-        ZhuiAnimeError err = context.AuthenticateFailure switch
+        ZAError err = context.AuthenticateFailure switch
         {
-            ZhuiAnimeError e => e,
-            null or Exception => new ZhuiAnimeError.InvalidToken(
+            ZAError e => e,
+            null or Exception => new ZAError.InvalidToken(
                 context.Error,
                 context.ErrorDescription,
                 context.AuthenticateFailure
@@ -79,11 +79,11 @@ public class AuthenticationEventHandler : JwtBearerEvents
         // Customized logic for JSON response
         if (context.HttpContext.RequestServices.GetRequiredService<IHostEnvironment>().IsDevelopment())
         {
-            await context.HttpContext.Response.WriteAsJsonAsync(new ZhuiAnimeError.ErrorDevResponse(err));
+            await context.HttpContext.Response.WriteAsJsonAsync(new ZAError.ErrorDevResponse(err));
         }
         else
         {
-            await context.HttpContext.Response.WriteAsJsonAsync(new ZhuiAnimeError.ErrorProdResponse(err));
+            await context.HttpContext.Response.WriteAsJsonAsync(new ZAError.ErrorProdResponse(err));
         }
     }
 
@@ -91,19 +91,19 @@ public class AuthenticationEventHandler : JwtBearerEvents
     {
         if (context.Principal == null)
         {
-            throw new ZhuiAnimeError.InvalidToken("za_no_principal", "no principal in token", null);
+            throw new ZAError.InvalidToken("za_no_principal", "no principal in token", null);
         }
         var subject = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier) ??
-            throw new ZhuiAnimeError.InvalidToken("za_no_subject", "no subject in token", null);
+            throw new ZAError.InvalidToken("za_no_subject", "no subject in token", null);
         if (uint.TryParse(subject, out var _) == false)
         {
-            throw new ZhuiAnimeError.InvalidToken("za_invalid_subject", "subject is not number", null);
+            throw new ZAError.InvalidToken("za_invalid_subject", "subject is not number", null);
         }
         var updatedAtStr = context.Principal.FindFirstValue(Services.TokenService.JwtClaimNames.UpdatedAt) ??
-            throw new ZhuiAnimeError.InvalidToken("za_no_updated_at", "no updated_at in token", null);
+            throw new ZAError.InvalidToken("za_no_updated_at", "no updated_at in token", null);
         if (long.TryParse(updatedAtStr, out var _) == false)
         {
-            throw new ZhuiAnimeError.InvalidToken("za_invalid_updated_at", "updated_at is not number", null);
+            throw new ZAError.InvalidToken("za_invalid_updated_at", "updated_at is not number", null);
         }
         return Task.CompletedTask;
     }

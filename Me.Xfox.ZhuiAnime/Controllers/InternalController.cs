@@ -11,6 +11,6 @@ public class InternalController : ControllerBase
     [Route("not_found")]
     public void EndpointNotFound()
     {
-        throw new ZhuiAnimeError.EndpointNotFound();
+        throw new ZAError.EndpointNotFound();
     }
 }
