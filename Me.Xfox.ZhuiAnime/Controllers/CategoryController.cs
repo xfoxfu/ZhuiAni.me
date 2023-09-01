@@ -79,7 +79,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
+    [ZAError.Has<ZAError.CategoryNotFound>]
     public async Task<CategoryDto> Get(uint id)
     {
         return new CategoryDto(await LoadCategory());
@@ -90,7 +90,7 @@ public class CategoryController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
+    [ZAError.Has<ZAError.CategoryNotFound>]
     public async Task<CategoryDto> Update(uint id, [FromBody] CreateOrUpdateCategoryDto request)
     {
         var category = await LoadCategory();
@@ -103,7 +103,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
+    [ZAError.Has<ZAError.CategoryNotFound>]
     public async Task<CategoryDto> Delete(uint id)
     {
         var category = await LoadCategory();
@@ -120,7 +120,7 @@ public class CategoryController : ControllerBase
     /// <param name="id">category id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
-    [ZAError.Has(typeof(ZAError.CategoryNotFound))]
+    [ZAError.Has<ZAError.CategoryNotFound>]
     public async Task<IEnumerable<ItemDto>> GetItems(uint id)
     {
         var category = await LoadCategory();

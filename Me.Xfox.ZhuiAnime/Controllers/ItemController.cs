@@ -93,7 +93,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<ItemDto> Get(uint id)
     {
         return new ItemDto(await LoadItem(id));
@@ -110,7 +110,7 @@ public class ItemController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
@@ -125,7 +125,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<ItemDto> Delete(uint id)
     {
         var item = await LoadItem(id);
@@ -138,7 +138,7 @@ public class ItemController : ControllerBase
     /// <param name="id">item id</param>
     /// <returns></returns>
     [HttpGet("{id}/items")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<IEnumerable<ItemDto>> GetChildItems(uint id)
     {
         var item = await LoadItem(id);

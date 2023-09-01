@@ -50,7 +50,7 @@ public class ItemLinkController : ControllerBase
     /// <summary>List</summary>
     /// <returns>List of links.</returns>
     [HttpGet]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<IEnumerable<LinkDto>> ListAsync(uint item_id)
     {
         var item = await DbContext.Item.Include(i => i.Links)
@@ -80,7 +80,7 @@ public class ItemLinkController : ControllerBase
     /// <returns></returns>
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ZAError.Has(typeof(ZAError.ItemNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
     {
         var item = await DbContext.Item.FindAsync(item_id);
@@ -125,7 +125,8 @@ public class ItemLinkController : ControllerBase
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpGet("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
+    [ZAError.Has<ZAError.LinkNotFound>]
     public async Task<LinkDto> Get(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);
@@ -152,7 +153,8 @@ public class ItemLinkController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPatch("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
+    [ZAError.Has<ZAError.LinkNotFound>]
     public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
     {
         var link = await LoadLink(item_id, id);
@@ -168,7 +170,8 @@ public class ItemLinkController : ControllerBase
     /// <param name="id">link id</param>
     /// <returns></returns>
     [HttpDelete("{id}")]
-    [ZAError.Has(typeof(ZAError.ItemNotFound), typeof(ZAError.LinkNotFound))]
+    [ZAError.Has<ZAError.ItemNotFound>]
+    [ZAError.Has<ZAError.LinkNotFound>]
     public async Task<LinkDto> Delete(uint item_id, uint id)
     {
         var link = await LoadLink(item_id, id);

@@ -74,7 +74,8 @@ public class SessionController : ControllerBase
     [AllowAnonymous]
     [ResponseCache(NoStore = true)]
     [Consumes("application/x-www-form-urlencoded")]
-    [ZAError.Has(typeof(ZAError.InvalidGrantType), typeof(ZAError.InvalidUsernameOrPassword))]
+    [ZAError.Has<ZAError.InvalidGrantType>]
+    [ZAError.Has<ZAError.InvalidUsernameOrPassword>]
     public async Task<LoginResDto> Login([FromForm] LoginReqDto req)
     {
         if (req.grant_type == "password")
@@ -141,7 +142,7 @@ public class SessionController : ControllerBase
     /// <returns></returns>
     /// <exception cref="ZAError.InvalidTokenNotFirstParty"></exception>
     [HttpGet]
-    [ZAError.Has(typeof(ZAError.InvalidTokenNotFirstParty))]
+    [ZAError.Has<ZAError.InvalidTokenNotFirstParty>]
     public async Task<TokenDto> Get()
     {
         if (!TokenService.IsFirstParty(User))
@@ -166,7 +167,7 @@ public class SessionController : ControllerBase
     /// <exception cref="ZAError.InvalidToken"></exception>
     [HttpDelete]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ZAError.Has(typeof(ZAError.InvalidTokenNotFirstParty))]
+    [ZAError.Has<ZAError.InvalidTokenNotFirstParty>]
     public async Task<IActionResult> Logout()
     {
         if (!TokenService.IsFirstParty(User))

@@ -123,12 +123,17 @@ public abstract class ZAError : Exception
         }
     };
 
-    [AttributeUsage(AttributeTargets.Method)]
-    public class HasAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+    public class HasAttribute<T> : Attribute, IHasAttribute where T : ZAError
     {
-        public IEnumerable<Type> ExceptionTypes { get; set; }
-        public HasAttribute(params Type[] exceptionTypes) =>
-            ExceptionTypes = exceptionTypes;
+        public Type ExceptionType { get; set; }
+        public HasAttribute() =>
+            ExceptionType = typeof(T);
+    }
+
+    protected interface IHasAttribute
+    {
+        public Type ExceptionType { get; }
     }
 
     public class ErrorResponsesOperationFilter : IOperationFilter
@@ -139,8 +144,8 @@ public abstract class ZAError : Exception
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             var exceptions = context.MethodInfo
-                .GetCustomAttributes(typeof(HasAttribute), true)
-                .SelectMany(x => ((HasAttribute)x).ExceptionTypes)
+                .GetCustomAttributes(typeof(HasAttribute<>), true)
+                .Select(x => ((IHasAttribute)x).ExceptionType)
                 .Select(GetErrorAttribute)
                 .Concat((IEnumerable<ErrorAttribute>)new[]
                 {
