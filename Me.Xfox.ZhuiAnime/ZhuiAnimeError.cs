@@ -405,4 +405,14 @@ public abstract class ZAError : Exception
             ExtraData.Add("code", code);
         }
     }
+
+    [Error(HttpStatusCode.Forbidden, "USER_REG_RESTRICTED", "User registration is restricted as there exists valid user.")]
+    [WithExtraData("code", typeof(string))]
+    public class UserRegRestricted : ZAError
+    {
+        public UserRegRestricted() : base(
+            $"User registration is restricted as there exists valid user.")
+        {
+        }
+    }
 }

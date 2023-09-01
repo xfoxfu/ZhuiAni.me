@@ -54,6 +54,10 @@ public class UserController : ControllerBase
     [ZAError.Has<ZAError.UsernameTaken>]
     public async Task<ActionResult<UserDto>> Register(CreateUserDto req)
     {
+        if (await DbContext.User.AnyAsync() && !(User.Identity?.IsAuthenticated ?? false))
+        {
+            throw new ZAError.UserRegRestricted();
+        }
         await TurnstileService.Validate(req.Captcha);
         if (await DbContext.User.AnyAsync(x => x.Username == req.Username))
         {
