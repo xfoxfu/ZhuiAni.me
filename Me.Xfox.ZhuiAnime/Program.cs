@@ -7,6 +7,7 @@ using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -140,6 +141,9 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
 TurnstileService.ConfigureOn(builder);
 TokenService.ConfigureOn(builder);
 
+// FIXME: This will raise "No XML encryptor configured. Key {GUID} may be
+// persisted to storage in unencrypted form." on start, but I think it is ok
+// as the JWT keys are managed manually.
 builder.Services.AddAuthentication(opts =>
 {
     opts.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
