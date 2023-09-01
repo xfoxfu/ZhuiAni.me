@@ -200,10 +200,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "api/{controller}/{action=Index}/{id?}")
-.RequireAuthorization();
+app.MapControllers().RequireAuthorization(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 
 app.MapFallbackToController("/api/{**path}",
     nameof(ZhuiAnime.Controllers.InternalController.EndpointNotFound),

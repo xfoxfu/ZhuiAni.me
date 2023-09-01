@@ -76,7 +76,7 @@ export const UserInfo: React.FC = () => {
 
   useEffect(() => {
     void (async () => {
-      if (error?.error_code === "INVALID_TOKEN") {
+      if (error?.error_code === "INVALID_TOKEN" || error?.error_code === "INVALID_TOKEN_NOT_FIRST_PARTY") {
         if (getRefreshToken() !== null) {
           try {
             await refresh();
