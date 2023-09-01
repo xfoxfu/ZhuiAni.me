@@ -79,6 +79,19 @@ public abstract class ZAError : Exception
         }
     }
 
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+    protected class WithExtraData : Attribute
+    {
+        public string FieldName { get; set; }
+        public Type FieldType { get; set; }
+
+        public WithExtraData(string fieldName, Type fieldType)
+        {
+            FieldName = fieldName;
+            FieldType = fieldType;
+        }
+    }
+
     public void WithHttpContext(HttpContext context)
     {
         ExtraData.Add("connection_id", context.Connection.Id);
@@ -244,6 +257,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.BadRequest, "BAD_REQUEST", "Request body is invalid.")]
+    [WithExtraData("errors", typeof(IDictionary<string, IEnumerable<string>>))]
     public class BadRequest : ZAError
     {
         public BadRequest(ModelStateDictionary state) : base(
@@ -256,6 +270,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "CATAGORY_NOT_FOUND", "Catagory {category_id} not found.")]
+    [WithExtraData("category_id", typeof(uint))]
     public class CategoryNotFound : ZAError
     {
         public CategoryNotFound(uint id) : base(
@@ -266,6 +281,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "ITEM_NOT_FOUND", "Item {item_id} not found.")]
+    [WithExtraData("item_id", typeof(uint))]
     public class ItemNotFound : ZAError
     {
         public ItemNotFound(uint id) : base(
@@ -276,6 +292,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "LINK_NOT_FOUND", "Link {link_id} not found.")]
+    [WithExtraData("link_id", typeof(uint))]
     public class LinkNotFound : ZAError
     {
         public LinkNotFound(uint id) : base(
@@ -286,6 +303,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "PIKPAK_JOB_NOT_FOUND", "PikPak job {pikpak_job_id} not found.")]
+    [WithExtraData("pikpak_job_id", typeof(uint))]
     public class PikPakJobNotFound : ZAError
     {
         public PikPakJobNotFound(uint id) : base(
@@ -296,6 +314,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "USER_NOT_FOUND", "User {user_id} not found.")]
+    [WithExtraData("user_id", typeof(uint))]
     public class UserNotFound : ZAError
     {
         public UserNotFound(uint id) : base(
@@ -306,6 +325,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "USERNAME_TAKEN", "Username {username} is already taken.")]
+    [WithExtraData("username", typeof(string))]
     public class UsernameTaken : ZAError
     {
         public UsernameTaken(string username) : base(
@@ -316,17 +336,20 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.BadRequest, "INVALID_CAPTCHA", "Turnstile validation token is invalid since {codes}.")]
+    [WithExtraData("token", typeof(string))]
+    [WithExtraData("codes", typeof(IEnumerable<string>))]
     public class InvalidCaptcha : ZAError
     {
         public InvalidCaptcha(string token, IEnumerable<string> codes) : base(
             $"Turnstile validation token is invalid since {string.Join(",", codes)}.")
         {
             ExtraData.Add("token", token);
-            ExtraData.Add("codes", string.Join(",", codes));
+            ExtraData.Add("codes", codes);
         }
     }
 
     [Error(HttpStatusCode.BadRequest, "INVALID_GRANT_TYPE", "Invalid grant type {grant_type}.")]
+    [WithExtraData("grant_type", typeof(string))]
     public class InvalidGrantType : ZAError
     {
         public InvalidGrantType(string grantType) : base(
@@ -337,6 +360,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.Forbidden, "INVALID_USERNAME_OR_PASSWORD", "Invalid username {username} or password.")]
+    [WithExtraData("username", typeof(string))]
     public class InvalidUsernameOrPassword : ZAError
     {
         public InvalidUsernameOrPassword(string username) : base(
@@ -347,6 +371,8 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.Unauthorized, "INVALID_TOKEN", "Invalid token {oauth_code}: {oauth_desc}.")]
+    [WithExtraData("oauth_code", typeof(string))]
+    [WithExtraData("oauth_desc", typeof(string))]
     public class InvalidToken : ZAError
     {
         public InvalidToken(string? code, string? description, Exception? ex) : base(
@@ -368,6 +394,7 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.Forbidden, "INVALID_REFRESH_TOKEN", "Refresh token is not valid for {code}.")]
+    [WithExtraData("code", typeof(string))]
     public class InvalidRefreshToken : ZAError
     {
         public InvalidRefreshToken(string code) : base(
