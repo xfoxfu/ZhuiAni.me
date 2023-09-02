@@ -2,7 +2,6 @@ root: true
 parser: "@typescript-eslint/parser"
 plugins:
   - "@typescript-eslint"
-  - "prettier"
   - "react"
   - "react-hooks"
 parserOptions:
@@ -15,7 +14,7 @@ extends:
   - "plugin:@typescript-eslint/recommended-requiring-type-checking"
   - "plugin:react/recommended"
   - "plugin:react-hooks/recommended"
-  - "plugin:prettier/recommended"
+  - "prettier"
 
 ignorePatterns:
   - "vite.config.ts"

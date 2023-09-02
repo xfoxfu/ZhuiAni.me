@@ -5,9 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "serve": "vite preview",
-    "lint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:eslint": "eslint 'src/**/*.{ts,tsx}'",
+    "lint:prettier": "prettier --ignore-unknown --check 'src/**/*'",
+    "lint:tsc": "tsc --noEmit --pretty",
+    "lint": "concurrently 'pnpm:lint:*' --group",
     "format": "prettier --ignore-unknown --write 'src/**/*'",
     "build-api": "swagger-typescript-api -p http://localhost:5000/api/swagger/v1/swagger.json -t build/api-template -o src -n api.ts"
   },
@@ -41,16 +44,15 @@
     "@typescript-eslint/eslint-plugin": "^6.1.0",
     "@typescript-eslint/parser": "^6.1.0",
     "@vitejs/plugin-react": "^4.0.3",
+    "concurrently": "^8.2.1",
     "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-react": "^7.33.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^3.0.0",
     "swagger-typescript-api": "^13.0.0",
     "typescript": "^5.1.6",
-    "vite": "^4.4.6",
-    "vite-plugin-eslint": "^1.8.1"
+    "vite": "^4.4.6"
   },
   "prettier": {
     "printWidth": 120,
