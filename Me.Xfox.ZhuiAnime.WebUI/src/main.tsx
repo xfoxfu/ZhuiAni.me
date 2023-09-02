@@ -1,10 +1,10 @@
+import App from "./App";
+import { fetcher } from "./api";
+import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App";
-import { ChakraProvider } from "@chakra-ui/react";
-import { SWRConfig } from "swr";
-import { fetcher } from "./api";
 import { BrowserRouter } from "react-router-dom";
+import { SWRConfig } from "swr";
 import { defaultConfig } from "swr/_internal";
 
 const container = document.getElementById("root");

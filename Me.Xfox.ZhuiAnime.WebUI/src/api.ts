@@ -1,3 +1,6 @@
+import { getAccessToken } from "./services/auth";
+import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
+
 /* eslint-disable */
 /* tslint:disable */
 /*
@@ -461,9 +464,6 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 export class ApiError extends Error {}
-
-import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
-import { getAccessToken } from "./services/auth";
 
 /**
  * @title ZhuiAni.me API
@@ -1454,7 +1454,7 @@ const api = new Api({
     },
   }),
 });
-export default api;
+export default api.api;
 
 export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
   const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };

@@ -1,3 +1,5 @@
+import api from "../api";
+import { Edit } from "../components/pikpak/Edit";
 import {
   Heading,
   Stack,
@@ -17,12 +19,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import React from "react";
-import Api from "../api";
-import { Edit } from "../components/pikpak/Edit";
 import { IoCloudOfflineOutline, IoSyncOutline } from "react-icons/io5";
 
 export const PikPakTasksList: React.FunctionComponent = () => {
-  const { data: tasks, error } = Api.api.usePikPakList();
+  const { data: tasks, error } = api.usePikPakList();
   return (
     <>
       <Heading as="h1" size="xl" color="green.700">

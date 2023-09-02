@@ -1,27 +1,27 @@
+import api from "../api";
+import { ItemLinks } from "../components/anime/ItemLinks";
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
   Heading,
   Stack,
-  Alert,
-  AlertIcon,
-  AlertDescription,
-  Tag,
   Table,
   TableContainer,
+  Tag,
   Tbody,
   Td,
+  Text,
   Tr,
   VStack,
-  Text,
 } from "@chakra-ui/react";
 import React from "react";
 import { useParams } from "react-router-dom";
-import api from "../api";
-import { ItemLinks } from "../components/anime/ItemLinks";
 
 export const Item: React.FunctionComponent = () => {
   const params = useParams();
-  const { data: anime, error: animeError } = api.api.useItemGet(Number.parseInt(params["animeId"] ?? "0", 10));
-  const { data: episodes, error: episodesError } = api.api.useItemGetChildItems(
+  const { data: anime, error: animeError } = api.useItemGet(Number.parseInt(params["animeId"] ?? "0", 10));
+  const { data: episodes, error: episodesError } = api.useItemGetChildItems(
     Number.parseInt(params["animeId"] ?? "0", 10),
   );
   const error = animeError ?? episodesError;

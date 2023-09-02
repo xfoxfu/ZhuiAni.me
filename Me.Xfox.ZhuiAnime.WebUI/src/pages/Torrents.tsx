@@ -1,3 +1,4 @@
+import api, { ApiError, TorrentDto } from "../api";
 import {
   Heading,
   Stack,
@@ -14,10 +15,9 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import Api, { ApiError, TorrentDto } from "../api";
-import { useCopyToClipboard, useDebounce } from "usehooks-ts";
-import useSWRInfinite from "swr/infinite";
 import { IoMagnetOutline, IoSearchOutline, IoDownloadOutline } from "react-icons/io5";
+import useSWRInfinite from "swr/infinite";
+import { useCopyToClipboard, useDebounce } from "usehooks-ts";
 
 export const TorrentsList: React.FunctionComponent = () => {
   const [rawQuery, setQuery] = useState("");
@@ -46,7 +46,7 @@ export const TorrentsList: React.FunctionComponent = () => {
     },
     {
       fetcher: ([, query, until]: [string, string, string | undefined]): Promise<TorrentDto[]> =>
-        Api.api.torrentList({ query: query ?? "", until }).then((d) => d.data),
+        api.torrentList({ query: query ?? "", until }).then((d) => d.data),
     },
   );
   const [, copy] = useCopyToClipboard();

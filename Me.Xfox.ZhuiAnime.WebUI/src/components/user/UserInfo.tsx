@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect } from "react";
+import api, { ApiError, HttpResponse } from "../../api";
+import { forceLogout, getRefreshToken, login, logout, refresh } from "../../services/auth";
 import {
   Button,
   FormControl,
@@ -18,10 +19,9 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import api, { ApiError, HttpResponse } from "../../api";
-import { forceLogout, getRefreshToken, login, logout, refresh } from "../../services/auth";
-import { SubmitHandler, useForm } from "react-hook-form";
 import { Turnstile } from "@marsidev/react-turnstile";
+import React, { useCallback, useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 
 type Inputs = {
   username: string;
@@ -33,8 +33,8 @@ export const UserInfo: React.FC = () => {
     data: session,
     isLoading,
     error,
-  } = api.api.useSessionGet({ shouldRetryOnError: false, revalidateOnFocus: false });
-  const { data: config } = api.api.useSessionGetConfig();
+  } = api.useSessionGet({ shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: config } = api.useSessionGetConfig();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [token, setToken] = React.useState<string | null>(null);

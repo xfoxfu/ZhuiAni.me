@@ -1,3 +1,4 @@
+import api from "../api";
 import {
   Heading,
   Stack,
@@ -12,11 +13,10 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import React from "react";
-import Api from "../api";
 import { Link } from "react-router-dom";
 
 export const ItemsList: React.FunctionComponent = () => {
-  const { data: animes, error } = Api.api.useItemList();
+  const { data: animes, error } = api.useItemList();
 
   return (
     <>

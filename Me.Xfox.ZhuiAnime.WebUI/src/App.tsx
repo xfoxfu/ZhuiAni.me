@@ -1,11 +1,11 @@
+import { UserInfo } from "./components/user/UserInfo";
+import { Item } from "./pages/Item";
+import { ItemsList } from "./pages/ItemsList";
+import { PikPakTasksList } from "./pages/PikPakTasksList";
+import { TorrentsList } from "./pages/Torrents";
 import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
 import React from "react";
 import { Routes, Route, Link } from "react-router-dom";
-import { Item } from "./pages/Item";
-import { ItemsList } from "./pages/ItemsList";
-import { TorrentsList } from "./pages/Torrents";
-import { PikPakTasksList } from "./pages/PikPakTasksList";
-import { UserInfo } from "./components/user/UserInfo";
 
 const App: React.FunctionComponent = () => {
   return (

@@ -1,11 +1,11 @@
-import { Alert, AlertIcon, AlertDescription, Tag, HStack, Icon, Link, Progress, Text, Tooltip } from "@chakra-ui/react";
-import React from "react";
 import api from "../../api";
+import { Alert, AlertDescription, AlertIcon, HStack, Icon, Link, Progress, Tag, Text, Tooltip } from "@chakra-ui/react";
+import React from "react";
+import { IoLinkOutline, IoOpenOutline, IoVideocamOutline } from "react-icons/io5";
 import MIMEType from "whatwg-mimetype";
-import { IoOpenOutline, IoLinkOutline, IoVideocamOutline } from "react-icons/io5";
 
 export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
-  const { data: links, error } = api.api.useItemLinkList(id);
+  const { data: links, error } = api.useItemLinkList(id);
 
   return (
     <>

@@ -1,31 +1,31 @@
+import api, { ApiError } from "../../api";
 import {
-  useDisclosure,
   Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Icon,
   IconButton,
-  FormControl,
-  FormLabel,
   Input,
-  VStack,
-  Switch,
-  FormErrorMessage,
-  useToast,
   InputGroup,
   InputRightElement,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Switch,
   Textarea,
+  VStack,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
-import { IoCodeWorkingOutline, IoCreateOutline } from "react-icons/io5";
-import { useForm, SubmitHandler } from "react-hook-form";
-import api, { ApiError } from "../../api";
 import escape from "escape-string-regexp";
+import React, { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { IoCodeWorkingOutline, IoCreateOutline } from "react-icons/io5";
 
 type Inputs = {
   bangumi: number;
@@ -37,7 +37,7 @@ type Inputs = {
 
 export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: task } = api.api.usePikPakGet(id ?? 0, {}, !!id);
+  const { data: task } = api.usePikPakGet(id ?? 0, {}, !!id);
   const toast = useToast();
   const {
     register,
@@ -51,23 +51,23 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
     try {
       if (id) {
-        await api.api.pikPakUpdate(id, {
+        await api.pikPakUpdate(id, {
           bangumi: inputs.bangumi,
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
           enabled: inputs.enabled,
         });
-        await api.api.mutatePikPakGet(id);
+        await api.mutatePikPakGet(id);
       } else {
-        await api.api.pikPakCreate({
+        await api.pikPakCreate({
           bangumi: inputs.bangumi,
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
         });
       }
-      await api.api.mutatePikPakList();
+      await api.mutatePikPakList();
       toast({
         title: "Job created.",
         status: "success",

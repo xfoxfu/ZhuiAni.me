@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/node": "^20.4.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
@@ -52,6 +53,9 @@
     "vite-plugin-eslint": "^1.8.1"
   },
   "prettier": {
-    "printWidth": 120
+    "printWidth": 120,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ]
   }
 }
