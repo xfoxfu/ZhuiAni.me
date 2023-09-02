@@ -15,6 +15,9 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
 
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
