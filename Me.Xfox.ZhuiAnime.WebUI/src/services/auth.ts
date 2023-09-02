@@ -71,7 +71,11 @@ export const refresh = async () => {
   sessionStore.set(isRefreshingAtom, false);
 };
 export const logout = async () => {
-  await api.sessionLogout();
+  try {
+    await api.sessionLogout();
+  } catch (e) {
+    console.error("lougout failed = ", e);
+  }
   await forceLogout();
 };
 export const forceLogout = async () => {
