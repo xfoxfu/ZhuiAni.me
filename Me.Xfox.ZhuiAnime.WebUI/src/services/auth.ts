@@ -94,7 +94,6 @@ export const apiSecurityWorker = async (): Promise<RequestParams> => {
   const refreshToken = sessionStore.get(refreshTokenAtom);
   if (!accessToken || Date.parse(accessToken.expires_at) < Date.now()) {
     if (refreshToken) await refresh();
-    else await forceLogout();
   }
   return {
     headers: {
