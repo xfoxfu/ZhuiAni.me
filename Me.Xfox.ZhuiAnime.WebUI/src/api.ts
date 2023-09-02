@@ -1,8 +1,7 @@
-import { getAccessToken } from "./services/auth";
-import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
-
 /* eslint-disable */
+
 /* tslint:disable */
+
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -11,6 +10,8 @@ import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
+import { apiSecurityWorker } from "./services/auth";
+import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
 
 /** Category information. */
 export interface CategoryDto {
@@ -1446,19 +1447,15 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   };
 }
 
-const api = new Api({
+export const client = new Api({
   baseUrl: "",
-  securityWorker: () => ({
-    headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
-    },
-  }),
+  securityWorker: apiSecurityWorker,
 });
-export default api.api;
+export default client.api;
 
 export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
   const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };
-  return await api
+  return await client
     .request({ path, query, secure: true })
     .then((res) => res.json())
     .catch(async (err) => {

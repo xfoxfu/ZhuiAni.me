@@ -1,13 +1,30 @@
 import { UserInfo } from "./components/user/UserInfo";
 import { Item } from "./pages/Item";
 import { ItemsList } from "./pages/ItemsList";
+import { LoginPage } from "./pages/Login";
 import { PikPakTasksList } from "./pages/PikPakTasksList";
 import { TorrentsList } from "./pages/Torrents";
+import { hasAuthenticatedAtom, refresh, refreshTokenAtom } from "./services/auth";
+import { promiseWithToast } from "./utils";
 import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
-import React from "react";
+import { useAtom } from "jotai";
+import React, { useEffect } from "react";
 import { Routes, Route, Link } from "react-router-dom";
 
 const App: React.FunctionComponent = () => {
+  const [hasAuthenticated] = useAtom(hasAuthenticatedAtom);
+  const [refreshToken] = useAtom(refreshTokenAtom);
+
+  useEffect(() => {
+    if (!hasAuthenticated && refreshToken) {
+      promiseWithToast(refresh());
+    }
+  }, [refreshToken, hasAuthenticated]);
+
+  if (!hasAuthenticated && !refreshToken) {
+    return <LoginPage />;
+  }
+
   return (
     <Flex>
       <Stack flex="1" bg="green.500" minH="100vh" paddingX="6" paddingY="4" color="white" spacing="4">

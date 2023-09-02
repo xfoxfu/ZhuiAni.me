@@ -1,21 +1,17 @@
 import useSWR, { SWRConfiguration, MutatorOptions, mutate } from "swr";
-import { getAccessToken } from "./services/auth";
+import { apiSecurityWorker } from "./services/auth";
 
 <%~ includeFile("@default/api.eta", it) %>
 
-const api = new Api({
+export const client = new Api({
   baseUrl: "",
-  securityWorker: () => ({
-    headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
-    },
-  }),
+  securityWorker: apiSecurityWorker,
 });
-export default api;
+export default client.api;
 
 export const fetcher = async (arg: string | [string, Record<string, unknown>?]) => {
   const { path, query } = typeof arg === "string" ? { path: arg, query: undefined } : { path: arg[0], query: arg[1] };
-  return await api
+  return await client
     .request({ path, query, secure: true })
     .then((res) => res.json())
     .catch(async (err) => {
