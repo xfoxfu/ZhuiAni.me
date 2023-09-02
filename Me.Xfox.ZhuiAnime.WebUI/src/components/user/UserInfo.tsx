@@ -1,5 +1,5 @@
 import api, { ApiError, HttpResponse } from "../../api";
-import { forceLogout, getRefreshToken, login, logout, refresh } from "../../services/auth";
+import { accessTokenAtom, forceLogout, login, logout, refresh } from "../../services/auth";
 import {
   Button,
   FormControl,
@@ -20,6 +20,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { Turnstile } from "@marsidev/react-turnstile";
+import { useAtom } from "jotai";
 import React, { useCallback, useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -29,6 +30,9 @@ type Inputs = {
 };
 
 export const UserInfo: React.FC = () => {
+  const [,] = useAtom(accessTokenAtom);
+  const [refreshToken] = useAtom(accessTokenAtom);
+
   const {
     data: session,
     isLoading,
@@ -77,7 +81,7 @@ export const UserInfo: React.FC = () => {
   useEffect(() => {
     void (async () => {
       if (error?.error_code === "INVALID_TOKEN" || error?.error_code === "INVALID_TOKEN_NOT_FIRST_PARTY") {
-        if (getRefreshToken() !== null) {
+        if (refreshToken !== null) {
           try {
             await refresh();
           } catch (err) {
@@ -89,7 +93,7 @@ export const UserInfo: React.FC = () => {
         }
       }
     })();
-  }, [error, toastError, onOpen]);
+  }, [error, toastError, onOpen, refreshToken]);
 
   if (isLoading) {
     return (
@@ -100,7 +104,7 @@ export const UserInfo: React.FC = () => {
   }
 
   if (error?.error_code === "INVALID_TOKEN") {
-    if (getRefreshToken() !== null) {
+    if (refreshToken !== null) {
       return (
         <Heading as="h2" size="md" display="inline">
           Refreshing Token
