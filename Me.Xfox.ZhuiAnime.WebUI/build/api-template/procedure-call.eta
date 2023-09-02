@@ -1,3 +1,8 @@
+<%
+if (it.route.raw['x-allow-anonymous']) {
+    it.route.request.security = false;
+}
+%>
 <%~ includeFile("@default/procedure-call.eta", it) %>
 <%
 const { utils, route, config } = it;

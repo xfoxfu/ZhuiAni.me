@@ -8,6 +8,8 @@ interface IAccessToken {
   expires_at: string;
 }
 
+let refreshTokenObservers: ((value: unknown) => unknown)[] = [];
+
 const sessionStore = getDefaultStore();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const defaultStorage = createJSONStorage<any>(() => localStorage);
@@ -48,13 +50,19 @@ export const login = async (username: string, password: string, captcha: string)
 };
 export const refresh = async () => {
   try {
-    if (sessionStore.get(isRefreshingAtom)) return;
+    if (sessionStore.get(isRefreshingAtom)) {
+      await new Promise((resolve, _) => refreshTokenObservers.push(resolve));
+      return;
+    }
     sessionStore.set(isRefreshingAtom, true);
     const result = await api.sessionLogin({
       grant_type: "refresh_token",
       refresh_token: sessionStore.get(refreshTokenAtom) ?? "",
     });
     await handleSessionLoginResponse(result.data);
+    const observers = refreshTokenObservers;
+    refreshTokenObservers = [];
+    observers.forEach((observer) => observer(null));
   } catch (err) {
     if ((err as HttpResponse<void, ErrorProdResponse>)?.error?.error_code === "INVALID_REFRESH_TOKEN") {
       await forceLogout();

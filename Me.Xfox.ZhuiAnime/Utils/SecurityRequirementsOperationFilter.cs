@@ -19,6 +19,8 @@ public class SecurityRequirementsOperationFilter : IOperationFilter
         if (allowAnonymous)
         {
             operation.Security = new List<OpenApiSecurityRequirement>() { new() };
+            // A workaround for https://github.com/acacode/swagger-typescript-api/pull/602
+            operation.Extensions.Add("x-allow-anonymous", new OpenApiBoolean(true));
         }
         var controller = context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<RouteAttribute>().FirstOrDefault();
         operation.Extensions.Add("x-controller", new OpenApiObject

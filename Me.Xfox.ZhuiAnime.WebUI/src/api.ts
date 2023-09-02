@@ -1145,13 +1145,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Session
      * @name SessionGetConfig
      * @request GET:/api/session/config
-     * @secure
      */
     sessionGetConfig: (params: RequestParams = {}) =>
       this.request<ConfigurationDto, ErrorProdResponse>({
         path: `/api/session/config`,
         method: "GET",
-        secure: true,
         format: "json",
         ...params,
       }),
@@ -1161,7 +1159,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Session
      * @name SessionGetConfig
      * @request GET:/api/session/config
-     * @secure
      */
     useSessionGetConfig: (options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ConfigurationDto, ErrorProdResponse>(doFetch ? `/api/session/config` : null, options),
@@ -1172,7 +1169,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags Session
      * @name SessionGetConfig
      * @request GET:/api/session/config
-     * @secure
      */
     mutateSessionGetConfig: (data?: ConfigurationDto | Promise<ConfigurationDto>, options?: MutatorOptions) =>
       mutate<ConfigurationDto>(`/api/session/config`, data, options),
@@ -1184,7 +1180,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name SessionLogin
      * @summary Login
      * @request POST:/api/session
-     * @secure
      */
     sessionLogin: (
       data: {
@@ -1200,7 +1195,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/api/session`,
         method: "POST",
         body: data,
-        secure: true,
         type: ContentType.UrlEncoded,
         format: "json",
         ...params,
@@ -1394,14 +1388,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags User
      * @name UserRegister
      * @request POST:/api/users
-     * @secure
      */
     userRegister: (data: CreateUserDto, params: RequestParams = {}) =>
       this.request<UserDto, ErrorProdResponse>({
         path: `/api/users`,
         method: "POST",
         body: data,
-        secure: true,
         type: ContentType.Json,
         format: "json",
         ...params,
