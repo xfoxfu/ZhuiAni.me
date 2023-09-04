@@ -91,6 +91,10 @@ export interface ErrorProdResponse {
   [key: string]: any;
 }
 
+export interface FetchPageResponseDto {
+  has_new_items: boolean;
+}
+
 export interface ImportSubjectDto {
   /**
    * bangumi subject ID
@@ -192,6 +196,17 @@ export interface LoginResDto {
   scope: string;
   token_type: string;
   issued_token_type: string;
+}
+
+export interface SearchRequestDto {
+  query: string;
+}
+
+export interface SearchResultItemDto {
+  /** @format int32 */
+  id: number;
+  name: string;
+  name_cn: string;
 }
 
 export interface TokenDto {
@@ -512,6 +527,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * No description
      *
+     * @tags Bangumi
+     * @name BangumiSearchSubject
+     * @request POST:/api/modules/bangumi/search_subject
+     * @secure
+     */
+    bangumiSearchSubject: (data: SearchRequestDto, params: RequestParams = {}) =>
+      this.request<SearchResultItemDto[], ErrorProdResponse>({
+        path: `/api/modules/bangumi/search_subject`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Category
      * @name CategoryList
      * @summary List
@@ -741,12 +775,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     itemCreate: (data: CreateItemDto, params: RequestParams = {}) =>
-      this.request<void, ErrorProdResponse>({
+      this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -921,12 +956,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     itemLinkCreate: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
-      this.request<void, ErrorProdResponse>({
+      this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -1337,10 +1373,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     torrentFetchPage: (name: string, page: number, params: RequestParams = {}) =>
-      this.request<void, ErrorProdResponse>({
+      this.request<FetchPageResponseDto, ErrorProdResponse>({
         path: `/api/modules/torrent_directory/providers/${name}/fetch/${page}`,
         method: "POST",
         secure: true,
+        format: "json",
         ...params,
       }),
 

@@ -1,4 +1,5 @@
 import api, { ApiError } from "../../api";
+import { promiseWithLog } from "../../utils";
 import {
   Button,
   FormControl,
@@ -9,6 +10,9 @@ import {
   Input,
   InputGroup,
   InputRightElement,
+  List,
+  ListIcon,
+  ListItem,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -23,12 +27,13 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import escape from "escape-string-regexp";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { IoCodeWorkingOutline, IoCreateOutline } from "react-icons/io5";
+import { IoCodeWorkingOutline, IoCreateOutline, IoFilmOutline } from "react-icons/io5";
+import { useDebounce } from "usehooks-ts";
 
 type Inputs = {
-  bangumi: number;
+  bangumi: string;
   target: string;
   regex: string;
   match_group_ep: number;
@@ -42,9 +47,10 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors: formErrs, isDirty },
+    formState: { errors: formErrs, isDirty, isValid, isValidating },
     setValue,
     getValues,
+    watch,
   } = useForm<Inputs>({
     defaultValues: { enabled: true },
   });
@@ -52,7 +58,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
     try {
       if (id) {
         await api.pikPakUpdate(id, {
-          bangumi: inputs.bangumi,
+          bangumi: Number.parseInt(inputs.bangumi),
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
@@ -61,7 +67,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
         await api.mutatePikPakGet(id);
       } else {
         await api.pikPakCreate({
-          bangumi: inputs.bangumi,
+          bangumi: Number.parseInt(inputs.bangumi),
           target: inputs.target,
           regex: inputs.regex,
           match_group_ep: inputs.match_group_ep,
@@ -86,7 +92,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   };
   useEffect(() => {
     if (!isDirty && task) {
-      setValue("bangumi", task.bangumi);
+      setValue("bangumi", task.bangumi.toString());
       setValue("target", task.target);
       setValue("regex", task.regex);
       setValue("match_group_ep", task.match_group_ep);
@@ -96,6 +102,15 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const onEscapeRegex = () => {
     setValue("regex", escape(getValues("regex")), { shouldDirty: true });
   };
+  const bangumi = watch("bangumi");
+  const bangumiDebounced = useDebounce(bangumi, 1000);
+  const [bangumiList, setBangumiList] = useState<[string, number][]>([]);
+  useEffect(() => {
+    promiseWithLog(async () => {
+      const list = await api.bangumiSearchSubject({ query: bangumiDebounced });
+      setBangumiList(list.data.map((item) => [item.name_cn || item.name, item.id]));
+    });
+  }, [bangumiDebounced]);
 
   return (
     <>
@@ -113,12 +128,28 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
           <ModalHeader>Edit PikPak Task</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <VStack spacing="2">
+            <VStack spacing="2" alignItems="start">
               <FormControl isInvalid={!!formErrs.bangumi}>
                 <FormLabel>Bangumi ID</FormLabel>
-                <Input type="number" {...register("bangumi", { required: true, valueAsNumber: true })} />
+                <Input
+                  {...register("bangumi", {
+                    required: true,
+                    validate: (value) => !Number.isNaN(Number.parseInt(value)),
+                  })}
+                />
                 <FormErrorMessage>{formErrs.bangumi?.message}</FormErrorMessage>
               </FormControl>
+              <List spacing={3}>
+                {bangumiList.map(([name, id]) => (
+                  <ListItem
+                    key={id}
+                    onClick={() => setValue("bangumi", id.toString(), { shouldValidate: true, shouldDirty: true })}
+                  >
+                    <ListIcon as={IoFilmOutline} color="green.500" />
+                    {name}
+                  </ListItem>
+                ))}
+              </List>
               <FormControl isInvalid={!!formErrs.target}>
                 <FormLabel>Target Folder</FormLabel>
                 <Input {...register("target", { required: true })} />
@@ -155,8 +186,12 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
             <Button onClick={onClose} mr="2">
               Close
             </Button>
-            {/* eslint-disable-next-line @typescript-eslint/no-misused-promises */}
-            <Button colorScheme="teal" onClick={handleSubmit(onSubmit)} isDisabled={!isDirty}>
+            <Button
+              colorScheme="teal"
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onClick={handleSubmit(onSubmit)}
+              isDisabled={!isDirty || isValidating || !isValid}
+            >
               Save
             </Button>
           </ModalFooter>

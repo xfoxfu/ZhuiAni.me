@@ -4,11 +4,11 @@ import { createStandaloneToast } from "@chakra-ui/react";
 const { ToastContainer, toast } = createStandaloneToast();
 export const ErrorToastContainer = ToastContainer;
 
-export const promiseWithLog = (promise: Promise<unknown>) => {
-  promise.catch((err) => console.error(err));
+export const promiseWithLog = (promise: Promise<unknown> | (() => Promise<unknown>)) => {
+  (typeof promise === "function" ? promise() : promise).catch((err) => console.error(err));
 };
-export const promiseWithToast = (promise: Promise<unknown>) => {
-  promise.catch((err) => {
+export const promiseWithToast = (promise: Promise<unknown> | (() => Promise<unknown>)) => {
+  (typeof promise === "function" ? promise() : promise).catch((err) => {
     console.error(err);
     toast({
       title: "An error occurred.",
