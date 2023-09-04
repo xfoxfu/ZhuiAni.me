@@ -61,4 +61,16 @@ public class BangumiController : ControllerBase
             })
             .ToListAsync();
     }
+
+    [HttpGet("subjects/{id}")]
+    public async Task<SearchResultItemDto> GetSubject(int id)
+    {
+        var subject = await Bangumi.GetSubject(id);
+        return new SearchResultItemDto
+        {
+            Id = (uint)subject.Id,
+            Name = subject.Name,
+            NameCn = subject.NameCn,
+        };
+    }
 }

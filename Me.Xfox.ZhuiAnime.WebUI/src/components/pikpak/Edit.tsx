@@ -107,10 +107,15 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const [bangumiList, setBangumiList] = useState<[string, number][]>([]);
   useEffect(() => {
     promiseWithLog(async () => {
+      if (!bangumiDebounced || !isOpen) return;
       const list = await api.bangumiSearchSubject({ query: bangumiDebounced });
+      const subject = Number.isNaN(Number.parseInt(bangumiDebounced))
+        ? null
+        : await api.bangumiGetSubject(Number.parseInt(bangumiDebounced));
+      if (subject) list.data.unshift(subject.data);
       setBangumiList(list.data.map((item) => [item.name_cn || item.name, item.id]));
     });
-  }, [bangumiDebounced]);
+  }, [bangumiDebounced, isOpen]);
 
   return (
     <>
@@ -139,7 +144,7 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
                 />
                 <FormErrorMessage>{formErrs.bangumi?.message}</FormErrorMessage>
               </FormControl>
-              <List spacing={3}>
+              <List spacing={3} width="100%">
                 {bangumiList.map(([name, id]) => (
                   <ListItem
                     key={id}

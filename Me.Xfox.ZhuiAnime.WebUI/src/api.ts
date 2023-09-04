@@ -1,7 +1,5 @@
 /* eslint-disable */
-
 /* tslint:disable */
-
 /*
  * ---------------------------------------------------------------
  * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
@@ -10,6 +8,7 @@
  * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
  * ---------------------------------------------------------------
  */
+
 import { apiSecurityWorker } from "./services/auth";
 import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
 
@@ -542,6 +541,47 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+
+    /**
+     * No description
+     *
+     * @tags Bangumi
+     * @name BangumiGetSubject
+     * @request GET:/api/modules/bangumi/subjects/{id}
+     * @secure
+     */
+    bangumiGetSubject: (id: number, params: RequestParams = {}) =>
+      this.request<SearchResultItemDto, ErrorProdResponse>({
+        path: `/api/modules/bangumi/subjects/${id}`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags Bangumi
+     * @name BangumiGetSubject
+     * @request GET:/api/modules/bangumi/subjects/{id}
+     * @secure
+     */
+    useBangumiGetSubject: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+      useSWR<SearchResultItemDto, ErrorProdResponse>(doFetch ? `/api/modules/bangumi/subjects/${id}` : null, options),
+
+    /**
+     * No description
+     *
+     * @tags Bangumi
+     * @name BangumiGetSubject
+     * @request GET:/api/modules/bangumi/subjects/{id}
+     * @secure
+     */
+    mutateBangumiGetSubject: (
+      id: number,
+      data?: SearchResultItemDto | Promise<SearchResultItemDto>,
+      options?: MutatorOptions,
+    ) => mutate<SearchResultItemDto>(`/api/modules/bangumi/subjects/${id}`, data, options),
 
     /**
      * No description

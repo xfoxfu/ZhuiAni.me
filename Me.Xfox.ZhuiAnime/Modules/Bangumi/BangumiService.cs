@@ -1,5 +1,6 @@
 using System.Collections;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
+using Microsoft.AspNetCore.Mvc;
 using AppModels = Me.Xfox.ZhuiAnime.Models;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi;
@@ -19,6 +20,11 @@ public class BangumiService
     {
         var item = await ImportSubject(id);
         return item.Id;
+    }
+
+    public async Task<Subject> GetSubject(int id)
+    {
+        return await BgmApi.GetSubjectAsync(id);
     }
 
     public async Task<AppModels.Item> ImportSubject(int id)
