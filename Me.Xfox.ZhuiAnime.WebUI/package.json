@@ -12,7 +12,7 @@
     "lint:tsc": "tsc --noEmit --pretty",
     "lint": "concurrently 'pnpm:lint:*' --group",
     "format": "prettier --ignore-unknown --write 'src/**/*'",
-    "build-api": "swagger-typescript-api -p http://localhost:5000/api/swagger/v1/swagger.json -t build/api-template -o src -n api.ts"
+    "build-api": "swagger-typescript-api -p http://localhost:5000/api/swagger/v1/swagger.json -t build/api-template -o src -n api.ts && prettier --write src/api.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",
