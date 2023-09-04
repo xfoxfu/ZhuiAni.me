@@ -4,13 +4,14 @@ import {
   Stack,
   HStack,
   Button,
-  Wrap,
-  WrapItem,
   VStack,
   Tooltip,
   Alert,
   AlertDescription,
   AlertIcon,
+  GridItem,
+  SimpleGrid,
+  Box,
 } from "@chakra-ui/react";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -35,29 +36,22 @@ export const ItemsList: React.FunctionComponent = () => {
           <Button size="sm">3 Days</Button>
           {/* <ImportBangumi /> */}
         </HStack>
-        <Wrap spacingX="3" spacingY="2" alignItems="stretch">
-          {animes?.map((a) => (
-            <WrapItem alignItems="stretch" key={a.id}>
-              <VStack
-                minW="18ch"
-                px="3"
-                py="2"
-                borderWidth="1px"
-                rounded="md"
-                align="stretch"
-                bg="white"
-                width="min-content"
-              >
-                {/* <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" /> */}
-                <Tooltip label={a.title}>
-                  <Heading as="h3" size="sm" noOfLines={1}>
-                    <Link to={`/animes/${a.id}`}>{a.title}</Link>
-                  </Heading>
-                </Tooltip>
-              </VStack>
-            </WrapItem>
-          ))}
-        </Wrap>
+        <Box>
+          <SimpleGrid spacingX="3" spacingY="2" alignItems="stretch" minChildWidth="16">
+            {animes?.map((a) => (
+              <GridItem alignItems="stretch" key={a.id} px="3" py="2" borderWidth="1px" rounded="md" bg="white">
+                <VStack align="stretch" maxWidth="32ch">
+                  {/* <Image src={`data:image;base64,${a.image_base64 ?? ""}`} alt={a.title} width="auto" height="auto" /> */}
+                  <Tooltip label={a.title}>
+                    <Heading as="h3" size="sm" noOfLines={1}>
+                      <Link to={`/animes/${a.id}`}>{a.title}</Link>
+                    </Heading>
+                  </Tooltip>
+                </VStack>
+              </GridItem>
+            ))}
+          </SimpleGrid>
+        </Box>
       </Stack>
     </>
   );
