@@ -36,4 +36,11 @@ public class BangumiController : ControllerBase
         var item = await Bangumi.ImportSubject(id);
         return new ItemController.ItemDto(item);
     }
+
+    public record SearchResultItemDto
+    {
+        public required uint Id { get; set; }
+        public required string Name { get; set; }
+        public required string NameCn { get; set; }
+    }
 }

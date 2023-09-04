@@ -17,6 +17,7 @@ public partial class BangumiApi
     {
         Client = new FlurlClient(baseUrl)
             .WithHeader("User-Agent", userAgent)
+            .WithHeader("Accept", "application/json")
             .UseBangumiExceptionHandler();
     }
 
@@ -50,6 +51,26 @@ public partial class BangumiApi
             offset = response.Offset + response.Limit;
             total = response.Total;
         } while (offset < total);
+    }
+    #endregion
+
+    #region /search/subject
+    public async IAsyncEnumerable<LegacySubjectSmall> SearchAsync(string query, [EnumeratorCancellation] CancellationToken ct = default)
+    {
+        var request = await Client.Request("/search/subject")
+            .AppendPathSegment(query, fullyEncode: true)
+            .SetQueryParam("type", "2")
+            .SetQueryParam("responseGroup", "small")
+            .GetAsync(cancellationToken: ct);
+        if (request.Headers.TryGetFirst("content-type", out var contentType) && !contentType.Contains("application/json"))
+        {
+            yield break;
+        }
+        var body = await request.GetJsonAsync<SearchResult<LegacySubjectSmall>>();
+        foreach (var item in body.Items)
+        {
+            yield return item;
+        }
     }
     #endregion
 }

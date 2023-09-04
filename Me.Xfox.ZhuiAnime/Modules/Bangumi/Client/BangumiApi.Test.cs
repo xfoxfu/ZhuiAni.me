@@ -62,4 +62,20 @@ public class BangumiApiTest
         var op = async () => await client.GetSubjectAsync(53397657);
         await op.Should().ThrowAsync<Flurl.Http.FlurlParsingException>();
     }
+
+    [Test]
+    public async Task TestSearch()
+    {
+        var client = new BangumiApi();
+        var res = await client.SearchAsync("BanG Dream").ToListAsync();
+        res.Count.Should().BeGreaterThanOrEqualTo(10);
+    }
+
+    [Test]
+    public async Task TestSearchWithoutResult()
+    {
+        var client = new BangumiApi();
+        var res = await client.SearchAsync("BanGDream!!!!!").ToListAsync();
+        res.Count.Should().BeLessThanOrEqualTo(5);
+    }
 }
