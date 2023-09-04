@@ -37,10 +37,28 @@ public class BangumiController : ControllerBase
         return new ItemController.ItemDto(item);
     }
 
+    public record SearchRequestDto
+    {
+        public required string Query { get; set; }
+    }
+
     public record SearchResultItemDto
     {
         public required uint Id { get; set; }
         public required string Name { get; set; }
         public required string NameCn { get; set; }
+    }
+
+    [HttpPost("search_subject")]
+    public async Task<IEnumerable<SearchResultItemDto>> SearchSubject(SearchRequestDto req)
+    {
+        return await Bangumi.SearchAsync(req.Query)
+            .Select(x => new SearchResultItemDto
+            {
+                Id = (uint)(x.Id ?? 0),
+                Name = x.Name,
+                NameCn = x.NameCn,
+            })
+            .ToListAsync();
     }
 }

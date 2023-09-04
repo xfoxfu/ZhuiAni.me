@@ -60,20 +60,22 @@ public class TorrentController : ControllerBase
             .ToListAsync();
     }
 
+    public record FetchPageResponseDto(bool HasNewItems);
+
     [HttpPost("providers/{name}/fetch/{page}")]
-    public async Task<IActionResult> FetchPage([FromRoute] string name, [FromRoute] uint page)
+    public async Task<FetchPageResponseDto> FetchPage([FromRoute] string name, [FromRoute] uint page)
     {
         if (name == "bangumi.moe")
         {
             ISource source = Activator.CreateInstance<Sources.BangumiSource>();
             var hasNE = await source.GetPage(page, DbContext);
-            return Ok(new { HasNewItems = hasNE });
+            return new(HasNewItems: hasNE);
         }
         else if (name == "acg.rip")
         {
             ISource source = Activator.CreateInstance<Sources.AcgRipSource>();
             var hasNE = await source.GetPage(page, DbContext);
-            return Ok(new { HasNewItems = hasNE });
+            return new(HasNewItems: hasNE);
         }
         else
         {

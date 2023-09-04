@@ -79,7 +79,7 @@ public class ItemLinkController : ControllerBase
     /// <param name="link"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(LinkDto), StatusCodes.Status201Created)]
     [ZAError.Has<ZAError.ItemNotFound>]
     public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
     {

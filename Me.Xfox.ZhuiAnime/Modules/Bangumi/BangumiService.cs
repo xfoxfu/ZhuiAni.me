@@ -1,3 +1,4 @@
+using System.Collections;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 using AppModels = Me.Xfox.ZhuiAnime.Models;
 
@@ -130,5 +131,10 @@ public class BangumiService
         }
 
         return item;
+    }
+
+    public IAsyncEnumerable<LegacySubjectSmall> SearchAsync(string query)
+    {
+        return BgmApi.SearchAsync(query);
     }
 }

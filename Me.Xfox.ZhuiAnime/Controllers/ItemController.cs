@@ -71,7 +71,7 @@ public class ItemController : ControllerBase
     /// <param name="item"></param>
     /// <returns></returns>
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ItemDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateAsync([FromBody] CreateItemDto item)
     {
         var newItem = new Item
