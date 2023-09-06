@@ -1,17 +1,8 @@
 import api, { ApiError, ConfigurationDto, ErrorProdResponse, HttpResponse } from "../../api";
 import { login } from "../../services/auth";
 import { promiseWithLog } from "../../utils";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Button,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
+import { ErrorTip } from "../utils/ErrorTip";
+import { Button, FormControl, FormErrorMessage, FormLabel, Input, VStack } from "@chakra-ui/react";
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import React, { MouseEventHandler } from "react";
 import { useForm } from "react-hook-form";
@@ -57,12 +48,7 @@ export const Login: React.FC = () => {
   return (
     <form>
       <VStack spacing="2">
-        {formErrs.root?.message && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{formErrs.root?.message}</AlertDescription>
-          </Alert>
-        )}
+        <ErrorTip error={formErrs.root} />
         <FormControl isInvalid={!!formErrs.username}>
           <FormLabel>Username</FormLabel>
           <Input {...register("username", { required: true })} />

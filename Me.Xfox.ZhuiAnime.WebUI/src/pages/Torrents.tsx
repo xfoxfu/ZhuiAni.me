@@ -1,8 +1,6 @@
 import api, { ApiError, TorrentDto } from "../api";
+import { ErrorTip } from "../components/utils/ErrorTip";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
   Button,
   HStack,
   Heading,
@@ -57,12 +55,7 @@ export const TorrentsList: React.FunctionComponent = () => {
         Torrents
       </Heading>
       <Stack spacing="1">
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+        <ErrorTip error={error} />
         <InputGroup>
           <InputLeftElement pointerEvents="none">
             <Icon color="gray.300" as={IoSearchOutline} />

@@ -1,9 +1,7 @@
 import api from "../api";
 import { Edit } from "../components/pikpak/Edit";
+import { ErrorTip } from "../components/utils/ErrorTip";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
   HStack,
   Heading,
   Icon,
@@ -29,13 +27,7 @@ export const PikPakTasksList: React.FunctionComponent = () => {
         Tasks
       </Heading>
       <Stack spacing="1">
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
-
+        <ErrorTip error={error} />
         <Edit />
         <TableContainer>
           <Table variant="simple">

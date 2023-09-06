@@ -1,20 +1,7 @@
 import api from "../api";
 import { ItemLinks } from "../components/anime/ItemLinks";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Heading,
-  Stack,
-  Table,
-  TableContainer,
-  Tag,
-  Tbody,
-  Td,
-  Text,
-  Tr,
-  VStack,
-} from "@chakra-ui/react";
+import { ErrorTip } from "../components/utils/ErrorTip";
+import { Heading, Stack, Table, TableContainer, Tag, Tbody, Td, Text, Tr, VStack } from "@chakra-ui/react";
 import React from "react";
 import { useParams } from "react-router-dom";
 
@@ -32,12 +19,7 @@ export const Item: React.FunctionComponent = () => {
         {anime?.title}
       </Heading>
       <Stack spacing="1">
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+        <ErrorTip error={error} />
         {anime && <ItemLinks id={anime?.id} />}
         <TableContainer width="fit-content">
           <Table>

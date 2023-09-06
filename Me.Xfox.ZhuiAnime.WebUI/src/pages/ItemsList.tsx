@@ -1,8 +1,6 @@
 import api from "../api";
+import { ErrorTip } from "../components/utils/ErrorTip";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
   Box,
   Button,
   GridItem,
@@ -28,12 +26,7 @@ export const ItemsList: React.FunctionComponent = () => {
         Animations
       </Heading>
       <Stack spacing="1">
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertDescription>{error.message}</AlertDescription>
-          </Alert>
-        )}
+        <ErrorTip error={error} />
         <HStack spacing="1.5">
           <Button size="sm">Today</Button>
           <Button size="sm">3 Days</Button>
