@@ -14,6 +14,8 @@ public class Item
 
     public string Title { get; set; } = string.Empty;
 
+    public string? ImageUrl { get; set; }
+
     public IDictionary<string, string> Annotations = new Dictionary<string, string>();
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

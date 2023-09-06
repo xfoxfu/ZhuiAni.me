@@ -64,6 +64,7 @@ public class BangumiService
 
             anime.Title = bgmAnime.Name;
             anime.CategoryId = category.Id;
+            anime.ImageUrl = bgmAnime.Images.Large;
 
             await DbContext.SaveChangesAsync();
             item = anime;

@@ -28,6 +28,11 @@ public partial class BangumiApi
             .Request("/v0/subjects/", id)
             .GetJsonAsync<Subject>(cancellationToken: ct);
     }
+
+    public async Task<byte[]> GetImageAsync(string url, CancellationToken ct = default)
+    {
+        return await Client.Request(url).GetBytesAsync(cancellationToken: ct);
+    }
     #endregion
 
     #region /v0/episodes

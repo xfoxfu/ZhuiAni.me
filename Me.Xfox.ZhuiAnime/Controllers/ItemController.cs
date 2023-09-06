@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Me.Xfox.ZhuiAnime.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,32 +16,28 @@ public class ItemController : ControllerBase
     }
 
     /// <summary>An item, like an anime, a manga, a episode in an anime, etc.</summary>
-    /// <param name="Id">id</param>
-    /// <param name="CategoryId">the id of category this item belongs to</param>
-    /// <param name="Title">original title of the item</param>
-    /// <param name="Annotations">additional information</param>
-    /// <param name="ParentItemId">the id of the parent item, if this item belongs to a parent item</param>
-    /// <param name="CreatedAt">created time</param>
-    /// <param name="UpdatedAt">last updated time</param>
-    public record ItemDto(
-        uint Id,
-        uint CategoryId,
-        string Title,
-        IDictionary<string, string> Annotations,
-        uint? ParentItemId,
-        DateTimeOffset CreatedAt,
-        DateTimeOffset UpdatedAt
-    )
+    public record ItemDto
     {
-        public ItemDto(Item item) : this(
-            item.Id,
-            item.CategoryId,
-            item.Title,
-            item.Annotations,
-            item.ParentItemId,
-            item.CreatedAt,
-            item.UpdatedAt)
+        public required uint Id { get; set; }
+        public required uint CategoryId { get; set; }
+        public required string Title { get; set; }
+        public required IDictionary<string, string> Annotations { get; set; }
+        public required uint? ParentItemId { get; set; }
+        public required DateTimeOffset CreatedAt { get; set; }
+        public required DateTimeOffset UpdatedAt { get; set; }
+        public required string? ImageUrl { get; set; }
+
+        [SetsRequiredMembers]
+        public ItemDto(Item item)
         {
+            Id = item.Id;
+            CategoryId = item.CategoryId;
+            Title = item.Title;
+            Annotations = item.Annotations;
+            ParentItemId = item.ParentItemId;
+            CreatedAt = item.CreatedAt;
+            UpdatedAt = item.UpdatedAt;
+            ImageUrl = item.ImageUrl;
         }
     }
 

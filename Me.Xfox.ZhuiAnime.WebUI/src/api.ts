@@ -105,35 +105,19 @@ export interface ImportSubjectDto {
 
 /** An item, like an anime, a manga, a episode in an anime, etc. */
 export interface ItemDto {
-  /**
-   * id
-   * @format int32
-   */
+  /** @format int32 */
   id: number;
-  /**
-   * the id of category this item belongs to
-   * @format int32
-   */
+  /** @format int32 */
   category_id: number;
-  /** original title of the item */
   title: string;
-  /** additional information */
   annotations: Record<string, string>;
-  /**
-   * the id of the parent item, if this item belongs to a parent item
-   * @format int32
-   */
+  /** @format int32 */
   parent_item_id?: number | null;
-  /**
-   * created time
-   * @format date-time
-   */
+  /** @format date-time */
   created_at: string;
-  /**
-   * last updated time
-   * @format date-time
-   */
+  /** @format date-time */
   updated_at: string;
+  image_url?: string | null;
 }
 
 export interface JobDto {
