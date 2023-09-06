@@ -6,8 +6,8 @@ import {
   Box,
   Button,
   GridItem,
-  Heading,
   HStack,
+  Heading,
   Icon,
   Image,
   SimpleGrid,
@@ -45,7 +45,7 @@ export const ItemsList: React.FunctionComponent = () => {
               <GridItem key={a.id} px="3" py="2" borderWidth="1px" rounded="md" bg="white">
                 <VStack height="100%" maxWidth="32ch" justifyContent="space-between">
                   {a.image_url ? (
-                    <Image src={a.image_url} alt={a.title} width="auto" height="auto" />
+                    <Image src={a.image_url} alt={a.title} flexGrow="1" objectFit="contain" />
                   ) : (
                     <Icon as={IoImageSharp} w="12" h="12" flexGrow="1" />
                   )}
