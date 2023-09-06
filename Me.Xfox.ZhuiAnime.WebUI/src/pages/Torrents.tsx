@@ -1,21 +1,21 @@
 import api, { ApiError, TorrentDto } from "../api";
 import {
-  Heading,
-  Stack,
   Alert,
   AlertDescription,
   AlertIcon,
-  HStack,
   Button,
+  HStack,
+  Heading,
+  Icon,
+  IconButton,
   Input,
   InputGroup,
   InputLeftElement,
+  Stack,
   Tooltip,
-  Icon,
-  IconButton,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
-import { IoMagnetOutline, IoSearchOutline, IoDownloadOutline } from "react-icons/io5";
+import { IoDownloadOutline, IoMagnetOutline, IoSearchOutline } from "react-icons/io5";
 import useSWRInfinite from "swr/infinite";
 import { useCopyToClipboard, useDebounce } from "usehooks-ts";
 

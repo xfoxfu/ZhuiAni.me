@@ -59,6 +59,7 @@
     "printWidth": 120,
     "plugins": [
       "@trivago/prettier-plugin-sort-imports"
-    ]
+    ],
+    "importOrderSortSpecifiers": true
   }
 }

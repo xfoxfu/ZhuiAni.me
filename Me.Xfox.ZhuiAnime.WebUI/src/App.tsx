@@ -6,10 +6,10 @@ import { PikPakTasksList } from "./pages/PikPakTasksList";
 import { TorrentsList } from "./pages/Torrents";
 import { hasAuthenticatedAtom, refresh, refreshTokenAtom } from "./services/auth";
 import { promiseWithToast } from "./utils";
-import { Flex, Heading, chakra, Stack, Divider } from "@chakra-ui/react";
+import { Divider, Flex, Heading, Stack, chakra } from "@chakra-ui/react";
 import { useAtom } from "jotai";
 import React, { useEffect } from "react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Link, Route, Routes } from "react-router-dom";
 
 const App: React.FunctionComponent = () => {
   const [hasAuthenticated] = useAtom(hasAuthenticatedAtom);

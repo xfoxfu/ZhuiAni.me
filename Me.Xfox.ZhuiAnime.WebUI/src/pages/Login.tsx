@@ -1,5 +1,5 @@
 import { Login } from "../components/user/Login";
-import { Flex, Container, Card, CardHeader, Heading, CardBody } from "@chakra-ui/react";
+import { Card, CardBody, CardHeader, Container, Flex, Heading } from "@chakra-ui/react";
 import { chakra } from "@chakra-ui/system";
 import React from "react";
 
