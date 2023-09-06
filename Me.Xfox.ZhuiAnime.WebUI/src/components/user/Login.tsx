@@ -1,4 +1,4 @@
-import api, { ApiError, ConfigurationDto, ErrorProdResponse, HttpResponse } from "../../api";
+import api, { ApiError, HttpResponse } from "../../api";
 import { login } from "../../services/auth";
 import { promiseWithLog } from "../../utils";
 import { ErrorTip } from "../utils/ErrorTip";
@@ -6,7 +6,6 @@ import { Button, FormControl, FormErrorMessage, FormLabel, Input, VStack } from 
 import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 import React, { MouseEventHandler } from "react";
 import { useForm } from "react-hook-form";
-import useSWR from "swr";
 
 type Inputs = {
   username: string;
@@ -14,9 +13,7 @@ type Inputs = {
 };
 
 export const Login: React.FC = () => {
-  const { data: config } = useSWR<ConfigurationDto, ErrorProdResponse>("/api/session/config", () =>
-    api.sessionGetConfig({ secure: false }).then((res) => res.data),
-  );
+  const { data: config } = api.useSessionGetConfig();
 
   const [token, setToken] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);

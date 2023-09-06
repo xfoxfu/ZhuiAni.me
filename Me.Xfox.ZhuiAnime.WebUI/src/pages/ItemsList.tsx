@@ -15,7 +15,6 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import { IoImageSharp } from "react-icons/io5";
-import { Link } from "react-router-dom";
 
 export const ItemsList: React.FunctionComponent = () => {
   const { data: animes, error } = api.useItemList();
@@ -35,8 +34,17 @@ export const ItemsList: React.FunctionComponent = () => {
         <Box>
           <SimpleGrid spacingX="3" spacingY="2" alignItems="stretch" minChildWidth="24ch">
             {animes?.map((a) => (
-              <GridItem key={a.id} px="3" py="2" borderWidth="1px" rounded="md" bg="white">
-                <VStack height="100%" maxWidth="32ch" justifyContent="space-between">
+              <GridItem
+                key={a.id}
+                px="3"
+                py="2"
+                borderWidth="1px"
+                rounded="md"
+                bg="white"
+                as="a"
+                href={`/animes/${a.id}`}
+              >
+                <VStack height="100%" justifyContent="space-between">
                   {a.image_url ? (
                     <Image src={a.image_url} alt={a.title} flexGrow="1" objectFit="contain" />
                   ) : (
@@ -44,7 +52,7 @@ export const ItemsList: React.FunctionComponent = () => {
                   )}
                   <Tooltip label={a.title}>
                     <Heading as="h3" size="sm" noOfLines={1}>
-                      <Link to={`/animes/${a.id}`}>{a.title}</Link>
+                      {a.title}
                     </Heading>
                   </Tooltip>
                 </VStack>
