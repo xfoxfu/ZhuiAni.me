@@ -1,19 +1,9 @@
-import api, { ImportSubjectDto } from "../../api";
-import { promiseWithToast } from "../../utils";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  Button,
-  HStack,
-  Icon,
-  IconButton,
-  Progress,
-  Tooltip,
-} from "@chakra-ui/react";
+import api from "../../api";
+import { promiseWithLog } from "../../utils";
+import { ErrorTip } from "../utils/ErrorTip";
+import { Button, HStack, Icon, IconButton, Progress, Tooltip } from "@chakra-ui/react";
 import React from "react";
 import { IoLinkOutline, IoOpenOutline, IoRefresh, IoVideocamOutline } from "react-icons/io5";
-import useSWRMutation from "swr/mutation";
 import MIMEType from "whatwg-mimetype";
 
 export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
@@ -22,7 +12,7 @@ export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
     links &&
     links.find((x) => x.address.startsWith("https://bgm.tv/subject/") && x.mime_type === "text/html;kind=bgm.tv");
   const onRefresh = () =>
-    promiseWithToast(async () => {
+    promiseWithLog(async () => {
       if (!bangumi) {
         return;
       }
@@ -30,21 +20,12 @@ export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
         id: Number.parseInt(bangumi.address.replace("https://bgm.tv/subject/", ""), 10),
       });
     });
-  // FIXME: extract this pattern to api generation
-  const { trigger, isMutating } = useSWRMutation(
-    "/api/modules/bangumi/import_subject",
-    (_url, { arg }: { arg: ImportSubjectDto }) => api.bangumiImportSubject(arg),
-    {},
-  );
+  const { trigger, isMutating, error: importError } = api.useBangumiImportSubject();
 
   return (
     <>
-      {error && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertDescription>{error.message}</AlertDescription>
-        </Alert>
-      )}
+      <ErrorTip error={error} />
+      <ErrorTip error={importError} />
       {!links && <Progress width="100%" size="xs" colorScheme="teal" isIndeterminate />}
       <HStack spacing={1}>
         {links &&

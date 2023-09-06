@@ -44,6 +44,13 @@ const DataParam = {
     defaultValue: null,
 }
 
+const MutationOption = {
+    name: "options",
+    optional: true,
+    type: `SWRMutationConfiguration<${type}, ${errorType}, string, ${payload ? payload.type : "never"}>`,
+    defaultValue: null,
+}
+
 const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${!defaultValue && optional ? '?' : ''}: ${type}${defaultValue ? ` = ${defaultValue}` : ''}`;
 
 const rawWrapperArgs = config.extractRequestParams ?
@@ -54,20 +61,23 @@ const rawWrapperArgs = config.extractRequestParams ?
           type: getInlineParseContent(requestParams),
         },
         ...(!requestParams ? pathParams : []),
-        payload
     ] : [
         ...pathParams,
         query,
-        payload
     ]
 
 const mutateArgs = _
-    .sortBy(_.compact([...rawWrapperArgs, DataParam, MutateConfigParam]), [o => o.optional])
+    .sortBy(_.compact([...rawWrapperArgs, payload, DataParam, MutateConfigParam]), [o => o.optional])
     .map(argToTmpl)
     .join(', ')
 
 const wrapperArgs = _
-    .sortBy(_.compact([...rawWrapperArgs, SWRConfigParam, FetchCondition]), [o => o.optional])
+    .sortBy(_.compact([...rawWrapperArgs, payload, SWRConfigParam, FetchCondition]), [o => o.optional])
+    .map(argToTmpl)
+    .join(', ')
+
+const mutationArgs = _
+    .sortBy(_.compact([...rawWrapperArgs, MutationOption]), [o => o.optional])
     .map(argToTmpl)
     .join(', ')
 
@@ -98,4 +108,19 @@ const queryTmpl = (query != null && queryName) || null;
   mutate<%~ route.routeName.usage.charAt(0).toUpperCase() %><%~ route.routeName.usage.slice(1) %><%~ route.namespace ? ': ' : ' = ' %>(<%~ mutateArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
     mutate<<%~ type %>>(
         <% if (!queryTmpl) { %>`<%~ path %>`<% } else { %>[`<%~ path %>`, <%~ queryTmpl %>]<% } %>, data, options),
+<% } else { %>
+/**
+<%~ routeDocs.description %>
+
+ * <% /* Here you can add some other JSDoc tags */ %>
+
+<%~ routeDocs.lines %>
+
+ */
+  use<%~ route.routeName.usage.charAt(0).toUpperCase() %><%~ route.routeName.usage.slice(1) %><%~ route.namespace ? ': ' : ' = ' %>(<%~ mutationArgs %>)<%~ config.toJS ? `: ${describeReturnType()}` : "" %> =>
+    useSWRMutation(
+        <% if (!queryTmpl) { %>`<%~ path %>`<% } else { %>[`<%~ path %>`, <%~ queryTmpl %>]<% } %>,
+        (_url: string, { arg }: { arg: <%~ payload ? payload.type : "never" %> }  ) => this.api.<%~ route.routeName.usage %>(<%~ pathParams.length > 0 ? pathParams.map(x => x.name).join(', ') + ", " : "" %> arg).then((x) => x.data, (x) => Promise.reject(x.error)),
+        options,
+    ),
 <% } %>

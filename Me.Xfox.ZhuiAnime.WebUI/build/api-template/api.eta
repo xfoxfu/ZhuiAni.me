@@ -1,4 +1,5 @@
 import useSWR, { SWRConfiguration, MutatorOptions, mutate } from "swr";
+import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 import { apiSecurityWorker } from "./services/auth";
 
 <%~ includeFile("@default/api.eta", it) %>

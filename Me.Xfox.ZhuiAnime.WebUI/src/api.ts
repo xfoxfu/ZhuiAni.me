@@ -12,6 +12,7 @@
  */
 import { apiSecurityWorker } from "./services/auth";
 import useSWR, { MutatorOptions, SWRConfiguration, mutate } from "swr";
+import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 
 /** Category information. */
 export interface CategoryDto {
@@ -507,6 +508,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * @description Import a subject from https://bgm.tv .
+     *
+     * @tags Bangumi
+     * @name BangumiImportSubject
+     * @summary Import Subject
+     * @request POST:/api/modules/bangumi/import_subject
+     * @secure
+     */
+    useBangumiImportSubject: (
+      options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, ImportSubjectDto>,
+    ) =>
+      useSWRMutation(
+        `/api/modules/bangumi/import_subject`,
+        (_url: string, { arg }: { arg: ImportSubjectDto }) =>
+          this.api.bangumiImportSubject(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -526,6 +548,26 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Bangumi
+     * @name BangumiSearchSubject
+     * @request POST:/api/modules/bangumi/search_subject
+     * @secure
+     */
+    useBangumiSearchSubject: (
+      options?: SWRMutationConfiguration<SearchResultItemDto[], ErrorProdResponse, string, SearchRequestDto>,
+    ) =>
+      useSWRMutation(
+        `/api/modules/bangumi/search_subject`,
+        (_url: string, { arg }: { arg: SearchRequestDto }) =>
+          this.api.bangumiSearchSubject(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -628,6 +670,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name CategoryCreate
+     * @summary Create
+     * @request POST:/api/categories
+     * @secure
+     */
+    useCategoryCreate: (
+      options?: SWRMutationConfiguration<CategoryDto, ErrorProdResponse, string, CreateOrUpdateCategoryDto>,
+    ) =>
+      useSWRMutation(
+        `/api/categories`,
+        (_url: string, { arg }: { arg: CreateOrUpdateCategoryDto }) =>
+          this.api.categoryCreate(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -689,6 +752,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name CategoryUpdate
+     * @summary Update
+     * @request PATCH:/api/categories/{id}
+     * @secure
+     */
+    useCategoryUpdate: (
+      id: number,
+      options?: SWRMutationConfiguration<CategoryDto, ErrorProdResponse, string, CreateOrUpdateCategoryDto>,
+    ) =>
+      useSWRMutation(
+        `/api/categories/${id}`,
+        (_url: string, { arg }: { arg: CreateOrUpdateCategoryDto }) =>
+          this.api.categoryUpdate(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -707,6 +792,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Category
+     * @name CategoryDelete
+     * @summary Delete
+     * @request DELETE:/api/categories/{id}
+     * @secure
+     */
+    useCategoryDelete: (
+      id: number,
+      options?: SWRMutationConfiguration<CategoryDto, ErrorProdResponse, string, never>,
+    ) =>
+      useSWRMutation(
+        `/api/categories/${id}`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.categoryDelete(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * @description This API will only return those are top-level, i.e. do not have a parent item. The result will be ordered by id descendingly.
@@ -809,6 +916,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name ItemCreate
+     * @summary Create
+     * @request POST:/api/items
+     * @secure
+     */
+    useItemCreate: (options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, CreateItemDto>) =>
+      useSWRMutation(
+        `/api/items`,
+        (_url: string, { arg }: { arg: CreateItemDto }) =>
+          this.api.itemCreate(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -870,6 +996,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name ItemUpdate
+     * @summary Update
+     * @request PATCH:/api/items/{id}
+     * @secure
+     */
+    useItemUpdate: (
+      id: number,
+      options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, UpdateItemDto>,
+    ) =>
+      useSWRMutation(
+        `/api/items/${id}`,
+        (_url: string, { arg }: { arg: UpdateItemDto }) =>
+          this.api.itemUpdate(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -888,6 +1036,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Item
+     * @name ItemDelete
+     * @summary Delete
+     * @request DELETE:/api/items/{id}
+     * @secure
+     */
+    useItemDelete: (id: number, options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, never>) =>
+      useSWRMutation(
+        `/api/items/${id}`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.itemDelete(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -990,6 +1157,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name ItemLinkCreate
+     * @summary Create
+     * @request POST:/api/items/{item_id}/links
+     * @secure
+     */
+    useItemLinkCreate: (
+      itemId: number,
+      options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, CreateLinkDto>,
+    ) =>
+      useSWRMutation(
+        `/api/items/${itemId}/links`,
+        (_url: string, { arg }: { arg: CreateLinkDto }) =>
+          this.api.itemLinkCreate(itemId, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1051,6 +1240,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name ItemLinkUpdate
+     * @summary Update
+     * @request PATCH:/api/items/{item_id}/links/{id}
+     * @secure
+     */
+    useItemLinkUpdate: (
+      itemId: number,
+      id: number,
+      options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, UpdateLinkDto>,
+    ) =>
+      useSWRMutation(
+        `/api/items/${itemId}/links/${id}`,
+        (_url: string, { arg }: { arg: UpdateLinkDto }) =>
+          this.api.itemLinkUpdate(itemId, id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1069,6 +1281,29 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags ItemLink
+     * @name ItemLinkDelete
+     * @summary Delete
+     * @request DELETE:/api/items/{item_id}/links/{id}
+     * @secure
+     */
+    useItemLinkDelete: (
+      itemId: number,
+      id: number,
+      options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, never>,
+    ) =>
+      useSWRMutation(
+        `/api/items/${itemId}/links/${id}`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.itemLinkDelete(itemId, id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1126,6 +1361,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakCreate
+     * @request POST:/api/modules/pikpak/jobs
+     * @secure
+     */
+    usePikPakCreate: (options?: SWRMutationConfiguration<JobDto, ErrorProdResponse, string, CreateJobDto>) =>
+      useSWRMutation(
+        `/api/modules/pikpak/jobs`,
+        (_url: string, { arg }: { arg: CreateJobDto }) =>
+          this.api.pikPakCreate(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1183,6 +1436,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakUpdate
+     * @request POST:/api/modules/pikpak/jobs/{id}
+     * @secure
+     */
+    usePikPakUpdate: (
+      id: number,
+      options?: SWRMutationConfiguration<JobDto, ErrorProdResponse, string, UpdateJobDto>,
+    ) =>
+      useSWRMutation(
+        `/api/modules/pikpak/jobs/${id}`,
+        (_url: string, { arg }: { arg: UpdateJobDto }) =>
+          this.api.pikPakUpdate(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1199,6 +1473,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakDelete
+     * @request DELETE:/api/modules/pikpak/jobs/{id}
+     * @secure
+     */
+    usePikPakDelete: (id: number, options?: SWRMutationConfiguration<void, ErrorProdResponse, string, never>) =>
+      useSWRMutation(
+        `/api/modules/pikpak/jobs/${id}`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.pikPakDelete(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1260,6 +1552,50 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * @description Login with username and password. This API does not comply with OAuth 2.1, and only supports first-party applications (the built-in web frontend). It is based on `grant_type` `password` (which has been drooped in OAuth 2.1) or `refresh_token`. It requires additional parameters for security control. **Request with password** It requires `username`, `password`, `captcha`. ```text username=alice&password=foobar&captcha=foobar&grant_type=password ``` **Request with refresh token** It requires `refresh_token`. ```text grant_type=refresh_token&refresh_token=507f0155-577e-448d-870b-5abe98a41d3f ```
+     *
+     * @tags Session
+     * @name SessionLogin
+     * @summary Login
+     * @request POST:/api/session
+     */
+    useSessionLogin: (
+      options?: SWRMutationConfiguration<
+        LoginResDto,
+        ErrorProdResponse,
+        string,
+        {
+          username?: string;
+          password?: string;
+          captcha?: string;
+          grant_type?: string;
+          refresh_token?: string;
+        }
+      >,
+    ) =>
+      useSWRMutation(
+        `/api/session`,
+        (
+          _url: string,
+          {
+            arg,
+          }: {
+            arg: {
+              username?: string;
+              password?: string;
+              captcha?: string;
+              grant_type?: string;
+              refresh_token?: string;
+            };
+          },
+        ) =>
+          this.api.sessionLogin(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1318,6 +1654,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         secure: true,
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Session
+     * @name SessionLogout
+     * @summary Logout
+     * @request DELETE:/api/session
+     * @secure
+     */
+    useSessionLogout: (options?: SWRMutationConfiguration<void, ErrorProdResponse, string, never>) =>
+      useSWRMutation(
+        `/api/session`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.sessionLogout(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1405,6 +1760,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags Torrent
+     * @name TorrentFetchPage
+     * @request POST:/api/modules/torrent_directory/providers/{name}/fetch/{page}
+     * @secure
+     */
+    useTorrentFetchPage: (
+      name: string,
+      page: number,
+      options?: SWRMutationConfiguration<FetchPageResponseDto, ErrorProdResponse, string, never>,
+    ) =>
+      useSWRMutation(
+        `/api/modules/torrent_directory/providers/${name}/fetch/${page}`,
+        (_url: string, { arg }: { arg: never }) =>
+          this.api.torrentFetchPage(name, page, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
@@ -1460,6 +1837,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         format: "json",
         ...params,
       }),
+    /**
+     * No description
+     *
+     * @tags User
+     * @name UserRegister
+     * @request POST:/api/users
+     */
+    useUserRegister: (options?: SWRMutationConfiguration<UserDto, ErrorProdResponse, string, CreateUserDto>) =>
+      useSWRMutation(
+        `/api/users`,
+        (_url: string, { arg }: { arg: CreateUserDto }) =>
+          this.api.userRegister(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
 
     /**
      * No description
