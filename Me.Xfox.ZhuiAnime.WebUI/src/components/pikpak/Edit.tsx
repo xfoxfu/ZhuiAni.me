@@ -149,8 +149,10 @@ export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
                   <ListItem
                     key={id}
                     onClick={() => setValue("bangumi", id.toString(), { shouldValidate: true, shouldDirty: true })}
+                    display="flex"
+                    alignItems="center"
                   >
-                    <ListIcon as={IoFilmOutline} color="green.500" />
+                    <ListIcon as={IoFilmOutline} color="green.500" marginInlineStart="2" />
                     {name}
                   </ListItem>
                 ))}
