@@ -4,13 +4,11 @@ import {
   Alert,
   AlertDescription,
   AlertIcon,
+  Button,
   HStack,
   Icon,
   IconButton,
-  Link,
   Progress,
-  Tag,
-  Text,
   Tooltip,
 } from "@chakra-ui/react";
 import React from "react";
@@ -50,25 +48,33 @@ export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
       {!links && <Progress width="100%" size="xs" colorScheme="teal" isIndeterminate />}
       <HStack spacing={1}>
         {links &&
-          links.map((i) => (
-            <Link key={i.id} href={i.address} isExternal>
-              <Tooltip label={i.address}>
-                <Tag variant="solid" colorScheme="teal">
-                  {i.mime_type === "text/html;kind=bgm.tv" ? (
-                    <HStack spacing={1}>
-                      <Icon as={IoOpenOutline} />
-                      <Text>bgm.tv</Text>
-                    </HStack>
-                  ) : MIMEType.parse(i.mime_type)?.type === "video" ||
-                    MIMEType.parse(i.mime_type)?.parameters.get("kind") === "text/html;kind=video" ? (
-                    <Icon as={IoVideocamOutline} />
-                  ) : (
-                    <Icon as={IoLinkOutline} />
-                  )}
-                </Tag>
+          links.map((i) => {
+            const commonProps = {
+              "aria-label": i.address,
+              size: "xs",
+              as: "a" as const,
+              href: i.address,
+              target: "_blank",
+            };
+            let body: React.ReactElement;
+            const mimeType = MIMEType.parse(i.mime_type);
+            if (i.mime_type === "text/html;kind=bgm.tv") {
+              body = (
+                <Button leftIcon={<Icon as={IoOpenOutline} />} {...commonProps}>
+                  bgm.tv
+                </Button>
+              );
+            } else if (mimeType?.type === "video" || mimeType?.parameters.get("kind") === "video") {
+              body = <IconButton icon={<Icon as={IoVideocamOutline} />} colorScheme="teal" {...commonProps} />;
+            } else {
+              body = <IconButton icon={<Icon as={IoLinkOutline} />} colorScheme="teal" {...commonProps} />;
+            }
+            return (
+              <Tooltip label={i.address} key={i.id}>
+                {body}
               </Tooltip>
-            </Link>
-          ))}
+            );
+          })}
         {bangumi && (
           <Tooltip label="Refresh bgm.tv Data">
             <IconButton
