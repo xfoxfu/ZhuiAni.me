@@ -48,7 +48,7 @@ public class Link
 
             builder.Property(x => x.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnUpdate();
+                .ValueGeneratedOnAddOrUpdate();
         }
     }
 

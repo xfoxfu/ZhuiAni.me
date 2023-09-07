@@ -27,7 +27,7 @@ public class Category
 
             builder.Property(x => x.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnUpdate();
+                .ValueGeneratedOnAddOrUpdate();
         }
     }
 }

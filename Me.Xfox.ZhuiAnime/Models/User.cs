@@ -47,7 +47,7 @@ public class User
 
             builder.Property(x => x.UpdatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .ValueGeneratedOnUpdate();
+                .ValueGeneratedOnAddOrUpdate();
         }
     }
 }

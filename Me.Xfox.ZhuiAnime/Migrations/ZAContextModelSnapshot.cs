@@ -45,7 +45,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("title");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnUpdate()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -94,7 +94,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("title");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnUpdate()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -150,7 +150,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("parent_link_id");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnUpdate()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
@@ -222,7 +222,7 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnName("hashed_password");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
-                        .ValueGeneratedOnUpdate()
+                        .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
