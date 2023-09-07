@@ -1,6 +1,6 @@
 import App from "./App";
 import { fetcher } from "./api";
-import { ErrorToastContainer } from "./utils";
+import { ToastContainer } from "./utils";
 import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -28,7 +28,7 @@ root.render(
       >
         <BrowserRouter>
           <App />
-          <ErrorToastContainer />
+          <ToastContainer />
         </BrowserRouter>
       </SWRConfig>
     </ChakraProvider>

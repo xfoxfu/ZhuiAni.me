@@ -1,4 +1,5 @@
 import api from "../api";
+import { ImportBangumi } from "../components/anime/ImportBangumi";
 import { ErrorTip } from "../components/utils/ErrorTip";
 import {
   Box,
@@ -29,7 +30,7 @@ export const ItemsList: React.FunctionComponent = () => {
         <HStack spacing="1.5">
           <Button size="sm">Today</Button>
           <Button size="sm">3 Days</Button>
-          {/* <ImportBangumi /> */}
+          <ImportBangumi />
         </HStack>
         <Box>
           <SimpleGrid spacingX="3" spacingY="2" alignItems="stretch" minChildWidth="24ch">
