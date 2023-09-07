@@ -33,7 +33,7 @@ export const ItemsList: React.FunctionComponent = () => {
           <ImportBangumi />
         </HStack>
         <Box>
-          <SimpleGrid spacingX="3" spacingY="2" alignItems="stretch" minChildWidth="24ch">
+          <SimpleGrid spacingX="3" spacingY="2" alignItems="stretch" minChildWidth="18ch">
             {animes?.map((a) => (
               <GridItem
                 key={a.id}

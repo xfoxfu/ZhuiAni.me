@@ -1,5 +1,6 @@
 import api, { ApiError, HttpResponse } from "../../api";
 import { accessTokenAtom, forceLogout, login, logout, refresh } from "../../services/auth";
+import { toast } from "../../utils";
 import {
   Button,
   FormControl,
@@ -17,7 +18,6 @@ import {
   Stack,
   VStack,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { useAtom } from "jotai";
@@ -51,18 +51,14 @@ export const UserInfo: React.FC = () => {
     defaultValues: { username: "", password: "" },
   });
 
-  const toast = useToast();
-  const toastError = useCallback(
-    (err: unknown) => {
-      toast({
-        title: (err as HttpResponse<void, ApiError>).error.message,
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    },
-    [toast],
-  );
+  const toastError = useCallback((err: unknown) => {
+    toast({
+      title: (err as HttpResponse<void, ApiError>).error.message,
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+    });
+  }, []);
   const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
     try {
       await login(inputs.username, inputs.password, token ?? "");

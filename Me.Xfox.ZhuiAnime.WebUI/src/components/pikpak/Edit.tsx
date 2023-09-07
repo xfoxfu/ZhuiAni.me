@@ -1,5 +1,5 @@
 import api, { ApiError } from "../../api";
-import { promiseWithLog } from "../../utils";
+import { promiseWithLog, toast } from "../../utils";
 import {
   Button,
   FormControl,
@@ -24,7 +24,6 @@ import {
   Textarea,
   VStack,
   useDisclosure,
-  useToast,
 } from "@chakra-ui/react";
 import escape from "escape-string-regexp";
 import React, { useEffect, useState } from "react";
@@ -43,7 +42,6 @@ type Inputs = {
 export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: task } = api.usePikPakGet(id ?? 0, {}, !!id);
-  const toast = useToast();
   const {
     register,
     handleSubmit,
