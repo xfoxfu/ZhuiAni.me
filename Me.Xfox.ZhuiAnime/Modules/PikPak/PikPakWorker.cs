@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi;
+using Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 using Microsoft.Extensions.Options;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
@@ -56,11 +57,11 @@ public class PikPakWorker : IHostedService, IDisposable
         using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
         var bangumiService = scope.ServiceProvider.GetRequiredService<BangumiService>();
 
-        var configs = await db.PikPakJob.Where(a => a.Enabled).ToListAsync();
+        var configs = await db.Set<PikPakJob>().Where(a => a.Enabled).ToListAsync();
         foreach (var config in configs)
         {
             Logger.LogInformation("Updating anime {@AnimeId}", config.Id);
-            var torrents = await db.Torrent
+            var torrents = await db.Set<Torrent>()
                 .Where(t => t.OriginSite == "https://bangumi.moe")
                 .Where(t => t.PublishedAt > config.LastFetchedAt)
                 .Where(t => Regex.IsMatch(t.Title, config.Regex))

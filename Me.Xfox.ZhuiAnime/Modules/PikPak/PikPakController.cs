@@ -11,6 +11,7 @@ public class PikPakController : ControllerBase
     protected PikPakClient PikPak { get; init; }
 
     protected ZAContext Db { get; init; }
+    protected DbSet<PikPakJob> DbPikPakJob => Db.Set<PikPakJob>();
 
     public PikPakController(PikPakClient pikPakClient, ZAContext db)
     {
@@ -43,7 +44,7 @@ public class PikPakController : ControllerBase
     [HttpGet("jobs")]
     public async Task<IEnumerable<JobDto>> List()
     {
-        return await Db.PikPakJob
+        return await DbPikPakJob
             .OrderByDescending(x => x.LastFetchedAt)
             .Select(a => new JobDto(a))
             .ToListAsync();
@@ -69,7 +70,7 @@ public class PikPakController : ControllerBase
                 Ep = req.MatchGroupEp
             }
         };
-        Db.PikPakJob.Add(anime);
+        DbPikPakJob.Add(anime);
         await Db.SaveChangesAsync();
         return new JobDto(anime);
     }
@@ -78,7 +79,7 @@ public class PikPakController : ControllerBase
     public async Task<JobDto> Get(uint id)
     {
         return new JobDto(
-            await Db.PikPakJob.FindAsync(id) ??
+            await DbPikPakJob.FindAsync(id) ??
                 throw new ZAError.PikPakJobNotFound(id)
         );
     }
@@ -94,7 +95,7 @@ public class PikPakController : ControllerBase
     [HttpPost("jobs/{id}")]
     public async Task<JobDto> Update(uint id, UpdateJobDto req)
     {
-        var anime = await Db.PikPakJob.FindAsync(id) ??
+        var anime = await DbPikPakJob.FindAsync(id) ??
             throw new ZAError.PikPakJobNotFound(id);
         anime.Bangumi = req.Bangumi;
         anime.Target = req.Target;
@@ -108,9 +109,9 @@ public class PikPakController : ControllerBase
     [HttpDelete("jobs/{id}")]
     public async Task Delete(uint id)
     {
-        var anime = await Db.PikPakJob.FindAsync(id) ??
+        var anime = await DbPikPakJob.FindAsync(id) ??
             throw new ZAError.PikPakJobNotFound(id);
-        Db.PikPakJob.Remove(anime);
+        DbPikPakJob.Remove(anime);
         await Db.SaveChangesAsync();
     }
 }

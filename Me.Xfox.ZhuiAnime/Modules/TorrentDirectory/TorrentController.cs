@@ -33,7 +33,7 @@ public class TorrentController : ControllerBase
         [FromQuery] int? count,
         [FromQuery] DateTimeOffset? until)
     {
-        var linq = DbContext.Torrent.AsQueryable();
+        var linq = DbContext.Set<Torrent>().AsQueryable();
         if (!string.IsNullOrWhiteSpace(query))
         {
             DbContext.Database.SetCommandTimeout(TimeSpan.FromSeconds(10));

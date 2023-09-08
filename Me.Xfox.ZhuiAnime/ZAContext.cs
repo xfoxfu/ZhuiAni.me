@@ -1,9 +1,8 @@
 using Me.Xfox.ZhuiAnime.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Me.Xfox.ZhuiAnime;
 
-public partial class ZAContext : DbContext
+public class ZAContext : DbContext
 {
     public ZAContext(DbContextOptions<ZAContext> options)
         : base(options)
