@@ -1,7 +1,8 @@
 import api from "../api";
 import { ItemLinks } from "../components/anime/ItemLinks";
 import { ErrorTip } from "../components/utils/ErrorTip";
-import { Heading, Stack, Table, TableContainer, Tag, Tbody, Td, Text, Tr, VStack } from "@chakra-ui/react";
+import { OverflowTooltip } from "../components/utils/OverflowTooltip";
+import { Card, CardBody, Flex, Heading, Image, Stack } from "@chakra-ui/react";
 import React from "react";
 import { useParams } from "react-router-dom";
 
@@ -18,32 +19,31 @@ export const Item: React.FunctionComponent = () => {
       <Heading as="h1" size="xl" color="green.700">
         {anime?.title}
       </Heading>
-      <Stack spacing="1">
-        <ErrorTip error={error} />
-        {anime && <ItemLinks id={anime?.id} />}
-        <TableContainer width="fit-content">
-          <Table>
-            <Tbody>
-              {episodes
-                ?.sort((a, b) => a.title.localeCompare(b.title))
-                ?.map((e) => (
-                  <Tr key={e.id}>
-                    <Td paddingY="1.5" paddingX="1">
-                      <Tag variant="solid" colorScheme="teal" width="100%" justifyContent="center">
-                        {e.annotations["https://bgm.tv/ep/:id/type"]} {e.annotations["https://bgm.tv/ep/:id/sort"]}
-                      </Tag>
-                    </Td>
-                    <Td paddingY="1.5" paddingX="1">
-                      <VStack spacing={1} alignItems="flex-start">
-                        <Text>{e.title}</Text>
-                        <ItemLinks id={e.id} />
-                      </VStack>
-                    </Td>
-                  </Tr>
-                ))}
-            </Tbody>
-          </Table>
-        </TableContainer>
+      <Stack direction={["column", "row"]}>
+        <Stack spacing="1">
+          <ErrorTip error={error} />
+          {anime && <ItemLinks id={anime?.id} />}
+          <Flex wrap="wrap" rowGap="3" columnGap="2">
+            {episodes?.map((x) => (
+              <Card key={x.id}>
+                <CardBody>
+                  <Stack spacing="2">
+                    <OverflowTooltip
+                      size="md"
+                      noOfLines={1}
+                      maxW="24ch"
+                      tooltipProps={{ placement: "top", bg: "gray.100", color: "black" }}
+                    >
+                      {x.title}
+                    </OverflowTooltip>
+                    <ItemLinks id={x.id} />
+                  </Stack>
+                </CardBody>
+              </Card>
+            ))}
+          </Flex>
+        </Stack>
+        {anime && <Image src={anime.image_url ?? ""} alt={anime.title} maxW="32ch" height="max-content" />}
       </Stack>
     </>
   );

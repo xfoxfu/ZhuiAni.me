@@ -54,7 +54,7 @@ const App: React.FunctionComponent = () => {
         <Divider />
         <UserInfo />
       </Stack>
-      <Stack padding="4" bg="gray.50" spacing="4">
+      <Stack padding="4" bg="gray.50" spacing="4" flexGrow="1">
         <Routes>
           <Route path="/" element={<ItemsList />}></Route>
           <Route path="/animes">
