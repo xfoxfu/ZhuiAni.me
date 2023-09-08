@@ -34,6 +34,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.WithCorrelationId()
 );
 
+builder.Services.AddSpaYarp();
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services
@@ -194,6 +196,7 @@ app.UseSerilogRequestLogging();
 
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 app.UseStaticFiles();
+if (app.Environment.IsDevelopment()) app.UseSpaYarp();
 
 app.UseRouting();
 

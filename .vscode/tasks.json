@@ -38,8 +38,7 @@
       ],
       "options": {
         "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development",
-          "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
+          "ASPNETCORE_ENVIRONMENT": "Development"
         }
       },
       "problemMatcher": "$msCompile"

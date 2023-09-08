@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Web",
+      "name": "Backend",
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "build",
@@ -11,8 +11,7 @@
       "cwd": "${workspaceFolder}/Me.Xfox.ZhuiAnime",
       "stopAtEntry": false,
       "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.SpaProxy"
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "sourceFileMap": {
         "/Views": "${workspaceFolder}/Views"

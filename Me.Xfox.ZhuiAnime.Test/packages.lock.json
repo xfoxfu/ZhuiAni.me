@@ -66,6 +66,14 @@
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0"
         }
       },
+      "AspNetCore.SpaYarp": {
+        "type": "Transitive",
+        "resolved": "2.0.1",
+        "contentHash": "+2FpE5gdlHnQhOJJRAEJbiS05apffJwc/GTR27UanLl81RRzkFR4mkKMe7aTExqqX5W3Nexb+Ed1jZYMQSJnVQ==",
+        "dependencies": {
+          "Yarp.ReverseProxy": "2.0.1"
+        }
+      },
       "BCrypt.Net-Next": {
         "type": "Transitive",
         "resolved": "4.0.3",
@@ -143,11 +151,6 @@
         "dependencies": {
           "Microsoft.Extensions.Primitives": "2.2.0"
         }
-      },
-      "Microsoft.AspNetCore.SpaProxy": {
-        "type": "Transitive",
-        "resolved": "7.0.10",
-        "contentHash": "AOTli9sWaUsBw0nLQnXsX8su3l33X4bW8XfcDeQLBSYN2LY9ZBrTt1zPUsepXxrCndUmXz9t1OXHeRc7riOlSQ=="
       },
       "Microsoft.AspNetCore.WebUtilities": {
         "type": "Transitive",
@@ -709,6 +712,11 @@
           "Microsoft.IdentityModel.Tokens": "6.32.2"
         }
       },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "sDnWM0N3AMCa86LrKTWeF3BZLD2sgWyYUc7HL6z4+xyDZNQRwzmxbo4qP2rX2MqC+Sy1/gOSRDah5ltxY5jPxw=="
+      },
       "System.Reflection.Metadata": {
         "type": "Transitive",
         "resolved": "1.6.0",
@@ -761,15 +769,23 @@
         "resolved": "0.16.2",
         "contentHash": "NVvOlecYWwhqQdE461UGHUeJ1t2DtGXU+L00LgtBTgWA16bUmMhUIRaCpSkRX5HqAeid/KlXmdH7Sul0mr6HJA=="
       },
+      "Yarp.ReverseProxy": {
+        "type": "Transitive",
+        "resolved": "2.0.1",
+        "contentHash": "op7vBwONPFeR1PYxeLw+RLqSodODDX8RWd0OinLGMVIq6yi1q9mv1j56ImuyZgiAToksiC0Dc7jbRUZ9I+jvFA==",
+        "dependencies": {
+          "System.IO.Hashing": "7.0.0"
+        }
+      },
       "me.xfox.zhuianime": {
         "type": "Project",
         "dependencies": {
+          "AspNetCore.SpaYarp": "[2.0.1, )",
           "BCrypt.Net-Next": "[4.0.3, )",
           "CodeHollow.FeedReader": "[1.2.6, )",
           "EFCore.NamingConventions": "[7.0.2, )",
           "Flurl.Http": "[4.0.0-pre3, )",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[7.0.10, )",
-          "Microsoft.AspNetCore.SpaProxy": "[7.0.10, )",
           "NSwag.Annotations": "[13.20.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[7.0.4, )",
           "Sentry.AspNetCore": "[3.36.0, )",

@@ -2,6 +2,15 @@
   "version": 1,
   "dependencies": {
     "net7.0": {
+      "AspNetCore.SpaYarp": {
+        "type": "Direct",
+        "requested": "[2.0.1, )",
+        "resolved": "2.0.1",
+        "contentHash": "+2FpE5gdlHnQhOJJRAEJbiS05apffJwc/GTR27UanLl81RRzkFR4mkKMe7aTExqqX5W3Nexb+Ed1jZYMQSJnVQ==",
+        "dependencies": {
+          "Yarp.ReverseProxy": "2.0.1"
+        }
+      },
       "BCrypt.Net-Next": {
         "type": "Direct",
         "requested": "[4.0.3, )",
@@ -42,12 +51,6 @@
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "6.15.1"
         }
-      },
-      "Microsoft.AspNetCore.SpaProxy": {
-        "type": "Direct",
-        "requested": "[7.0.10, )",
-        "resolved": "7.0.10",
-        "contentHash": "AOTli9sWaUsBw0nLQnXsX8su3l33X4bW8XfcDeQLBSYN2LY9ZBrTt1zPUsepXxrCndUmXz9t1OXHeRc7riOlSQ=="
       },
       "Microsoft.EntityFrameworkCore.Design": {
         "type": "Direct",
@@ -647,6 +650,11 @@
         "resolved": "4.4.0",
         "contentHash": "2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA=="
       },
+      "System.IO.Hashing": {
+        "type": "Transitive",
+        "resolved": "7.0.0",
+        "contentHash": "sDnWM0N3AMCa86LrKTWeF3BZLD2sgWyYUc7HL6z4+xyDZNQRwzmxbo4qP2rX2MqC+Sy1/gOSRDah5ltxY5jPxw=="
+      },
       "System.Runtime": {
         "type": "Transitive",
         "resolved": "4.3.0",
@@ -682,6 +690,14 @@
         "contentHash": "DaGSsVqKsn/ia6RG8frjwmJonfos0srquhw09TlT8KRw5I43E+4gs+/bZj4K0vShJ5H9imCuXupb4RmS+dBy3w==",
         "dependencies": {
           "System.Text.Encodings.Web": "7.0.0"
+        }
+      },
+      "Yarp.ReverseProxy": {
+        "type": "Transitive",
+        "resolved": "2.0.1",
+        "contentHash": "op7vBwONPFeR1PYxeLw+RLqSodODDX8RWd0OinLGMVIq6yi1q9mv1j56ImuyZgiAToksiC0Dc7jbRUZ9I+jvFA==",
+        "dependencies": {
+          "System.IO.Hashing": "7.0.0"
         }
       }
     },

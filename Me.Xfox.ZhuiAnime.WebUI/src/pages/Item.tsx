@@ -19,7 +19,8 @@ export const Item: React.FunctionComponent = () => {
       <Heading as="h1" size="xl" color="green.700">
         {anime?.title}
       </Heading>
-      <Stack direction={["column", "row"]}>
+      <Stack direction={["column", null, null, null, "row"]}>
+        {anime && <Image src={anime.image_url ?? ""} alt={anime.title} maxW="32ch" height="max-content" />}
         <Stack spacing="1">
           <ErrorTip error={error} />
           {anime && <ItemLinks id={anime?.id} />}
@@ -43,7 +44,6 @@ export const Item: React.FunctionComponent = () => {
             ))}
           </Flex>
         </Stack>
-        {anime && <Image src={anime.image_url ?? ""} alt={anime.title} maxW="32ch" height="max-content" />}
       </Stack>
     </>
   );
