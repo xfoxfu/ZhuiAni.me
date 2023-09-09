@@ -1,6 +1,6 @@
 # [ZhuiAni.me](https://zhuiani.me)
 
-[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/xfoxfu/ZhuiAni.me/ci.yml?branch=main&style=flat-square)](https://github.com/xfoxfu/ZhuiAni.me/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/xfoxfu/ZhuiAni.me?style=flat-square)](https://github.com/xfoxfu/ZhuiAni.me/blob/main/LICENSE)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/xfoxfu/ZhuiAni.me/ci.yml?branch=main&style=flat-square)](https://github.com/xfoxfu/ZhuiAni.me/actions/workflows/ci.yml) [![License](https://img.shields.io/github/license/xfoxfu/ZhuiAni.me?style=flat-square)](https://github.com/xfoxfu/ZhuiAni.me/blob/main/LICENSE) [![Codecov](https://img.shields.io/codecov/c/github/xfoxfu/ZhuiAni.me?style=flat-square&logo=codecov&logoColor=white)](https://codecov.io/gh/xfoxfu/ZhuiAni.me)
 
 A platform for scraping, subscribing, downloading and watching animations based on torrents.
 
