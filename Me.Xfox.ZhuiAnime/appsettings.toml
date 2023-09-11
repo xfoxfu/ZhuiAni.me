@@ -14,6 +14,8 @@ Default = "Debug"
 Microsoft = "Information"
 "Microsoft.AspNetCore" = "Warning"
 "Microsoft.EntityFrameworkCore.Database.Command" = "Warning"
+"AspNetCore.SpaYarp" = "Information"
+"Yarp.ReverseProxy" = "Warning"
 
 [Serilog.WriteTo.Console]
 Name = "Console"

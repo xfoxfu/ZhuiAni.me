@@ -39,6 +39,7 @@ builder.Services.AddSpaYarp(opts =>
     opts.ClientUrl = "http://localhost:3000";
     opts.LaunchCommand = "pnpm dev";
     opts.WorkingDirectory = Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\Me.Xfox.ZhuiAnime.WebUI".Replace('\\', Path.DirectorySeparatorChar));
+    opts.MaxTimeoutInSeconds = 3;
 });
 
 builder.Services.AddHttpContextAccessor();
