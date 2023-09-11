@@ -2,15 +2,6 @@
   "version": 1,
   "dependencies": {
     "net7.0": {
-      "AspNetCore.SpaYarp": {
-        "type": "Direct",
-        "requested": "[2.0.1, )",
-        "resolved": "2.0.1",
-        "contentHash": "+2FpE5gdlHnQhOJJRAEJbiS05apffJwc/GTR27UanLl81RRzkFR4mkKMe7aTExqqX5W3Nexb+Ed1jZYMQSJnVQ==",
-        "dependencies": {
-          "Yarp.ReverseProxy": "2.0.1"
-        }
-      },
       "BCrypt.Net-Next": {
         "type": "Direct",
         "requested": "[4.0.3, )",
@@ -210,6 +201,15 @@
         "requested": "[1.3.0, )",
         "resolved": "1.3.0",
         "contentHash": "vBbnDs27ETW6MwZIbk8voql4OWYxJ0ALudiyFuIu69Bo8HJuWv6+mieykfrqKuzv1JAnvraWrYqALdNe1d+pWA=="
+      },
+      "Yarp.ReverseProxy": {
+        "type": "Direct",
+        "requested": "[2.0.1, )",
+        "resolved": "2.0.1",
+        "contentHash": "op7vBwONPFeR1PYxeLw+RLqSodODDX8RWd0OinLGMVIq6yi1q9mv1j56ImuyZgiAToksiC0Dc7jbRUZ9I+jvFA==",
+        "dependencies": {
+          "System.IO.Hashing": "7.0.0"
+        }
       },
       "Flurl": {
         "type": "Transitive",
@@ -696,14 +696,6 @@
         "contentHash": "DaGSsVqKsn/ia6RG8frjwmJonfos0srquhw09TlT8KRw5I43E+4gs+/bZj4K0vShJ5H9imCuXupb4RmS+dBy3w==",
         "dependencies": {
           "System.Text.Encodings.Web": "7.0.0"
-        }
-      },
-      "Yarp.ReverseProxy": {
-        "type": "Transitive",
-        "resolved": "2.0.1",
-        "contentHash": "op7vBwONPFeR1PYxeLw+RLqSodODDX8RWd0OinLGMVIq6yi1q9mv1j56ImuyZgiAToksiC0Dc7jbRUZ9I+jvFA==",
-        "dependencies": {
-          "System.IO.Hashing": "7.0.0"
         }
       }
     },

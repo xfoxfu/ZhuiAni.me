@@ -34,7 +34,12 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
     .Enrich.WithCorrelationId()
 );
 
-builder.Services.AddSpaYarp();
+builder.Services.AddSpaYarp(opts =>
+{
+    opts.ClientUrl = "http://localhost:3000";
+    opts.LaunchCommand = "pnpm dev";
+    opts.WorkingDirectory = Path.Join(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\Me.Xfox.ZhuiAnime.WebUI".Replace('\\', Path.DirectorySeparatorChar));
+});
 
 builder.Services.AddHttpContextAccessor();
 
@@ -196,7 +201,6 @@ app.UseSerilogRequestLogging();
 
 if (app.Environment.IsProduction()) app.UseHttpsRedirection();
 app.UseStaticFiles();
-if (app.Environment.IsDevelopment()) app.UseSpaYarp();
 
 app.UseRouting();
 
@@ -208,6 +212,9 @@ app.MapControllers().RequireAuthorization(new AuthorizationPolicyBuilder().Requi
 app.MapFallbackToController("/api/{**path}",
     nameof(ZhuiAnime.Controllers.InternalController.EndpointNotFound),
     nameof(ZhuiAnime.Controllers.InternalController).Replace("Controller", ""));
+
+if (app.Environment.IsDevelopment()) app.UseSpaYarp();
+
 app.MapFallbackToFile("index.html");
 
 await app.RunAsync();

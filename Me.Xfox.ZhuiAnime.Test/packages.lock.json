@@ -72,14 +72,6 @@
           "Microsoft.Bcl.AsyncInterfaces": "6.0.0"
         }
       },
-      "AspNetCore.SpaYarp": {
-        "type": "Transitive",
-        "resolved": "2.0.1",
-        "contentHash": "+2FpE5gdlHnQhOJJRAEJbiS05apffJwc/GTR27UanLl81RRzkFR4mkKMe7aTExqqX5W3Nexb+Ed1jZYMQSJnVQ==",
-        "dependencies": {
-          "Yarp.ReverseProxy": "2.0.1"
-        }
-      },
       "BCrypt.Net-Next": {
         "type": "Transitive",
         "resolved": "4.0.3",
@@ -791,7 +783,6 @@
       "me.xfox.zhuianime": {
         "type": "Project",
         "dependencies": {
-          "AspNetCore.SpaYarp": "[2.0.1, )",
           "BCrypt.Net-Next": "[4.0.3, )",
           "CodeHollow.FeedReader": "[1.2.6, )",
           "EFCore.NamingConventions": "[7.0.2, )",
@@ -812,7 +803,8 @@
           "System.IdentityModel.Tokens.Jwt": "[6.32.2, )",
           "System.Linq.Async": "[6.0.1, )",
           "Tomlyn": "[0.16.2, )",
-          "Ulid": "[1.3.0, )"
+          "Ulid": "[1.3.0, )",
+          "Yarp.ReverseProxy": "[2.0.1, )"
         }
       }
     }
