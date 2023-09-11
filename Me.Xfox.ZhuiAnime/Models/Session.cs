@@ -4,7 +4,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Session
 {
-    public Guid Token { get; set; }
+    public Ulid Token { get; set; }
 
     public User User { get; set; } = null!;
     public uint UserId { get; set; }

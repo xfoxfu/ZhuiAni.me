@@ -78,7 +78,7 @@ public class TokenService
         {
             UserId = user.Id,
             UserUpdatedAt = user.UpdatedAt,
-            Token = Guid.NewGuid(),
+            Token = Ulid.NewUlid(),
             ExpiresIn = expireTime
         };
         using var services = Services.CreateScope();

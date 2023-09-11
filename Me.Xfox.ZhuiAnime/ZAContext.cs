@@ -1,4 +1,5 @@
 using Me.Xfox.ZhuiAnime.Models;
+using Me.Xfox.ZhuiAnime.Utils;
 
 namespace Me.Xfox.ZhuiAnime;
 
@@ -19,5 +20,12 @@ public class ZAContext : DbContext
     {
         modelBuilder.ApplyConfigurationsFromAssembly(
             System.Reflection.Assembly.GetExecutingAssembly());
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder
+            .Properties<Ulid>()
+            .HaveConversion<UlidToGuidConverter>();
     }
 }

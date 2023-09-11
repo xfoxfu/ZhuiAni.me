@@ -205,6 +205,12 @@
         "resolved": "0.16.2",
         "contentHash": "NVvOlecYWwhqQdE461UGHUeJ1t2DtGXU+L00LgtBTgWA16bUmMhUIRaCpSkRX5HqAeid/KlXmdH7Sul0mr6HJA=="
       },
+      "Ulid": {
+        "type": "Direct",
+        "requested": "[1.3.0, )",
+        "resolved": "1.3.0",
+        "contentHash": "vBbnDs27ETW6MwZIbk8voql4OWYxJ0ALudiyFuIu69Bo8HJuWv6+mieykfrqKuzv1JAnvraWrYqALdNe1d+pWA=="
+      },
       "Flurl": {
         "type": "Transitive",
         "resolved": "3.0.7",

@@ -775,6 +775,11 @@
         "resolved": "0.16.2",
         "contentHash": "NVvOlecYWwhqQdE461UGHUeJ1t2DtGXU+L00LgtBTgWA16bUmMhUIRaCpSkRX5HqAeid/KlXmdH7Sul0mr6HJA=="
       },
+      "Ulid": {
+        "type": "Transitive",
+        "resolved": "1.3.0",
+        "contentHash": "vBbnDs27ETW6MwZIbk8voql4OWYxJ0ALudiyFuIu69Bo8HJuWv6+mieykfrqKuzv1JAnvraWrYqALdNe1d+pWA=="
+      },
       "Yarp.ReverseProxy": {
         "type": "Transitive",
         "resolved": "2.0.1",
@@ -806,7 +811,8 @@
           "Swashbuckle.AspNetCore.ReDoc": "[6.5.0, )",
           "System.IdentityModel.Tokens.Jwt": "[6.32.2, )",
           "System.Linq.Async": "[6.0.1, )",
-          "Tomlyn": "[0.16.2, )"
+          "Tomlyn": "[0.16.2, )",
+          "Ulid": "[1.3.0, )"
         }
       }
     }

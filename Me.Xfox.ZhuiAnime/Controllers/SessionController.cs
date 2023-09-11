@@ -114,7 +114,7 @@ public class SessionController : ControllerBase
         }
         else if (req.grant_type == "refresh_token")
         {
-            if (!Guid.TryParse(req.refresh_token, out var tokenId))
+            if (!Ulid.TryParse(req.refresh_token, out var tokenId))
             {
                 throw new ZAError.InvalidRefreshToken("not_guid");
             }

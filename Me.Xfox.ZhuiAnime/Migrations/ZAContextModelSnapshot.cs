@@ -170,7 +170,6 @@ namespace Me.Xfox.ZhuiAnime.Migrations
             modelBuilder.Entity("Me.Xfox.ZhuiAnime.Models.Session", b =>
                 {
                     b.Property<Guid>("Token")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("token");
 
