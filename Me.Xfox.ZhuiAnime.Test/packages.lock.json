@@ -169,11 +169,6 @@
         "resolved": "17.7.2",
         "contentHash": "ntbkwIqwszkfCRjxVZOyEQiHauiYsY9NtYjw9ASsoxDSiG8YtV6AGcOAwrAk3TZv2UOq4MrpX+3MYEeMHSb03w=="
       },
-      "Microsoft.CSharp": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ=="
-      },
       "Microsoft.EntityFrameworkCore": {
         "type": "Transitive",
         "resolved": "7.0.5",
@@ -370,26 +365,23 @@
       },
       "Microsoft.IdentityModel.Abstractions": {
         "type": "Transitive",
-        "resolved": "6.32.2",
-        "contentHash": "Ul0qehKXMlq6+73l2w8/daStt8InzIzTzwt2fcMHGbe7pI5pBnwrLEwqALAxcnOkMy2wFY45kJn7QilaOdbkgw=="
+        "resolved": "7.0.0",
+        "contentHash": "7iSWSRR72VKeonFdfDi43Lvkca98Y0F3TmmWhRSuHbkjk/IKUSO0Qd272LQFZpi5eDNQNbUXy3o4THXhOAU6cw=="
       },
       "Microsoft.IdentityModel.JsonWebTokens": {
         "type": "Transitive",
-        "resolved": "6.32.2",
-        "contentHash": "QfoQdEBDir4ShH3ub/hObgNCqoH3/5bhtyMshn6WhD/3PA7lKQyIEU5QpFUON/XeOcdYQqBmzqlgwTo27C9DgQ==",
+        "resolved": "7.0.0",
+        "contentHash": "N+hUPsFZs+IhlMU+qmX8NnYVB9uMxVdcWoPIhKo4oHDR/yuIFh19SVZeFby15cm8S9yedynOcfs7TU5oDCheZw==",
         "dependencies": {
-          "Microsoft.IdentityModel.Tokens": "6.32.2",
-          "System.Text.Encoding": "4.3.0",
-          "System.Text.Encodings.Web": "4.7.2",
-          "System.Text.Json": "4.7.2"
+          "Microsoft.IdentityModel.Tokens": "7.0.0"
         }
       },
       "Microsoft.IdentityModel.Logging": {
         "type": "Transitive",
-        "resolved": "6.32.2",
-        "contentHash": "OgXpzJVBIQNdoyYCNgFprMZGrn2aAcU08w2oqyA2RvGrYvcVWsxJsygGcrMN0vDTvCwKUlpvjqT84eEktp3Avg==",
+        "resolved": "7.0.0",
+        "contentHash": "6I35Kt2/PQZAyUYLo3+QgT/LubZ5/4Ojelkbyo8KKdDgjMbVocAx2B3P5V7iMCz+rsAe/RLr6ql87QKnHtI+aw==",
         "dependencies": {
-          "Microsoft.IdentityModel.Abstractions": "6.32.2"
+          "Microsoft.IdentityModel.Abstractions": "7.0.0"
         }
       },
       "Microsoft.IdentityModel.Protocols": {
@@ -412,12 +404,10 @@
       },
       "Microsoft.IdentityModel.Tokens": {
         "type": "Transitive",
-        "resolved": "6.32.2",
-        "contentHash": "U4er/0UAY0AE8/Rzu9xHV1z95IqV3IbFZpqi2I4/042EBldb+s+E4lhZ3axuuioqg1mU1Ucr5Kq2EOCjf2JSgQ==",
+        "resolved": "7.0.0",
+        "contentHash": "dxYqmmFLsjBQZ6F6a4XDzrZ1CTxBRFVigJvWiNtXiIsT6UlYMxs9ONMaGx9XKzcxmcgEQ2ADuCqKZduz0LR9Hw==",
         "dependencies": {
-          "Microsoft.CSharp": "4.5.0",
-          "Microsoft.IdentityModel.Logging": "6.32.2",
-          "System.Security.Cryptography.Cng": "4.5.0"
+          "Microsoft.IdentityModel.Logging": "7.0.0"
         }
       },
       "Microsoft.Net.Http.Headers": {
@@ -433,11 +423,6 @@
         "type": "Transitive",
         "resolved": "1.1.0",
         "contentHash": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A=="
-      },
-      "Microsoft.NETCore.Targets": {
-        "type": "Transitive",
-        "resolved": "1.1.0",
-        "contentHash": "aOZA3BWfz9RXjpzt0sRJJMjAscAUm3Hoa4UWAfceV9UTYxgwZ1lZt5nO2myFf+/jetYQo4uTP7zS8sJY67BBxg=="
       },
       "Microsoft.OpenApi": {
         "type": "Transitive",
@@ -506,33 +491,33 @@
       },
       "Sentry": {
         "type": "Transitive",
-        "resolved": "3.36.0",
-        "contentHash": "gZKZqtnTxXsYtmBdkLKRglXd3mkywDOqzcUnM9m1aCjkfYs4bnF1YVge/2gXANgpoDgbtWQdUX7qH/8XDDVBlA=="
+        "resolved": "3.39.1",
+        "contentHash": "6wynIOfDOAhDFahbkVfxqO9t/POeCVJJeIrdZt743nhBfE7s9H/VNTb4HihuY3nzfgFx73CE/YvsI4ChEVHPHQ=="
       },
       "Sentry.AspNetCore": {
         "type": "Transitive",
-        "resolved": "3.36.0",
-        "contentHash": "dYFPNxjVeo758nFZECPKdcDa1xnaiDM9cMQRgNjk4yQxko6U+zpnleUIAOxewt2QDDByMxVEzIspzDx71W6Mqg==",
+        "resolved": "3.39.1",
+        "contentHash": "elTbC3hyPa0ksVsy61hwaPHi1Fock+TMrwN8YRe7etWfKKPseMEUWCOZM7p5KzSSCF5f9tzFKhp6GNDjsEMkng==",
         "dependencies": {
-          "Sentry.Extensions.Logging": "3.36.0"
+          "Sentry.Extensions.Logging": "3.39.1"
         }
       },
       "Sentry.Extensions.Logging": {
         "type": "Transitive",
-        "resolved": "3.36.0",
-        "contentHash": "tgFA/zu1O0AZOymYCt1DjDNhXp/JxE45m2ZNUsGKT2r8sfJJZYgY4LCPvs0yCYL2hwFnZRaRlSPi4qiNrTCQzg==",
+        "resolved": "3.39.1",
+        "contentHash": "fPNI9EFSj/lRWoVRrR05zTMdEPs+4uB4WVgPYtQSXEUAwcsEGA4tmqj8bOr6C99JvEH/gO/8F7rEpemJOxoP0Q==",
         "dependencies": {
           "Microsoft.Extensions.Http": "6.0.0",
           "Microsoft.Extensions.Logging.Configuration": "6.0.0",
-          "Sentry": "3.36.0"
+          "Sentry": "3.39.1"
         }
       },
       "Sentry.Serilog": {
         "type": "Transitive",
-        "resolved": "3.36.0",
-        "contentHash": "LnDdVoZ7ejC5la3DUn91uX3Gxe6bLqsTdxhIU1Va7uThYAnKmdYahJbyunKLTJh3lmuLQIInXnZ4iKpbAegpuA==",
+        "resolved": "3.39.1",
+        "contentHash": "KKdHNS7+tJY58M4ywaHkFhbPfwYmIrkNLHtaC3HcjaQ2XZrJNeFie/pqoQRYw9h+45i8SPvgLLPXyr4eiyMYPQ==",
         "dependencies": {
-          "Sentry": "3.36.0",
+          "Sentry": "3.39.1",
           "Serilog": "2.10.0"
         }
       },
@@ -703,11 +688,11 @@
       },
       "System.IdentityModel.Tokens.Jwt": {
         "type": "Transitive",
-        "resolved": "6.32.2",
-        "contentHash": "rChCYKLnmKLO8xFcLmOYSJh4lJXV1XkyddblRK5H3C3KDC/oYMMesU6oHd5CjvlqH1L5umtil1FQKYZG4/qDfQ==",
+        "resolved": "7.0.0",
+        "contentHash": "3OpN2iJf8lxpzVeFeeZSLtR3co6uKBs3VudS3PkkgdX5WF9fqqdhRMYf7WbkxqWQP/9RpoFbD3RimhfJe3hlQQ==",
         "dependencies": {
-          "Microsoft.IdentityModel.JsonWebTokens": "6.32.2",
-          "Microsoft.IdentityModel.Tokens": "6.32.2"
+          "Microsoft.IdentityModel.JsonWebTokens": "7.0.0",
+          "Microsoft.IdentityModel.Tokens": "7.0.0"
         }
       },
       "System.IO.Hashing": {
@@ -720,34 +705,10 @@
         "resolved": "1.6.0",
         "contentHash": "COC1aiAJjCoA5GBF+QKL2uLqEBew4JsCkQmoHKbN3TlOZKa2fKLz5CpiRQKDz0RsAOEGsVKqOD5bomsXq/4STQ=="
       },
-      "System.Runtime": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "JufQi0vPQ0xGnAczR13AUFglDyVYt4Kqnz1AZaiKZ5+GICq0/1MH/mO/eAJHt/mHW1zjKBJd7kV26SrxddAhiw==",
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "1.1.0",
-          "Microsoft.NETCore.Targets": "1.1.0"
-        }
-      },
-      "System.Security.Cryptography.Cng": {
-        "type": "Transitive",
-        "resolved": "4.5.0",
-        "contentHash": "WG3r7EyjUe9CMPFSs6bty5doUqT+q9pbI80hlNzo2SkPkZ4VTuZkGWjpp77JB8+uaL4DFPRdBsAY+DX3dBK92A=="
-      },
       "System.Security.Cryptography.ProtectedData": {
         "type": "Transitive",
         "resolved": "4.4.0",
         "contentHash": "cJV7ScGW7EhatRsjehfvvYVBvtiSMKgN8bOVI0bQhnF5bU7vnHVIsH49Kva7i7GWaWYvmEzkYVk1TC+gZYBEog=="
-      },
-      "System.Text.Encoding": {
-        "type": "Transitive",
-        "resolved": "4.3.0",
-        "contentHash": "BiIg+KWaSDOITze6jGQynxg64naAPtqGHBwDrLaCtixsa5bKiR8dpPOHA7ge3C0JJQizJE+sfkz1wV+BAKAYZw==",
-        "dependencies": {
-          "Microsoft.NETCore.Platforms": "1.1.0",
-          "Microsoft.NETCore.Targets": "1.1.0",
-          "System.Runtime": "4.3.0"
-        }
       },
       "System.Text.Encodings.Web": {
         "type": "Transitive",
@@ -790,8 +751,8 @@
           "Microsoft.AspNetCore.Authentication.JwtBearer": "[7.0.10, )",
           "NSwag.Annotations": "[13.20.0, )",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "[7.0.4, )",
-          "Sentry.AspNetCore": "[3.36.0, )",
-          "Sentry.Serilog": "[3.36.0, )",
+          "Sentry.AspNetCore": "[3.39.1, )",
+          "Sentry.Serilog": "[3.39.1, )",
           "Serilog": "[3.0.1, )",
           "Serilog.AspNetCore": "[7.0.0, )",
           "Serilog.Enrichers.CorrelationId": "[3.0.1, )",
@@ -800,7 +761,7 @@
           "Serilog.Sinks.PeriodicBatching": "[3.1.0, )",
           "Swashbuckle.AspNetCore": "[6.5.0, )",
           "Swashbuckle.AspNetCore.ReDoc": "[6.5.0, )",
-          "System.IdentityModel.Tokens.Jwt": "[6.32.2, )",
+          "System.IdentityModel.Tokens.Jwt": "[7.0.0, )",
           "System.Linq.Async": "[6.0.1, )",
           "Tomlyn": "[0.16.2, )",
           "Ulid": "[1.3.0, )",
