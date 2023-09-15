@@ -103,7 +103,7 @@ public class SessionController : ControllerBase
             }
             var refresh = await TokenService.IssueFirstPartyRefreshToken(user, null);
             var (token, jwt) = TokenService.IssueFirstParty(user, refresh);
-            var expires = jwt.Payload.Exp ?? 0;
+            var expires = jwt.Payload.Expiration ?? 0;
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var scopes = jwt.Payload.Claims.FirstOrDefault(x => x.Type == TokenService.JwtClaimNames.Scope)?.Value ?? "";
             return new(
@@ -132,7 +132,7 @@ public class SessionController : ControllerBase
             }
             var newRefresh = await TokenService.IssueFirstPartyRefreshToken(refresh.User, refresh);
             var (token, jwt) = TokenService.IssueFirstParty(refresh.User, newRefresh);
-            var expires = jwt.Payload.Exp ?? 0;
+            var expires = jwt.Payload.Expiration ?? 0;
             var now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var scopes = jwt.Payload.Claims.FirstOrDefault(x => x.Type == TokenService.JwtClaimNames.Scope)?.Value ?? "";
             return new(

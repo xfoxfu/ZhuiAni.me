@@ -1,4 +1,5 @@
 global using Microsoft.EntityFrameworkCore;
+using System.CommandLine;
 using System.Text.Json.Serialization;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
@@ -218,4 +219,19 @@ if (app.Environment.IsDevelopment()) app.UseSpaYarp();
 
 app.MapFallbackToFile("index.html");
 
-await app.RunAsync();
+var rootCommand = new RootCommand("Start ZhuiAni.me");
+rootCommand.SetHandler(async () =>
+{
+    await app.RunAsync();
+});
+
+var migrateCommand = new Command("migrate", "Migrate database");
+rootCommand.Add(migrateCommand);
+migrateCommand.SetHandler(async () =>
+{
+    using var scope = app.Services.CreateScope();
+    using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
+    await db.Database.MigrateAsync();
+});
+
+await rootCommand.InvokeAsync(args);

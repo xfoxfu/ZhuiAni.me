@@ -673,6 +673,11 @@
         "resolved": "4.5.0",
         "contentHash": "pL2ChpaRRWI/p4LXyy4RgeWlYF2sgfj/pnVMvBqwNFr5cXg7CXNnWZWxrOONLg8VGdFB8oB+EG2Qw4MLgTOe+A=="
       },
+      "System.CommandLine": {
+        "type": "Transitive",
+        "resolved": "2.0.0-beta4.22272.1",
+        "contentHash": "1uqED/q2H0kKoLJ4+hI2iPSBSEdTuhfCYADeJrAqERmiGQ2NNacYKRNEQ+gFbU4glgVyK8rxI+ZOe1onEtr/Pg=="
+      },
       "System.Configuration.ConfigurationManager": {
         "type": "Transitive",
         "resolved": "4.4.0",
@@ -761,6 +766,7 @@
           "Serilog.Sinks.PeriodicBatching": "[3.1.0, )",
           "Swashbuckle.AspNetCore": "[6.5.0, )",
           "Swashbuckle.AspNetCore.ReDoc": "[6.5.0, )",
+          "System.CommandLine": "[2.0.0-beta4.22272.1, )",
           "System.IdentityModel.Tokens.Jwt": "[7.0.0, )",
           "System.Linq.Async": "[6.0.1, )",
           "Tomlyn": "[0.16.2, )",
