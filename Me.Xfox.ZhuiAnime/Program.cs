@@ -8,7 +8,6 @@ using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -224,6 +223,7 @@ rootCommand.SetHandler(async () =>
 {
     await app.RunAsync();
 });
+rootCommand.TreatUnmatchedTokensAsErrors = false;
 
 var migrateCommand = new Command("migrate", "Migrate database");
 rootCommand.Add(migrateCommand);
