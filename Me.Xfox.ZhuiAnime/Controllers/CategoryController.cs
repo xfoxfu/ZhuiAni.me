@@ -42,7 +42,7 @@ public class CategoryController : ControllerBase
     public async Task<IEnumerable<CategoryDto>> ListAsync()
     {
         return await DbContext.Category
-            .OrderBy(a => a.Id)
+            .OrderBy(a => a.CreatedAt)
             .Select(c => new CategoryDto(c))
             .ToListAsync();
     }

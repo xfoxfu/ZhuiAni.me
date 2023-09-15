@@ -59,7 +59,7 @@ public class ItemLinkController : ControllerBase
         {
             throw new ZAError.ItemNotFound(item_id);
         }
-        return item.Links!.Select(l => new LinkDto(l));
+        return item.Links!.OrderBy(x => x.UpdatedAt).Select(l => new LinkDto(l));
     }
 
     /// <summary>Information for creating</summary>

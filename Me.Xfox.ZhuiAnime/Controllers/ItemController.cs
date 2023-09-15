@@ -141,7 +141,7 @@ public class ItemController : ControllerBase
         var item = await LoadItem(id);
         return await DbContext.Item
             .Where(i => i.ParentItemId == id)
-            .OrderBy(i => i.Id)
+            .OrderBy(x => x.Title)
             .Select(i => new ItemDto(i))
             .ToListAsync();
     }
