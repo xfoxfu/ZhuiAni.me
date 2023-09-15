@@ -7,7 +7,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 
 public class Torrent
 {
-    public Ulid Id { get; set; }
+    public Ulid Id { get; set; } = Ulid.NewUlid();
 
     public string OriginSite { get; set; } = string.Empty;
 

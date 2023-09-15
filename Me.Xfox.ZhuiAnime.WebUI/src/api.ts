@@ -16,11 +16,8 @@ import useSWRMutation, { SWRMutationConfiguration } from "swr/mutation";
 
 /** Category information. */
 export interface CategoryDto {
-  /**
-   * id
-   * @format int32
-   */
-  id: number;
+  /** id */
+  id: string;
   /** user-friendly name */
   title: string;
   /**
@@ -40,12 +37,10 @@ export interface ConfigurationDto {
 }
 
 export interface CreateItemDto {
-  /** @format int32 */
-  category_id: number;
+  category_id: string;
   title: string;
   annotations: Record<string, string>;
-  /** @format int32 */
-  parent_item_id?: number | null;
+  parent_item_id?: string | null;
 }
 
 export interface CreateJobDto {
@@ -68,11 +63,8 @@ export interface CreateLinkDto {
   mime_type: string;
   /** extra information for this link */
   annotations: Record<string, string>;
-  /**
-   * id of parent link, if exists
-   * @format int32
-   */
-  parent_link_id?: number | null;
+  /** id of parent link, if exists */
+  parent_link_id?: string | null;
 }
 
 export interface CreateOrUpdateCategoryDto {
@@ -106,14 +98,11 @@ export interface ImportSubjectDto {
 
 /** An item, like an anime, a manga, a episode in an anime, etc. */
 export interface ItemDto {
-  /** @format int32 */
-  id: number;
-  /** @format int32 */
-  category_id: number;
+  id: string;
+  category_id: string;
   title: string;
   annotations: Record<string, string>;
-  /** @format int32 */
-  parent_item_id?: number | null;
+  parent_item_id?: string | null;
   /** @format date-time */
   created_at: string;
   /** @format date-time */
@@ -122,8 +111,7 @@ export interface ItemDto {
 }
 
 export interface JobDto {
-  /** @format int32 */
-  id: number;
+  id: string;
   /** @format int32 */
   bangumi: number;
   target: string;
@@ -137,16 +125,10 @@ export interface JobDto {
 
 /** Link. */
 export interface LinkDto {
-  /**
-   * id
-   * @format int32
-   */
-  id: number;
-  /**
-   * id of the item this link belongs to
-   * @format int32
-   */
-  item_id: number;
+  /** id */
+  id: string;
+  /** id of the item this link belongs to */
+  item_id: string;
   /**
    * the url this link points to
    * @format uri
@@ -156,11 +138,8 @@ export interface LinkDto {
   mime_type: string;
   /** extra information for this link */
   annotations: Record<string, string>;
-  /**
-   * id of parent link, if exists
-   * @format int32
-   */
-  parent_link_id?: number | null;
+  /** id of parent link, if exists */
+  parent_link_id?: string | null;
   /**
    * created time
    * @format date-time
@@ -203,8 +182,7 @@ export interface TokenDto {
 }
 
 export interface TorrentDto {
-  /** @format int32 */
-  id: number;
+  id: string;
   origin_site: string;
   origin_id: string;
   title: string;
@@ -215,8 +193,7 @@ export interface TorrentDto {
 }
 
 export interface UpdateItemDto {
-  /** @format int32 */
-  category_id?: number | null;
+  category_id?: string | null;
   title?: string | null;
   annotations?: Record<string, string>;
 }
@@ -245,8 +222,7 @@ export interface UpdateLinkDto {
 }
 
 export interface UserDto {
-  /** @format int32 */
-  id: number;
+  id: string;
   username: string;
   /** @format date-time */
   created_at: string;
@@ -945,7 +921,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}
      * @secure
      */
-    itemGet: (id: number, params: RequestParams = {}) =>
+    itemGet: (id: string, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "GET",
@@ -962,7 +938,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}
      * @secure
      */
-    useItemGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemGet: (id: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto, ErrorProdResponse>(doFetch ? `/api/items/${id}` : null, options),
 
     /**
@@ -974,7 +950,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}
      * @secure
      */
-    mutateItemGet: (id: number, data?: ItemDto | Promise<ItemDto>, options?: MutatorOptions) =>
+    mutateItemGet: (id: string, data?: ItemDto | Promise<ItemDto>, options?: MutatorOptions) =>
       mutate<ItemDto>(`/api/items/${id}`, data, options),
 
     /**
@@ -986,7 +962,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PATCH:/api/items/{id}
      * @secure
      */
-    itemUpdate: (id: number, data: UpdateItemDto, params: RequestParams = {}) =>
+    itemUpdate: (id: string, data: UpdateItemDto, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "PATCH",
@@ -1006,7 +982,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     useItemUpdate: (
-      id: number,
+      id: string,
       options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, UpdateItemDto>,
     ) =>
       useSWRMutation(
@@ -1028,7 +1004,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/items/{id}
      * @secure
      */
-    itemDelete: (id: number, params: RequestParams = {}) =>
+    itemDelete: (id: string, params: RequestParams = {}) =>
       this.request<ItemDto, ErrorProdResponse>({
         path: `/api/items/${id}`,
         method: "DELETE",
@@ -1045,7 +1021,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/items/{id}
      * @secure
      */
-    useItemDelete: (id: number, options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, never>) =>
+    useItemDelete: (id: string, options?: SWRMutationConfiguration<ItemDto, ErrorProdResponse, string, never>) =>
       useSWRMutation(
         `/api/items/${id}`,
         (_url: string, { arg }: { arg: never }) =>
@@ -1065,7 +1041,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}/items
      * @secure
      */
-    itemGetChildItems: (id: number, params: RequestParams = {}) =>
+    itemGetChildItems: (id: string, params: RequestParams = {}) =>
       this.request<ItemDto[], ErrorProdResponse>({
         path: `/api/items/${id}/items`,
         method: "GET",
@@ -1082,7 +1058,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}/items
      * @secure
      */
-    useItemGetChildItems: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemGetChildItems: (id: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<ItemDto[], ErrorProdResponse>(doFetch ? `/api/items/${id}/items` : null, options),
 
     /**
@@ -1094,7 +1070,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{id}/items
      * @secure
      */
-    mutateItemGetChildItems: (id: number, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
+    mutateItemGetChildItems: (id: string, data?: ItemDto[] | Promise<ItemDto[]>, options?: MutatorOptions) =>
       mutate<ItemDto[]>(`/api/items/${id}/items`, data, options),
 
     /**
@@ -1106,7 +1082,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
-    itemLinkList: (itemId: number, params: RequestParams = {}) =>
+    itemLinkList: (itemId: string, params: RequestParams = {}) =>
       this.request<LinkDto[], ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "GET",
@@ -1123,7 +1099,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
-    useItemLinkList: (itemId: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemLinkList: (itemId: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<LinkDto[], ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links` : null, options),
 
     /**
@@ -1135,7 +1111,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links
      * @secure
      */
-    mutateItemLinkList: (itemId: number, data?: LinkDto[] | Promise<LinkDto[]>, options?: MutatorOptions) =>
+    mutateItemLinkList: (itemId: string, data?: LinkDto[] | Promise<LinkDto[]>, options?: MutatorOptions) =>
       mutate<LinkDto[]>(`/api/items/${itemId}/links`, data, options),
 
     /**
@@ -1147,7 +1123,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/items/{item_id}/links
      * @secure
      */
-    itemLinkCreate: (itemId: number, data: CreateLinkDto, params: RequestParams = {}) =>
+    itemLinkCreate: (itemId: string, data: CreateLinkDto, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links`,
         method: "POST",
@@ -1167,7 +1143,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     useItemLinkCreate: (
-      itemId: number,
+      itemId: string,
       options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, CreateLinkDto>,
     ) =>
       useSWRMutation(
@@ -1189,7 +1165,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
-    itemLinkGet: (itemId: number, id: number, params: RequestParams = {}) =>
+    itemLinkGet: (itemId: string, id: string, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "GET",
@@ -1206,7 +1182,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
-    useItemLinkGet: (itemId: number, id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useItemLinkGet: (itemId: string, id: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<LinkDto, ErrorProdResponse>(doFetch ? `/api/items/${itemId}/links/${id}` : null, options),
 
     /**
@@ -1218,7 +1194,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/items/{item_id}/links/{id}
      * @secure
      */
-    mutateItemLinkGet: (itemId: number, id: number, data?: LinkDto | Promise<LinkDto>, options?: MutatorOptions) =>
+    mutateItemLinkGet: (itemId: string, id: string, data?: LinkDto | Promise<LinkDto>, options?: MutatorOptions) =>
       mutate<LinkDto>(`/api/items/${itemId}/links/${id}`, data, options),
 
     /**
@@ -1230,7 +1206,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request PATCH:/api/items/{item_id}/links/{id}
      * @secure
      */
-    itemLinkUpdate: (itemId: number, id: number, data: UpdateLinkDto, params: RequestParams = {}) =>
+    itemLinkUpdate: (itemId: string, id: string, data: UpdateLinkDto, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "PATCH",
@@ -1250,8 +1226,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     useItemLinkUpdate: (
-      itemId: number,
-      id: number,
+      itemId: string,
+      id: string,
       options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, UpdateLinkDto>,
     ) =>
       useSWRMutation(
@@ -1273,7 +1249,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/items/{item_id}/links/{id}
      * @secure
      */
-    itemLinkDelete: (itemId: number, id: number, params: RequestParams = {}) =>
+    itemLinkDelete: (itemId: string, id: string, params: RequestParams = {}) =>
       this.request<LinkDto, ErrorProdResponse>({
         path: `/api/items/${itemId}/links/${id}`,
         method: "DELETE",
@@ -1291,8 +1267,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     useItemLinkDelete: (
-      itemId: number,
-      id: number,
+      itemId: string,
+      id: string,
       options?: SWRMutationConfiguration<LinkDto, ErrorProdResponse, string, never>,
     ) =>
       useSWRMutation(
@@ -1388,7 +1364,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    pikPakGet: (id: number, params: RequestParams = {}) =>
+    pikPakGet: (id: string, params: RequestParams = {}) =>
       this.request<JobDto, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "GET",
@@ -1404,7 +1380,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    usePikPakGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    usePikPakGet: (id: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<JobDto, ErrorProdResponse>(doFetch ? `/api/modules/pikpak/jobs/${id}` : null, options),
 
     /**
@@ -1415,7 +1391,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    mutatePikPakGet: (id: number, data?: JobDto | Promise<JobDto>, options?: MutatorOptions) =>
+    mutatePikPakGet: (id: string, data?: JobDto | Promise<JobDto>, options?: MutatorOptions) =>
       mutate<JobDto>(`/api/modules/pikpak/jobs/${id}`, data, options),
 
     /**
@@ -1426,7 +1402,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request POST:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    pikPakUpdate: (id: number, data: UpdateJobDto, params: RequestParams = {}) =>
+    pikPakUpdate: (id: string, data: UpdateJobDto, params: RequestParams = {}) =>
       this.request<JobDto, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "POST",
@@ -1445,7 +1421,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @secure
      */
     usePikPakUpdate: (
-      id: number,
+      id: string,
       options?: SWRMutationConfiguration<JobDto, ErrorProdResponse, string, UpdateJobDto>,
     ) =>
       useSWRMutation(
@@ -1466,7 +1442,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    pikPakDelete: (id: number, params: RequestParams = {}) =>
+    pikPakDelete: (id: string, params: RequestParams = {}) =>
       this.request<void, ErrorProdResponse>({
         path: `/api/modules/pikpak/jobs/${id}`,
         method: "DELETE",
@@ -1481,7 +1457,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request DELETE:/api/modules/pikpak/jobs/{id}
      * @secure
      */
-    usePikPakDelete: (id: number, options?: SWRMutationConfiguration<void, ErrorProdResponse, string, never>) =>
+    usePikPakDelete: (id: string, options?: SWRMutationConfiguration<void, ErrorProdResponse, string, never>) =>
       useSWRMutation(
         `/api/modules/pikpak/jobs/${id}`,
         (_url: string, { arg }: { arg: never }) =>
@@ -1863,7 +1839,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/users/{id}
      * @secure
      */
-    userGet: (id: number, params: RequestParams = {}) =>
+    userGet: (id: string, params: RequestParams = {}) =>
       this.request<UserDto, ErrorProdResponse>({
         path: `/api/users/${id}`,
         method: "GET",
@@ -1879,7 +1855,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/users/{id}
      * @secure
      */
-    useUserGet: (id: number, options?: SWRConfiguration, doFetch: boolean = true) =>
+    useUserGet: (id: string, options?: SWRConfiguration, doFetch: boolean = true) =>
       useSWR<UserDto, ErrorProdResponse>(doFetch ? `/api/users/${id}` : null, options),
 
     /**
@@ -1890,7 +1866,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/api/users/{id}
      * @secure
      */
-    mutateUserGet: (id: number, data?: UserDto | Promise<UserDto>, options?: MutatorOptions) =>
+    mutateUserGet: (id: string, data?: UserDto | Promise<UserDto>, options?: MutatorOptions) =>
       mutate<UserDto>(`/api/users/${id}`, data, options),
   };
 }

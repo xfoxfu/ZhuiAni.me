@@ -7,7 +7,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Category
 {
-    public Ulid Id { get; set; }
+    public Ulid Id { get; set; } = Ulid.NewUlid();
 
     public string Title { get; set; } = string.Empty;
 

@@ -5,7 +5,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class User
 {
-    public Ulid Id { get; set; }
+    public Ulid Id { get; set; } = Ulid.NewUlid();
 
     public string Username { get; set; } = string.Empty;
 

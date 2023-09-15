@@ -2,16 +2,15 @@ import api from "../api";
 import { ItemLinks } from "../components/anime/ItemLinks";
 import { ErrorTip } from "../components/utils/ErrorTip";
 import { OverflowTooltip } from "../components/utils/OverflowTooltip";
+import { NullULID } from "../components/utils/misc";
 import { Card, CardBody, Flex, Heading, Image, Stack } from "@chakra-ui/react";
 import React from "react";
 import { useParams } from "react-router-dom";
 
 export const Item: React.FunctionComponent = () => {
   const params = useParams();
-  const { data: anime, error: animeError } = api.useItemGet(Number.parseInt(params["animeId"] ?? "0", 10));
-  const { data: episodes, error: episodesError } = api.useItemGetChildItems(
-    Number.parseInt(params["animeId"] ?? "0", 10),
-  );
+  const { data: anime, error: animeError } = api.useItemGet(params["animeId"] ?? NullULID);
+  const { data: episodes, error: episodesError } = api.useItemGetChildItems(params["animeId"] ?? NullULID);
   const error = animeError ?? episodesError;
 
   return (

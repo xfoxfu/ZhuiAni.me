@@ -6,7 +6,7 @@ import React from "react";
 import { IoLinkOutline, IoOpenOutline, IoRefresh, IoVideocamOutline } from "react-icons/io5";
 import MIMEType from "whatwg-mimetype";
 
-export const ItemLinks: React.FunctionComponent<{ id: number }> = ({ id }) => {
+export const ItemLinks: React.FunctionComponent<{ id: string }> = ({ id }) => {
   const { data: links, error } = api.useItemLinkList(id);
   const bangumi =
     links &&

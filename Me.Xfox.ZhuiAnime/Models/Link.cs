@@ -8,7 +8,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Link
 {
-    public Ulid Id { get; set; }
+    public Ulid Id { get; set; } = Ulid.NewUlid();
 
     public Item Item { get; set; } = null!;
     public Ulid ItemId { get; set; }

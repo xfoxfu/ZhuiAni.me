@@ -4,7 +4,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Session
 {
-    public Ulid Token { get; set; }
+    public Ulid Token { get; set; } = Ulid.NewUlid();
 
     public User User { get; set; } = null!;
     public Ulid UserId { get; set; }

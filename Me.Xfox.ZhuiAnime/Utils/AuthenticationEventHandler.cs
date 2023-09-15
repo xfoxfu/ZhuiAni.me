@@ -95,9 +95,9 @@ public class AuthenticationEventHandler : JwtBearerEvents
         }
         var subject = context.Principal.FindFirstValue(ClaimTypes.NameIdentifier) ??
             throw new ZAError.InvalidToken("za_no_subject", "no subject in token", null);
-        if (uint.TryParse(subject, out var _) == false)
+        if (Ulid.TryParse(subject, out var _) == false)
         {
-            throw new ZAError.InvalidToken("za_invalid_subject", "subject is not number", null);
+            throw new ZAError.InvalidToken("za_invalid_subject", "subject is not ulid", null);
         }
         var updatedAtStr = context.Principal.FindFirstValue(Services.TokenService.JwtClaimNames.UpdatedAt) ??
             throw new ZAError.InvalidToken("za_no_updated_at", "no updated_at in token", null);

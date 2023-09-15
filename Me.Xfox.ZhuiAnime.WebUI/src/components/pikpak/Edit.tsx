@@ -1,5 +1,6 @@
 import api, { ApiError } from "../../api";
 import { promiseWithLog, toast } from "../../utils";
+import { NullULID } from "../utils/misc";
 import {
   Button,
   FormControl,
@@ -39,9 +40,9 @@ type Inputs = {
   enabled: boolean;
 };
 
-export const Edit: React.FunctionComponent<{ id?: number }> = ({ id }) => {
+export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: task } = api.usePikPakGet(id ?? 0, {}, !!id);
+  const { data: task } = api.usePikPakGet(id ?? NullULID, {}, !!id);
   const {
     register,
     handleSubmit,

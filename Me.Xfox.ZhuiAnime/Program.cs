@@ -137,6 +137,7 @@ builder.Services.AddSwaggerGen(opts =>
     opts.SchemaFilter<RequiredNotNullableSchemaFilter>();
     opts.OperationFilter<SecurityRequirementsOperationFilter>();
     opts.OperationFilter<ZAError.ErrorResponsesOperationFilter>();
+    opts.MapType<Ulid>(() => new OpenApiSchema { Type = "string" });
 });
 
 foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
