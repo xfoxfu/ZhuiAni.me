@@ -8,9 +8,11 @@ namespace Me.Xfox.ZhuiAnime.Models;
 public class Item
 {
     public uint Id { get; set; }
+    public Ulid? IdV2 { get; set; }
 
     public Category Category { get; set; } = null!;
     public uint CategoryId { get; set; }
+    public Ulid? CategoryIdV2 { get; set; }
 
     public string Title { get; set; } = string.Empty;
 

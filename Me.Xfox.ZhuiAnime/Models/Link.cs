@@ -9,9 +9,11 @@ namespace Me.Xfox.ZhuiAnime.Models;
 public class Link
 {
     public uint Id { get; set; }
+    public Ulid? IdV2 { get; set; }
 
     public Item Item { get; set; } = null!;
     public uint ItemId { get; set; }
+    public Ulid? ItemIdV2 { get; set; }
 
     public Uri Address { get; set; } = new Uri("invalid://");
 
@@ -21,6 +23,7 @@ public class Link
 
     public Link? ParentLink { get; set; } = null;
     public uint? ParentLinkId { get; set; }
+    public Ulid? ParentLinkIdV2 { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Link>? ChildLinks { get; set; }

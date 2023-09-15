@@ -8,6 +8,7 @@ public class Session
 
     public User User { get; set; } = null!;
     public uint UserId { get; set; }
+    public Ulid? UserIdV2 { get; set; }
 
     public DateTimeOffset UserUpdatedAt { get; set; }
 

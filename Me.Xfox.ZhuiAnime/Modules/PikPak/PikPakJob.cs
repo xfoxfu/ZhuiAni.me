@@ -6,6 +6,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 public class PikPakJob
 {
     public uint Id { get; set; }
+    public Ulid? IdV2 { get; set; }
 
     public uint Bangumi { get; set; }
 

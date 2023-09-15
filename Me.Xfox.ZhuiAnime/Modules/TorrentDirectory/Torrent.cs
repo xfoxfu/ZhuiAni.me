@@ -8,6 +8,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.TorrentDirectory;
 public class Torrent
 {
     public uint Id { get; set; }
+    public Ulid? IdV2{ get; set; }
 
     public string OriginSite { get; set; } = string.Empty;
 
@@ -34,19 +35,19 @@ public class Torrent
         public void Configure(EntityTypeBuilder<Torrent> builder)
         {
             builder.Property(x => x.Size)
-              .IsRequired(false);
+                .IsRequired(false);
 
             builder.Property(x => x.Contents)
-              .IsRequired(false);
+                .IsRequired(false);
 
             builder.Property(x => x.LinkTorrent)
-              .IsRequired(false);
+                .IsRequired(false);
 
             builder.Property(x => x.LinkMagnet)
-              .IsRequired(false);
+                .IsRequired(false);
 
             builder.HasIndex(x => new { x.OriginSite, x.OriginId })
-              .IsUnique();
+                .IsUnique();
         }
     }
 }
