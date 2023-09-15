@@ -60,7 +60,7 @@ public class PikPakWorker : IHostedService, IDisposable
         var configs = await db.Set<PikPakJob>().Where(a => a.Enabled).ToListAsync();
         foreach (var config in configs)
         {
-            Logger.LogInformation("Updating anime {@AnimeId}", config.Id);
+            Logger.LogInformation("Updating anime {@AnimeId}", config.IdV2);
             var torrents = await db.Set<Torrent>()
                 .Where(t => t.OriginSite == "https://bangumi.moe")
                 .Where(t => t.PublishedAt > config.LastFetchedAt)
@@ -72,7 +72,7 @@ public class PikPakWorker : IHostedService, IDisposable
             if (torrents.Count > 0)
             {
                 var imported = await bangumiService.ImportSubject((int)config.Bangumi);
-                bangumi = (await db.Item.FindAsync(imported.Id))!;
+                bangumi = (await db.Item.FindAsync(imported.IdV2))!;
             }
             else
             {
@@ -90,7 +90,7 @@ public class PikPakWorker : IHostedService, IDisposable
                 var link = await Client.ImportLink(config, torrent, db, bangumi);
                 links.Add(link);
 
-                Logger.LogInformation("Imported torrent {@TorrentId} to anime {@AnimeId}", torrent.Id, config.Id);
+                Logger.LogInformation("Imported torrent {@TorrentId} to anime {@AnimeId}", torrent.IdV2, config.IdV2);
             }
 
             if (links.Count > 0)
@@ -102,7 +102,7 @@ public class PikPakWorker : IHostedService, IDisposable
                 await db.SaveChangesAsync();
                 await tx.CommitAsync();
             }
-            Logger.LogInformation("Updated anime {@AnimeId}, {@Count} new items.", config.Id, links.Count);
+            Logger.LogInformation("Updated anime {@AnimeId}, {@Count} new items.", config.IdV2, links.Count);
         }
     }
 

@@ -7,8 +7,7 @@ public class Session
     public Ulid Token { get; set; }
 
     public User User { get; set; } = null!;
-    public uint UserId { get; set; }
-    public Ulid? UserIdV2 { get; set; }
+    public Ulid UserIdV2 { get; set; }
 
     public DateTimeOffset UserUpdatedAt { get; set; }
 
@@ -26,7 +25,8 @@ public class Session
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.HasOne(x => x.User)
-                .WithMany(x => x.Sessions);
+                .WithMany(x => x.Sessions)
+                .HasForeignKey(x => x.UserIdV2);
         }
     }
 }

@@ -7,8 +7,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Category
 {
-    public uint Id { get; set; }
-    public Ulid? IdV2 { get; set; }
+    public Ulid IdV2 { get; set; }
 
     public string Title { get; set; } = string.Empty;
 
@@ -23,6 +22,8 @@ public class Category
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
+            builder.HasKey(x => x.IdV2);
+
             builder.Property(x => x.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 

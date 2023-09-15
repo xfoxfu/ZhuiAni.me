@@ -8,12 +8,10 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Link
 {
-    public uint Id { get; set; }
-    public Ulid? IdV2 { get; set; }
+    public Ulid IdV2 { get; set; }
 
     public Item Item { get; set; } = null!;
-    public uint ItemId { get; set; }
-    public Ulid? ItemIdV2 { get; set; }
+    public Ulid ItemIdV2 { get; set; }
 
     public Uri Address { get; set; } = new Uri("invalid://");
 
@@ -22,7 +20,6 @@ public class Link
     public IDictionary<string, string> Annotations { get; set; } = new Dictionary<string, string>();
 
     public Link? ParentLink { get; set; } = null;
-    public uint? ParentLinkId { get; set; }
     public Ulid? ParentLinkIdV2 { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -36,11 +33,15 @@ public class Link
     {
         public void Configure(EntityTypeBuilder<Link> builder)
         {
+            builder.HasKey(x => x.IdV2);
+
             builder.HasOne(e => e.Item)
-                .WithMany(e => e.Links);
+                .WithMany(e => e.Links)
+                .HasForeignKey(x => x.ItemIdV2);
 
             builder.HasOne(e => e.ParentLink)
                 .WithMany(e => e.ChildLinks)
+                .HasForeignKey(x => x.ParentLinkIdV2)
                 .IsRequired(false);
 
             builder.Property(e => e.Annotations)

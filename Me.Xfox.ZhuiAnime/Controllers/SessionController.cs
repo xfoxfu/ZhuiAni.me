@@ -167,7 +167,7 @@ public class SessionController : ControllerBase
         var expires = User.FindFirstValue(JwtRegisteredClaimNames.Exp);
         var issued = User.FindFirstValue(JwtRegisteredClaimNames.Iat);
         var subject = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        var userId = Convert.ToUInt32(subject);
+        var userId = Ulid.Parse(subject);
         var user = await DbContext.User.FindAsync(userId);
         return new(
             new(user!),

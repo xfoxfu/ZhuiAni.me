@@ -21,14 +21,14 @@ public class CategoryController : ControllerBase
     /// <param name="CreatedAt">created time</param>
     /// <param name="UpdatedAt">last updated time</param>
     public record CategoryDto(
-        uint Id,
+        Ulid Id,
         string Title,
         DateTimeOffset CreatedAt,
         DateTimeOffset UpdatedAt
     )
     {
         public CategoryDto(Category category) : this(
-            category.Id,
+            category.IdV2,
             category.Title,
             category.CreatedAt,
             category.UpdatedAt)
@@ -42,7 +42,7 @@ public class CategoryController : ControllerBase
     public async Task<IEnumerable<CategoryDto>> ListAsync()
     {
         return await DbContext.Category
-            .OrderBy(a => a.Id)
+            .OrderBy(a => a.IdV2)
             .Select(c => new CategoryDto(c))
             .ToListAsync();
     }
@@ -63,13 +63,13 @@ public class CategoryController : ControllerBase
         };
         await DbContext.Category.AddAsync(categoryDb);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { category_id = categoryDb.Id }, new CategoryDto(categoryDb));
+        return CreatedAtAction(nameof(Get), new { category_id = categoryDb.IdV2 }, new CategoryDto(categoryDb));
     }
 
     protected async Task<Category> LoadCategory(string routeParam = "id")
     {
         Request.RouteValues.TryGetValue(routeParam, out var idStr);
-        var id = Convert.ToUInt32(idStr ?? "0");
+        var id = Ulid.Parse(idStr as string ?? throw new ZAError.BadRequest("id is not string"));
         var category = await DbContext.Category.FindAsync(id) ??
             throw new ZAError.CategoryNotFound(id);
         return category;
@@ -127,8 +127,8 @@ public class CategoryController : ControllerBase
         var items = await DbContext.Entry(category)
             .Collection(c => c.Items!)
             .Query()
-            .Where(i => i.ParentItemId == null)
-            .OrderByDescending(i => i.Id)
+            .Where(i => i.ParentItemIdV2 == null)
+            .OrderByDescending(i => i.IdV2)
             .Select(i => new ItemDto(i))
             .ToListAsync();
         return items;

@@ -269,13 +269,18 @@ public abstract class ZAError : Exception
                 .Select(e => new { e.Key, Value = e.Value?.Errors.Select(e => e.ErrorMessage) })
                 .ToDictionary(e => e.Key, e => e.Value));
         }
+
+        public BadRequest(string message) : base(
+            $"Request body is invalid for {message}.")
+        {
+        }
     }
 
     [Error(HttpStatusCode.NotFound, "CATAGORY_NOT_FOUND", "Catagory {category_id} not found.")]
-    [WithExtraData("category_id", typeof(uint))]
+    [WithExtraData("category_id", typeof(string))]
     public class CategoryNotFound : ZAError
     {
-        public CategoryNotFound(uint id) : base(
+        public CategoryNotFound(Ulid id) : base(
             $"Catagory {id} not found.")
         {
             ExtraData.Add("category_id", id);
@@ -283,10 +288,10 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "ITEM_NOT_FOUND", "Item {item_id} not found.")]
-    [WithExtraData("item_id", typeof(uint))]
+    [WithExtraData("item_id", typeof(string))]
     public class ItemNotFound : ZAError
     {
-        public ItemNotFound(uint id) : base(
+        public ItemNotFound(Ulid id) : base(
             $"Item {id} not found.")
         {
             ExtraData.Add("item_id", id);
@@ -294,10 +299,10 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "LINK_NOT_FOUND", "Link {link_id} not found.")]
-    [WithExtraData("link_id", typeof(uint))]
+    [WithExtraData("link_id", typeof(string))]
     public class LinkNotFound : ZAError
     {
-        public LinkNotFound(uint id) : base(
+        public LinkNotFound(Ulid id) : base(
             $"Link {id} not found.")
         {
             ExtraData.Add("link_id", id);
@@ -305,10 +310,10 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "PIKPAK_JOB_NOT_FOUND", "PikPak job {pikpak_job_id} not found.")]
-    [WithExtraData("pikpak_job_id", typeof(uint))]
+    [WithExtraData("pikpak_job_id", typeof(string))]
     public class PikPakJobNotFound : ZAError
     {
-        public PikPakJobNotFound(uint id) : base(
+        public PikPakJobNotFound(Ulid id) : base(
             $"PikPak job {id} not found.")
         {
             ExtraData.Add("pikpak_job_id", id);
@@ -316,10 +321,10 @@ public abstract class ZAError : Exception
     }
 
     [Error(HttpStatusCode.NotFound, "USER_NOT_FOUND", "User {user_id} not found.")]
-    [WithExtraData("user_id", typeof(uint))]
+    [WithExtraData("user_id", typeof(string))]
     public class UserNotFound : ZAError
     {
-        public UserNotFound(uint id) : base(
+        public UserNotFound(Ulid id) : base(
             $"User {id} not found.")
         {
             ExtraData.Add("user_id", id);

@@ -275,7 +275,7 @@ public class PikPakClient
         if (existing != null)
         {
             Logger.LogInformation(
-                "Using existing {Link} for Anime {Anime}, Torrent {Torrent}.", existing.Id, config.Id, torrent.Id);
+                "Using existing {Link} for Anime {Anime}, Torrent {Torrent}.", existing.IdV2, config.IdV2, torrent.IdV2);
             config.LastFetchedAt = torrent.PublishedAt;
             await db.SaveChangesAsync();
             return existing;
@@ -290,7 +290,7 @@ public class PikPakClient
         // Add link
         var link = new Link
         {
-            ItemId = episode?.Id ?? anime.Id,
+            ItemIdV2 = episode?.IdV2 ?? anime.IdV2,
             Address = new Uri(linkAddress),
             MimeType = file.MimeType,
             Annotations = new Dictionary<string, string>

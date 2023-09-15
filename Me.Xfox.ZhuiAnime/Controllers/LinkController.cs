@@ -24,23 +24,23 @@ public class ItemLinkController : ControllerBase
     /// <param name="CreatedAt">created time</param>
     /// <param name="UpdatedAt">last updated time</param>
     public record LinkDto(
-        uint Id,
-        uint ItemId,
+        Ulid Id,
+        Ulid ItemId,
         Uri Address,
         string MimeType,
         IDictionary<string, string> Annotations,
-        uint? ParentLinkId,
+        Ulid? ParentLinkId,
         DateTimeOffset CreatedAt,
         DateTimeOffset UpdatedAt
     )
     {
         public LinkDto(Link link) : this(
-            link.Id,
-            link.ItemId,
+            link.IdV2,
+            link.ItemIdV2,
             link.Address,
             link.MimeType,
             link.Annotations,
-            link.ParentLinkId,
+            link.ParentLinkIdV2,
             link.CreatedAt,
             link.UpdatedAt)
         {
@@ -51,10 +51,10 @@ public class ItemLinkController : ControllerBase
     /// <returns>List of links.</returns>
     [HttpGet]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<IEnumerable<LinkDto>> ListAsync(uint item_id)
+    public async Task<IEnumerable<LinkDto>> ListAsync(Ulid item_id)
     {
         var item = await DbContext.Item.Include(i => i.Links)
-            .FirstOrDefaultAsync(i => i.Id == item_id);
+            .FirstOrDefaultAsync(i => i.IdV2 == item_id);
         if (item == null)
         {
             throw new ZAError.ItemNotFound(item_id);
@@ -71,7 +71,7 @@ public class ItemLinkController : ControllerBase
         Uri Address,
         string MimeType,
         IDictionary<string, string> Annotations,
-        uint? ParentLinkId
+        Ulid? ParentLinkId
     );
 
     /// <summary>Create</summary>
@@ -81,7 +81,7 @@ public class ItemLinkController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(LinkDto), StatusCodes.Status201Created)]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<IActionResult> CreateAsync(uint item_id, [FromBody] CreateLinkDto link)
+    public async Task<IActionResult> CreateAsync(Ulid item_id, [FromBody] CreateLinkDto link)
     {
         var item = await DbContext.Item.FindAsync(item_id);
         if (item == null)
@@ -90,18 +90,18 @@ public class ItemLinkController : ControllerBase
         }
         var newLink = new Link
         {
-            ItemId = item.Id,
+            ItemIdV2 = item.IdV2,
             Address = link.Address,
             MimeType = link.MimeType,
             Annotations = link.Annotations,
-            ParentLinkId = link.ParentLinkId
+            ParentLinkIdV2 = link.ParentLinkId
         };
         await DbContext.Link.AddAsync(newLink);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = newLink.Id }, new LinkDto(newLink));
+        return CreatedAtAction(nameof(Get), new { id = newLink.IdV2 }, new LinkDto(newLink));
     }
 
-    protected async Task<Link> LoadLink(uint item_id, uint id)
+    protected async Task<Link> LoadLink(Ulid item_id, Ulid id)
     {
         var item = await DbContext.Item.FindAsync(item_id);
         if (item == null)
@@ -111,7 +111,7 @@ public class ItemLinkController : ControllerBase
         var link = await DbContext.Entry(item)
             .Collection(i => i.Links!)
             .Query()
-            .FirstOrDefaultAsync(l => l.Id == id);
+            .FirstOrDefaultAsync(l => l.IdV2 == id);
         if (link == null)
         {
             throw new ZAError.LinkNotFound(id);
@@ -127,7 +127,7 @@ public class ItemLinkController : ControllerBase
     [HttpGet("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
     [ZAError.Has<ZAError.LinkNotFound>]
-    public async Task<LinkDto> Get(uint item_id, uint id)
+    public async Task<LinkDto> Get(Ulid item_id, Ulid id)
     {
         var link = await LoadLink(item_id, id);
         if (link == null)
@@ -155,7 +155,7 @@ public class ItemLinkController : ControllerBase
     [HttpPatch("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
     [ZAError.Has<ZAError.LinkNotFound>]
-    public async Task<LinkDto> Update(uint item_id, uint id, [FromBody] UpdateLinkDto request)
+    public async Task<LinkDto> Update(Ulid item_id, Ulid id, [FromBody] UpdateLinkDto request)
     {
         var link = await LoadLink(item_id, id);
         link.Address = request.Address;
@@ -172,7 +172,7 @@ public class ItemLinkController : ControllerBase
     [HttpDelete("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
     [ZAError.Has<ZAError.LinkNotFound>]
-    public async Task<LinkDto> Delete(uint item_id, uint id)
+    public async Task<LinkDto> Delete(Ulid item_id, Ulid id)
     {
         var link = await LoadLink(item_id, id);
         DbContext.Link.Remove(link);

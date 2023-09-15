@@ -20,7 +20,7 @@ public class PikPakController : ControllerBase
     }
 
     public record JobDto(
-        uint Id,
+        Ulid Id,
         uint Bangumi,
         string Target,
         string Regex,
@@ -30,7 +30,7 @@ public class PikPakController : ControllerBase
     )
     {
         public JobDto(PikPakJob anime) : this(
-            anime.Id,
+            anime.IdV2,
             anime.Bangumi,
             anime.Target,
             anime.Regex,
@@ -76,7 +76,7 @@ public class PikPakController : ControllerBase
     }
 
     [HttpGet("jobs/{id}")]
-    public async Task<JobDto> Get(uint id)
+    public async Task<JobDto> Get(Ulid id)
     {
         return new JobDto(
             await DbPikPakJob.FindAsync(id) ??
@@ -93,7 +93,7 @@ public class PikPakController : ControllerBase
     );
 
     [HttpPost("jobs/{id}")]
-    public async Task<JobDto> Update(uint id, UpdateJobDto req)
+    public async Task<JobDto> Update(Ulid id, UpdateJobDto req)
     {
         var anime = await DbPikPakJob.FindAsync(id) ??
             throw new ZAError.PikPakJobNotFound(id);
@@ -107,7 +107,7 @@ public class PikPakController : ControllerBase
     }
 
     [HttpDelete("jobs/{id}")]
-    public async Task Delete(uint id)
+    public async Task Delete(Ulid id)
     {
         var anime = await DbPikPakJob.FindAsync(id) ??
             throw new ZAError.PikPakJobNotFound(id);

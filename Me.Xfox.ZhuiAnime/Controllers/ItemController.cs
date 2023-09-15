@@ -18,11 +18,11 @@ public class ItemController : ControllerBase
     /// <summary>An item, like an anime, a manga, a episode in an anime, etc.</summary>
     public record ItemDto
     {
-        public required uint Id { get; set; }
-        public required uint CategoryId { get; set; }
+        public required Ulid Id { get; set; }
+        public required Ulid CategoryId { get; set; }
         public required string Title { get; set; }
         public required IDictionary<string, string> Annotations { get; set; }
-        public required uint? ParentItemId { get; set; }
+        public required Ulid? ParentItemId { get; set; }
         public required DateTimeOffset CreatedAt { get; set; }
         public required DateTimeOffset UpdatedAt { get; set; }
         public required string? ImageUrl { get; set; }
@@ -30,11 +30,11 @@ public class ItemController : ControllerBase
         [SetsRequiredMembers]
         public ItemDto(Item item)
         {
-            Id = item.Id;
-            CategoryId = item.CategoryId;
+            Id = item.IdV2;
+            CategoryId = item.CategoryIdV2;
             Title = item.Title;
             Annotations = item.Annotations;
-            ParentItemId = item.ParentItemId;
+            ParentItemId = item.ParentItemIdV2;
             CreatedAt = item.CreatedAt;
             UpdatedAt = item.UpdatedAt;
             ImageUrl = item.ImageUrl;
@@ -51,17 +51,17 @@ public class ItemController : ControllerBase
     public async Task<IEnumerable<ItemDto>> ListAsync()
     {
         return await DbContext.Item
-            .Where(i => i.ParentItemId == null)
+            .Where(i => i.ParentItemIdV2 == null)
             .OrderByDescending(x => x.UpdatedAt)
             .Select(i => new ItemDto(i))
             .ToListAsync();
     }
 
     public record CreateItemDto(
-        uint CategoryId,
+        Ulid CategoryId,
         string Title,
         IDictionary<string, string> Annotations,
-        uint? ParentItemId
+        Ulid? ParentItemId
     );
 
     /// <summary>Create</summary>
@@ -73,17 +73,17 @@ public class ItemController : ControllerBase
     {
         var newItem = new Item
         {
-            CategoryId = item.CategoryId,
+            CategoryIdV2 = item.CategoryId,
             Title = item.Title,
             Annotations = item.Annotations,
-            ParentItemId = item.ParentItemId
+            ParentItemIdV2 = item.ParentItemId
         };
         await DbContext.Item.AddAsync(newItem);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = newItem.Id }, new ItemDto(newItem));
+        return CreatedAtAction(nameof(Get), new { id = newItem.IdV2 }, new ItemDto(newItem));
     }
 
-    protected async Task<Item> LoadItem(uint id) => await DbContext.Item.FindAsync(id)
+    protected async Task<Item> LoadItem(Ulid id) => await DbContext.Item.FindAsync(id)
         ?? throw new ZAError.ItemNotFound(id);
 
     /// <summary>Get</summary>
@@ -91,13 +91,13 @@ public class ItemController : ControllerBase
     /// <returns></returns>
     [HttpGet("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<ItemDto> Get(uint id)
+    public async Task<ItemDto> Get(Ulid id)
     {
         return new ItemDto(await LoadItem(id));
     }
 
     public record UpdateItemDto(
-        uint? CategoryId,
+        Ulid? CategoryId,
         string? Title,
         IDictionary<string, string>? Annotations
     );
@@ -108,10 +108,10 @@ public class ItemController : ControllerBase
     /// <returns></returns>
     [HttpPatch("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<ItemDto> Update(uint id, [FromBody] UpdateItemDto request)
+    public async Task<ItemDto> Update(Ulid id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
-        item.CategoryId = request.CategoryId ?? item.CategoryId;
+        item.CategoryIdV2 = request.CategoryId ?? item.CategoryIdV2;
         item.Title = request.Title ?? item.Title;
         item.Annotations = request.Annotations ?? item.Annotations;
         await DbContext.SaveChangesAsync();
@@ -123,7 +123,7 @@ public class ItemController : ControllerBase
     /// <returns></returns>
     [HttpDelete("{id}")]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<ItemDto> Delete(uint id)
+    public async Task<ItemDto> Delete(Ulid id)
     {
         var item = await LoadItem(id);
         DbContext.Item.Remove(item);
@@ -136,12 +136,12 @@ public class ItemController : ControllerBase
     /// <returns></returns>
     [HttpGet("{id}/items")]
     [ZAError.Has<ZAError.ItemNotFound>]
-    public async Task<IEnumerable<ItemDto>> GetChildItems(uint id)
+    public async Task<IEnumerable<ItemDto>> GetChildItems(Ulid id)
     {
         var item = await LoadItem(id);
         return await DbContext.Item
-            .Where(i => i.ParentItemId == id)
-            .OrderBy(i => i.Id)
+            .Where(i => i.ParentItemIdV2 == id)
+            .OrderBy(i => i.IdV2)
             .Select(i => new ItemDto(i))
             .ToListAsync();
     }

@@ -22,14 +22,14 @@ public class UserController : ControllerBase
 
     public record UserDto
     {
-        public uint Id { get; init; }
+        public Ulid Id { get; init; }
         public string Username { get; init; }
         public DateTimeOffset CreatedAt { get; init; }
         public DateTimeOffset UpdatedAt { get; init; }
 
         public UserDto(User user)
         {
-            Id = user.Id;
+            Id = user.IdV2;
             Username = user.Username;
             CreatedAt = user.CreatedAt;
             UpdatedAt = user.UpdatedAt;
@@ -72,12 +72,12 @@ public class UserController : ControllerBase
 
         DbContext.User.Add(user);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDto(user));
+        return CreatedAtAction(nameof(Get), new { id = user.IdV2 }, new UserDto(user));
     }
 
     [HttpGet("{id}")]
     [ZAError.Has<ZAError.UserNotFound>]
-    public async Task<UserDto> Get(uint id)
+    public async Task<UserDto> Get(Ulid id)
     {
         return new UserDto(await DbContext.User.FindAsync(id) ?? throw new ZAError.UserNotFound(id));
     }
