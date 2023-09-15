@@ -30,11 +30,11 @@ public class ItemController : ControllerBase
         [SetsRequiredMembers]
         public ItemDto(Item item)
         {
-            Id = item.IdV2;
-            CategoryId = item.CategoryIdV2;
+            Id = item.Id;
+            CategoryId = item.CategoryId;
             Title = item.Title;
             Annotations = item.Annotations;
-            ParentItemId = item.ParentItemIdV2;
+            ParentItemId = item.ParentItemId;
             CreatedAt = item.CreatedAt;
             UpdatedAt = item.UpdatedAt;
             ImageUrl = item.ImageUrl;
@@ -51,7 +51,7 @@ public class ItemController : ControllerBase
     public async Task<IEnumerable<ItemDto>> ListAsync()
     {
         return await DbContext.Item
-            .Where(i => i.ParentItemIdV2 == null)
+            .Where(i => i.ParentItemId == null)
             .OrderByDescending(x => x.UpdatedAt)
             .Select(i => new ItemDto(i))
             .ToListAsync();
@@ -73,14 +73,14 @@ public class ItemController : ControllerBase
     {
         var newItem = new Item
         {
-            CategoryIdV2 = item.CategoryId,
+            CategoryId = item.CategoryId,
             Title = item.Title,
             Annotations = item.Annotations,
-            ParentItemIdV2 = item.ParentItemId
+            ParentItemId = item.ParentItemId
         };
         await DbContext.Item.AddAsync(newItem);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = newItem.IdV2 }, new ItemDto(newItem));
+        return CreatedAtAction(nameof(Get), new { id = newItem.Id }, new ItemDto(newItem));
     }
 
     protected async Task<Item> LoadItem(Ulid id) => await DbContext.Item.FindAsync(id)
@@ -111,7 +111,7 @@ public class ItemController : ControllerBase
     public async Task<ItemDto> Update(Ulid id, [FromBody] UpdateItemDto request)
     {
         var item = await LoadItem(id);
-        item.CategoryIdV2 = request.CategoryId ?? item.CategoryIdV2;
+        item.CategoryId = request.CategoryId ?? item.CategoryId;
         item.Title = request.Title ?? item.Title;
         item.Annotations = request.Annotations ?? item.Annotations;
         await DbContext.SaveChangesAsync();
@@ -140,8 +140,8 @@ public class ItemController : ControllerBase
     {
         var item = await LoadItem(id);
         return await DbContext.Item
-            .Where(i => i.ParentItemIdV2 == id)
-            .OrderBy(i => i.IdV2)
+            .Where(i => i.ParentItemId == id)
+            .OrderBy(i => i.Id)
             .Select(i => new ItemDto(i))
             .ToListAsync();
     }

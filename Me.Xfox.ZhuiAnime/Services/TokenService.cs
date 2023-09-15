@@ -44,7 +44,7 @@ public class TokenService
     {
         var claims = new List<Claim>
         {
-            new (JwtRegisteredClaimNames.Sub, user.IdV2.ToString()),
+            new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new (JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString(), ClaimValueTypes.Integer64),
             new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new (JwtClaimNames.Scope, EncodeScopes(new[]{ JwtScopes.OAuth })),
@@ -76,7 +76,7 @@ public class TokenService
         var expireTime = DateTimeOffset.UtcNow.Add(TimeSpan.FromDays(Options.CurrentValue.RefreshExpiresDays));
         var token = new Session
         {
-            UserIdV2 = user.IdV2,
+            UserId = user.Id,
             UserUpdatedAt = user.UpdatedAt,
             Token = Ulid.NewUlid(),
             ExpiresIn = expireTime
@@ -92,10 +92,10 @@ public class TokenService
         }
         await db.SaveChangesAsync();
         await db.Session
-            .Where(x => x.UserIdV2 == user.IdV2 && x.ExpiresIn < now)
+            .Where(x => x.UserId == user.Id && x.ExpiresIn < now)
             .ExecuteDeleteAsync();
         await db.Session
-            .Where(x => x.UserIdV2 == user.IdV2 && x.UserUpdatedAt != user.UpdatedAt)
+            .Where(x => x.UserId == user.Id && x.UserUpdatedAt != user.UpdatedAt)
             .ExecuteDeleteAsync();
         await transaction.CommitAsync();
         return token;

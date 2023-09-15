@@ -49,7 +49,7 @@ public class TorrentController : ControllerBase
             .OrderByDescending(t => t.PublishedAt)
             .Take(Math.Min(count ?? 20, 100))
             .Select(t => new TorrentDto(
-                t.IdV2,
+                t.Id,
                 t.OriginSite,
                 t.OriginId,
                 t.Title,

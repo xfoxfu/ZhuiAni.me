@@ -7,10 +7,10 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class Item
 {
-    public Ulid IdV2 { get; set; }
+    public Ulid Id { get; set; }
 
     public Category Category { get; set; } = null!;
-    public Ulid CategoryIdV2 { get; set; }
+    public Ulid CategoryId { get; set; }
 
     public string Title { get; set; } = string.Empty;
 
@@ -22,7 +22,7 @@ public class Item
     public IEnumerable<Link>? Links { get; set; }
 
     public Item? ParentItem { get; set; } = null;
-    public Ulid? ParentItemIdV2 { get; set; }
+    public Ulid? ParentItemId { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Item>? ChildItems { get; set; }
@@ -35,16 +35,12 @@ public class Item
     {
         public void Configure(EntityTypeBuilder<Item> builder)
         {
-            builder.HasKey(x => x.IdV2);
-
             builder.HasOne(e => e.ParentItem)
                 .WithMany(e => e.ChildItems)
-                .HasForeignKey(x => x.ParentItemIdV2)
                 .IsRequired(false);
 
             builder.HasOne(e => e.Category)
-                .WithMany(e => e.Items)
-                .HasForeignKey(x => x.CategoryIdV2);
+                .WithMany(e => e.Items);
 
             builder.Property(e => e.Annotations)
                 .HasColumnType("jsonb");

@@ -30,7 +30,7 @@ public class PikPakController : ControllerBase
     )
     {
         public JobDto(PikPakJob anime) : this(
-            anime.IdV2,
+            anime.Id,
             anime.Bangumi,
             anime.Target,
             anime.Regex,

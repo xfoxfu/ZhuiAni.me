@@ -28,7 +28,7 @@ public class CategoryController : ControllerBase
     )
     {
         public CategoryDto(Category category) : this(
-            category.IdV2,
+            category.Id,
             category.Title,
             category.CreatedAt,
             category.UpdatedAt)
@@ -42,7 +42,7 @@ public class CategoryController : ControllerBase
     public async Task<IEnumerable<CategoryDto>> ListAsync()
     {
         return await DbContext.Category
-            .OrderBy(a => a.IdV2)
+            .OrderBy(a => a.Id)
             .Select(c => new CategoryDto(c))
             .ToListAsync();
     }
@@ -63,7 +63,7 @@ public class CategoryController : ControllerBase
         };
         await DbContext.Category.AddAsync(categoryDb);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { category_id = categoryDb.IdV2 }, new CategoryDto(categoryDb));
+        return CreatedAtAction(nameof(Get), new { category_id = categoryDb.Id }, new CategoryDto(categoryDb));
     }
 
     protected async Task<Category> LoadCategory(string routeParam = "id")
@@ -127,8 +127,8 @@ public class CategoryController : ControllerBase
         var items = await DbContext.Entry(category)
             .Collection(c => c.Items!)
             .Query()
-            .Where(i => i.ParentItemIdV2 == null)
-            .OrderByDescending(i => i.IdV2)
+            .Where(i => i.ParentItemId == null)
+            .OrderByDescending(i => i.Id)
             .Select(i => new ItemDto(i))
             .ToListAsync();
         return items;

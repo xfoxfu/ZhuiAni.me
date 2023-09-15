@@ -29,7 +29,7 @@ public class UserController : ControllerBase
 
         public UserDto(User user)
         {
-            Id = user.IdV2;
+            Id = user.Id;
             Username = user.Username;
             CreatedAt = user.CreatedAt;
             UpdatedAt = user.UpdatedAt;
@@ -72,7 +72,7 @@ public class UserController : ControllerBase
 
         DbContext.User.Add(user);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = user.IdV2 }, new UserDto(user));
+        return CreatedAtAction(nameof(Get), new { id = user.Id }, new UserDto(user));
     }
 
     [HttpGet("{id}")]

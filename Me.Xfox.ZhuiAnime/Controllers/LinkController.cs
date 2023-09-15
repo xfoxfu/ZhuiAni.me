@@ -35,12 +35,12 @@ public class ItemLinkController : ControllerBase
     )
     {
         public LinkDto(Link link) : this(
-            link.IdV2,
-            link.ItemIdV2,
+            link.Id,
+            link.ItemId,
             link.Address,
             link.MimeType,
             link.Annotations,
-            link.ParentLinkIdV2,
+            link.ParentLinkId,
             link.CreatedAt,
             link.UpdatedAt)
         {
@@ -54,7 +54,7 @@ public class ItemLinkController : ControllerBase
     public async Task<IEnumerable<LinkDto>> ListAsync(Ulid item_id)
     {
         var item = await DbContext.Item.Include(i => i.Links)
-            .FirstOrDefaultAsync(i => i.IdV2 == item_id);
+            .FirstOrDefaultAsync(i => i.Id == item_id);
         if (item == null)
         {
             throw new ZAError.ItemNotFound(item_id);
@@ -90,15 +90,15 @@ public class ItemLinkController : ControllerBase
         }
         var newLink = new Link
         {
-            ItemIdV2 = item.IdV2,
+            ItemId = item.Id,
             Address = link.Address,
             MimeType = link.MimeType,
             Annotations = link.Annotations,
-            ParentLinkIdV2 = link.ParentLinkId
+            ParentLinkId = link.ParentLinkId
         };
         await DbContext.Link.AddAsync(newLink);
         await DbContext.SaveChangesAsync();
-        return CreatedAtAction(nameof(Get), new { id = newLink.IdV2 }, new LinkDto(newLink));
+        return CreatedAtAction(nameof(Get), new { id = newLink.Id }, new LinkDto(newLink));
     }
 
     protected async Task<Link> LoadLink(Ulid item_id, Ulid id)
@@ -111,7 +111,7 @@ public class ItemLinkController : ControllerBase
         var link = await DbContext.Entry(item)
             .Collection(i => i.Links!)
             .Query()
-            .FirstOrDefaultAsync(l => l.IdV2 == id);
+            .FirstOrDefaultAsync(l => l.Id == id);
         if (link == null)
         {
             throw new ZAError.LinkNotFound(id);

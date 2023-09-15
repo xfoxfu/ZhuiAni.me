@@ -5,7 +5,7 @@ namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
 public class PikPakJob
 {
-    public Ulid IdV2 { get; set; }
+    public Ulid Id { get; set; }
 
     public uint Bangumi { get; set; }
 
@@ -34,8 +34,6 @@ public class PikPakJob
         public void Configure(EntityTypeBuilder<PikPakJob> builder)
         {
             builder.ToTable("pikpak_job");
-
-            builder.HasKey(x => x.IdV2);
 
             builder.OwnsOne(a => a.MatchGroup);
         }

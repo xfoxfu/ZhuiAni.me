@@ -19,7 +19,7 @@ public class BangumiService
     public async Task<Ulid> ImportSubjectGetId(int id)
     {
         var item = await ImportSubject(id);
-        return item.IdV2;
+        return item.Id;
     }
 
     public async Task<Subject> GetSubject(int id)
@@ -63,20 +63,20 @@ public class BangumiService
             }
 
             anime.Title = bgmAnime.Name;
-            anime.CategoryIdV2 = category.IdV2;
+            anime.CategoryId = category.Id;
             anime.ImageUrl = bgmAnime.Images.Large;
 
             await DbContext.SaveChangesAsync();
             item = anime;
 
-            var link = await DbContext.Link.Where(l => l.ItemIdV2 == item.IdV2 && l.Address == address)
+            var link = await DbContext.Link.Where(l => l.ItemId == item.Id && l.Address == address)
                 .FirstOrDefaultAsync();
             if (link == null)
             {
                 link = new();
                 DbContext.Link.Add(link);
             }
-            link.ItemIdV2 = item.IdV2;
+            link.ItemId = item.Id;
             link.Address = address;
             link.MimeType = "text/html;kind=bgm.tv";
 
@@ -122,14 +122,14 @@ public class BangumiService
 
             await DbContext.SaveChangesAsync();
 
-            var link = await DbContext.Link.Where(l => l.ItemIdV2 == episode.IdV2 && l.Address == address)
+            var link = await DbContext.Link.Where(l => l.ItemId == episode.Id && l.Address == address)
                 .FirstOrDefaultAsync();
             if (link == null)
             {
                 link = new();
                 DbContext.Link.Add(link);
             }
-            link.ItemIdV2 = episode.IdV2;
+            link.ItemId = episode.Id;
             link.Address = address;
             link.MimeType = "text/html;kind=bgm.tv";
 

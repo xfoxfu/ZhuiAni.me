@@ -5,7 +5,7 @@ namespace Me.Xfox.ZhuiAnime.Models;
 
 public class User
 {
-    public Ulid IdV2 { get; set; }
+    public Ulid Id { get; set; }
 
     public string Username { get; set; } = string.Empty;
 
@@ -39,8 +39,6 @@ public class User
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(x => x.IdV2);
-
             builder.HasIndex(x => x.Username)
                 .IsUnique();
 
