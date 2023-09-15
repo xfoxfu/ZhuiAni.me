@@ -25,6 +25,7 @@ public class Item
 
     public Item? ParentItem { get; set; } = null;
     public uint? ParentItemId { get; set; }
+    public Ulid? ParentItemIdV2 { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<Item>? ChildItems { get; set; }

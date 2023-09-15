@@ -66,6 +66,12 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<Guid>(
+                name: "parent_item_id_v2",
+                table: "item",
+                type: "uuid",
+                nullable: true);
+
+            migrationBuilder.AddColumn<Guid>(
                 name: "id_v2",
                 table: "category",
                 type: "uuid",
@@ -109,6 +115,10 @@ namespace Me.Xfox.ZhuiAnime.Migrations
 
             migrationBuilder.DropColumn(
                 name: "id_v2",
+                table: "item");
+
+            migrationBuilder.DropColumn(
+                name: "parent_item_id_v2",
                 table: "item");
 
             migrationBuilder.DropColumn(

@@ -14,7 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Me.Xfox.ZhuiAnime.Migrations
 {
     [DbContext(typeof(ZAContext))]
-    [Migration("20230915180331_AllIdAsUlidStep1")]
+    [Migration("20230915181657_AllIdAsUlidStep1")]
     partial class AllIdAsUlidStep1
     {
         /// <inheritdoc />
@@ -102,6 +102,10 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                     b.Property<long?>("ParentItemId")
                         .HasColumnType("bigint")
                         .HasColumnName("parent_item_id");
+
+                    b.Property<Guid?>("ParentItemIdV2")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_item_id_v2");
 
                     b.Property<string>("Title")
                         .IsRequired()

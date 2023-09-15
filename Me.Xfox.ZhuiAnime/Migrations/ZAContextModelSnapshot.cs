@@ -100,6 +100,10 @@ namespace Me.Xfox.ZhuiAnime.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("parent_item_id");
 
+                    b.Property<Guid?>("ParentItemIdV2")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_item_id_v2");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text")

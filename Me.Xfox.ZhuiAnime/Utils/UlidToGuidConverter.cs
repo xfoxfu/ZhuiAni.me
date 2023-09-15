@@ -12,7 +12,7 @@ public class UlidToGuidConverter : ValueConverter<Ulid, Guid>
 
     public UlidToGuidConverter(ConverterMappingHints? mappingHints = null)
         : base(
-                convertToProviderExpression: x => new Guid(x.ToByteArray()),
+                convertToProviderExpression: x => x.ToGuid(),
                 convertFromProviderExpression: x => new Ulid(x),
                 mappingHints: defaultHints.With(mappingHints))
     {

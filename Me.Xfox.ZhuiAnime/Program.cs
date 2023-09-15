@@ -233,5 +233,60 @@ migrateCommand.SetHandler(async () =>
     using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
     await db.Database.MigrateAsync();
 });
+var migrateUlidCommand = new Command("ulid", "migrate to ulid");
+migrateCommand.AddCommand(migrateUlidCommand);
+migrateUlidCommand.SetHandler(async () =>
+{
+    using var scope = app.Services.CreateScope();
+    using var db = scope.ServiceProvider.GetRequiredService<ZAContext>();
+
+    foreach (var x in await db.Set<ZhuiAnime.Models.Category>().ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.CreatedAt);
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.Item>().Include(x => x.Category).ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.CreatedAt);
+        x.CategoryIdV2 = x.Category.IdV2;
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.Item>().Include(x => x.ParentItem).ToListAsync())
+    {
+        x.ParentItemIdV2 = x.ParentItem?.IdV2;
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.Link>().Include(x => x.Item).ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.CreatedAt);
+        x.ItemIdV2 = x.Item.IdV2;
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.Link>().Include(x => x.ParentLink).ToListAsync())
+    {
+        x.ParentLinkIdV2 = x.ParentLink?.IdV2;
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.User>().ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.CreatedAt);
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Models.Session>().Include(x => x.User).ToListAsync())
+    {
+        x.UserIdV2 = x.User.IdV2;
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Modules.PikPak.PikPakJob>().ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.LastFetchedAt);
+    }
+    await db.SaveChangesAsync();
+    foreach (var x in await db.Set<ZhuiAnime.Modules.TorrentDirectory.Torrent>().ToListAsync())
+    {
+        x.IdV2 = Ulid.NewUlid(x.PublishedAt);
+    }
+    await db.SaveChangesAsync();
+});
 
 await rootCommand.InvokeAsync(args);
