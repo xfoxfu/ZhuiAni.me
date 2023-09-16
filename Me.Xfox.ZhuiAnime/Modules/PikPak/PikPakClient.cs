@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Models;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi;
 using Microsoft.Extensions.Options;
 using static Me.Xfox.ZhuiAnime.Models.Link.CommonAnnotations;
 
@@ -164,6 +165,7 @@ public class PikPakClient
     {
         var res = await Client.Request($"/files")
             .SetQueryParam("parent_id", folderId)
+            .SetQueryParam("limit", 500)
             .GetJsonAsync<Types.ListFileResponse>();
         return res.Files;
     }
@@ -301,5 +303,74 @@ public class PikPakClient
         };
 
         return link;
+    }
+
+    public async Task<IEnumerable<Link>> ImportFolder(
+        BangumiService bangumiService,
+        ZAContext db,
+        string path,
+        string regex,
+        uint matchGroupEp,
+        uint bangumi)
+    {
+        await EnsureLogin();
+        var folder = await ResolveFolder(path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x)));
+        var files = (await List(folder.Id)).Where(x => !x.Trashed).ToList();
+
+        var anime = await bangumiService.ImportSubject((int)bangumi);
+        using var tx = await db.Database.BeginTransactionAsync();
+
+        var links = new List<Link>();
+        foreach (var file in files)
+        {
+            // Matching item in database
+            var ep = Regex.Match(file.Name, regex).Groups[(int)matchGroupEp].Value;
+            if (string.IsNullOrEmpty(ep)) continue;
+            await db.Entry(anime).Collection(i => i.ChildItems!).LoadAsync();
+            var episode = anime.ChildItems
+                ?.FirstOrDefault(i => double.Parse(i.Annotations["https://bgm.tv/ep/:id/sort"]) == double.Parse(ep));
+
+            var linkAddress = string.Format(AccessAddressTemplate, Path.Combine(path, file.Name));
+
+            // Check if link exists
+            Link? existing = null;
+            if (episode != null)
+            {
+                await db.Entry(episode).Collection(i => i.Links!).LoadAsync();
+                existing = episode.Links!
+                    .FirstOrDefault(l => l.Annotations.TryGetValue(PikPakFileId, out var fileId) && fileId == file.Id);
+            }
+            if (existing == null)
+            {
+                await db.Entry(anime).Collection(i => i.Links!).LoadAsync();
+                existing = anime.Links!
+                    .FirstOrDefault(l => l.Annotations.TryGetValue(PikPakFileId, out var fileId) && fileId == file.Id);
+            }
+
+            if (existing != null)
+            {
+                Logger.LogInformation("Using existing {Link} for file {FileId}", existing.Id, file.Id);
+            }
+            else
+            {
+                var link = new Link
+                {
+                    ItemId = episode?.Id ?? anime.Id,
+                    Address = new Uri(linkAddress),
+                    MimeType = file.MimeType,
+                    Annotations = new Dictionary<string, string>
+                    {
+                        [PikPakFileId] = file.Id,
+                    }
+                };
+                links.Add(link);
+            }
+        }
+
+        db.Link.AddRange(links);
+        await db.SaveChangesAsync();
+        await tx.CommitAsync();
+
+        return links;
     }
 }

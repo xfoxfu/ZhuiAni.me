@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak.Types;
@@ -116,6 +117,9 @@ public class FileResponse
 
     [JsonPropertyName("trashed")]
     public required bool Trashed { get; set; }
+
+    [JsonPropertyName("kind")]
+    public required string Kind { get; set; }
 }
 
 public class MoveRequest

@@ -1,4 +1,11 @@
+using System.Runtime.Serialization;
+using Me.Xfox.ZhuiAnime.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LinkDto = Me.Xfox.ZhuiAnime.Controllers.ItemLinkController.LinkDto;
+using static Me.Xfox.ZhuiAnime.Models.Link.CommonAnnotations;
+using System.Text.RegularExpressions;
+using Me.Xfox.ZhuiAnime.Modules.Bangumi;
 
 namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 
@@ -9,14 +16,15 @@ namespace Me.Xfox.ZhuiAnime.Modules.PikPak;
 public class PikPakController : ControllerBase
 {
     protected PikPakClient PikPak { get; init; }
-
     protected ZAContext Db { get; init; }
     protected DbSet<PikPakJob> DbPikPakJob => Db.Set<PikPakJob>();
+    protected BangumiService Bangumi { get; init; }
 
-    public PikPakController(PikPakClient pikPakClient, ZAContext db)
+    public PikPakController(PikPakClient pikPakClient, ZAContext db, BangumiService bangumi)
     {
         PikPak = pikPakClient;
         Db = db;
+        Bangumi = bangumi;
     }
 
     public record JobDto(
@@ -113,5 +121,59 @@ public class PikPakController : ControllerBase
             throw new ZAError.PikPakJobNotFound(id);
         DbPikPakJob.Remove(anime);
         await Db.SaveChangesAsync();
+    }
+
+    public record ListFolderDto
+    {
+        public required string Path { get; set; }
+    }
+
+    public record FileDto
+    {
+        public required string Name { get; set; }
+        public required FileType Type { get; set; }
+    }
+
+    public enum FileType
+    {
+        [EnumMember(Value = "folder")]
+        Folder,
+        [EnumMember(Value = "file")]
+        File,
+    }
+
+    [HttpPost("list_folder")]
+    public async Task<IEnumerable<FileDto>> ListFolder(ListFolderDto req)
+    {
+        await PikPak.EnsureLogin();
+        var folder = await PikPak.ResolveFolder(req.Path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x)));
+        var files = await PikPak.List(folder.Id);
+        return files
+            .Where(x => !x.Trashed)
+            .Select(x => new FileDto
+            {
+                Name = x.Name,
+                Type = x.Kind switch
+                {
+                    "drive#folder" => FileType.Folder,
+                    "drive#file" => FileType.File,
+                    _ => throw new Exception($"unexpected file type {x.Kind}")
+                },
+            });
+    }
+
+    public record ImportFolderDto
+    {
+        public required string Path { get; set; }
+        public required string Regex { get; set; }
+        public required uint MatchGroupEp { get; set; }
+        public required uint Bangumi { get; set; }
+    }
+
+    [HttpPost("import_folder")]
+    public async Task<IEnumerable<LinkDto>> ImportFolder(ImportFolderDto req)
+    {
+        var links = await PikPak.ImportFolder(Bangumi, Db, req.Path, req.Regex, req.MatchGroupEp, req.Bangumi);
+        return links.Select(x => new LinkDto(x));
     }
 }
