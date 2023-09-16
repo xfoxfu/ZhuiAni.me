@@ -281,6 +281,12 @@ public class PikPakClient
         return await GetFile(task.FileId);
     }
 
+    protected IEnumerable<string> ParsePath(string path) =>
+        path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x));
+
+    protected string CombinePath(IEnumerable<string> prefix, string file) =>
+        Flurl.Url.Combine(prefix.Append(file).ToArray());
+
     public async Task<Link> ImportLink(PikPakJob config, TorrentDirectory.Torrent torrent, ZAContext db, Item anime)
     {
         var source = (torrent.LinkMagnet ?? torrent.LinkTorrent) ?? throw new ArgumentNullException(
@@ -316,9 +322,9 @@ public class PikPakClient
         }
 
         // Download torrent
-        var path = config.Target.Split("/").Where(x => !string.IsNullOrWhiteSpace(x));
+        var path = ParsePath(config.Target);
         var file = await DownloadLink(source, path);
-        var addr = Flurl.Url.Combine(path.Append(file.Name).ToArray());
+        var addr = CombinePath(path, file.Name);
         var linkAddress = string.Format(AccessAddressTemplate, addr);
 
         // Add link
@@ -346,7 +352,8 @@ public class PikPakClient
         uint bangumi)
     {
         await EnsureLogin();
-        var folder = await ResolveFolder(path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x)));
+        var parsedPath = ParsePath(path);
+        var folder = await ResolveFolder(parsedPath);
         var files = (await List(folder.Id)).Where(x => !x.Trashed).ToList();
 
         var anime = await bangumiService.ImportSubject((int)bangumi);
@@ -362,7 +369,7 @@ public class PikPakClient
             var episode = anime.ChildItems
                 ?.FirstOrDefault(i => double.Parse(i.Annotations["https://bgm.tv/ep/:id/sort"]) == double.Parse(ep));
 
-            var linkAddress = string.Format(AccessAddressTemplate, Path.Combine(path, file.Name));
+            var linkAddress = string.Format(AccessAddressTemplate, CombinePath(parsedPath, file.Name));
 
             // Check if link exists
             Link? existing = null;
