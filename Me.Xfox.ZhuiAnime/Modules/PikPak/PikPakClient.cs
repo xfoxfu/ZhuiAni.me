@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Flurl.Http;
 using Me.Xfox.ZhuiAnime.Models;
@@ -231,6 +232,37 @@ public class PikPakClient
             var parent = file?.Id;
             var files = await List(parent);
             file = files.FirstOrDefault(f => f.Name == seg && !f.Trashed);
+            file ??= await CreateFolder(seg, parent);
+        }
+        Cache[string.Join('/', path)] = file?.Id!;
+        return file!;
+    }
+
+    public async Task<Types.FileResponse?> ResolveFolderNoCreate(IEnumerable<string> path)
+    {
+        if (Cache.TryGetValue(string.Join('/', path), out var cachedFileId))
+        {
+            try
+            {
+                var cachedFile = await GetFile(cachedFileId);
+                if (!cachedFile.Trashed) return cachedFile;
+            }
+            catch (PikPakException e)
+            {
+                if (e.Error?.Error != "file_not_found") throw e;
+            }
+        }
+
+        Logger.LogInformation("Resolving path {Path}", string.Join('/', path));
+        Types.FileResponse? file = null;
+        if (!path.Any()) throw new Exception("Path is empty");
+        foreach (var seg in path)
+        {
+            Logger.LogDebug("Resolving path segment {Segment}", seg);
+            var parent = file?.Id;
+            var files = await List(parent);
+            file = files.FirstOrDefault(f => f.Name == seg && !f.Trashed);
+            if (file == null) return null;
             file ??= await CreateFolder(seg, parent);
         }
         Cache[string.Join('/', path)] = file?.Id!;

@@ -1,5 +1,6 @@
 import api from "../api";
 import { Edit } from "../components/pikpak/Edit";
+import { Import } from "../components/pikpak/Import";
 import { ErrorTip } from "../components/utils/ErrorTip";
 import {
   HStack,
@@ -28,7 +29,10 @@ export const PikPakTasksList: React.FunctionComponent = () => {
       </Heading>
       <Stack spacing="1">
         <ErrorTip error={error} />
-        <Edit />
+        <HStack spacing="1">
+          <Edit />
+          <Import />
+        </HStack>
         <TableContainer>
           <Table variant="simple">
             <Thead>

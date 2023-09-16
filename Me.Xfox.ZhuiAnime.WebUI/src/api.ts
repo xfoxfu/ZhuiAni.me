@@ -88,6 +88,25 @@ export interface FetchPageResponseDto {
   has_new_items: boolean;
 }
 
+export interface FileDto {
+  name: string;
+  type: FileType;
+}
+
+export enum FileType {
+  Folder = "Folder",
+  File = "File",
+}
+
+export interface ImportFolderDto {
+  path: string;
+  regex: string;
+  /** @format int32 */
+  match_group_ep: number;
+  /** @format int32 */
+  bangumi: number;
+}
+
 export interface ImportSubjectDto {
   /**
    * bangumi subject ID
@@ -150,6 +169,10 @@ export interface LinkDto {
    * @format date-time
    */
   updated_at: string;
+}
+
+export interface ListFolderDto {
+  path: string;
 }
 
 export interface LoginResDto {
@@ -1462,6 +1485,82 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         `/api/modules/pikpak/jobs/${id}`,
         (_url: string, { arg }: { arg: never }) =>
           this.api.pikPakDelete(id, arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakListFolder
+     * @request POST:/api/modules/pikpak/list_folder
+     * @secure
+     */
+    pikPakListFolder: (data: ListFolderDto, params: RequestParams = {}) =>
+      this.request<FileDto[], ErrorProdResponse>({
+        path: `/api/modules/pikpak/list_folder`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakListFolder
+     * @request POST:/api/modules/pikpak/list_folder
+     * @secure
+     */
+    usePikPakListFolder: (options?: SWRMutationConfiguration<FileDto[], ErrorProdResponse, string, ListFolderDto>) =>
+      useSWRMutation(
+        `/api/modules/pikpak/list_folder`,
+        (_url: string, { arg }: { arg: ListFolderDto }) =>
+          this.api.pikPakListFolder(arg).then(
+            (x) => x.data,
+            (x) => Promise.reject(x.error),
+          ),
+        options,
+      ),
+
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakImportFolder
+     * @request POST:/api/modules/pikpak/import_folder
+     * @secure
+     */
+    pikPakImportFolder: (data: ImportFolderDto, params: RequestParams = {}) =>
+      this.request<LinkDto[], ErrorProdResponse>({
+        path: `/api/modules/pikpak/import_folder`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+    /**
+     * No description
+     *
+     * @tags PikPak
+     * @name PikPakImportFolder
+     * @request POST:/api/modules/pikpak/import_folder
+     * @secure
+     */
+    usePikPakImportFolder: (
+      options?: SWRMutationConfiguration<LinkDto[], ErrorProdResponse, string, ImportFolderDto>,
+    ) =>
+      useSWRMutation(
+        `/api/modules/pikpak/import_folder`,
+        (_url: string, { arg }: { arg: ImportFolderDto }) =>
+          this.api.pikPakImportFolder(arg).then(
             (x) => x.data,
             (x) => Promise.reject(x.error),
           ),

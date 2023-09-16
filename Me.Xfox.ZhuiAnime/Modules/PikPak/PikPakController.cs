@@ -146,7 +146,8 @@ public class PikPakController : ControllerBase
     public async Task<IEnumerable<FileDto>> ListFolder(ListFolderDto req)
     {
         await PikPak.EnsureLogin();
-        var folder = await PikPak.ResolveFolder(req.Path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x)));
+        var folder = await PikPak.ResolveFolderNoCreate(req.Path.Split("/").Where(x => !string.IsNullOrWhiteSpace(x)));
+        if (folder == null) return new List<FileDto>();
         var files = await PikPak.List(folder.Id);
         return files
             .Where(x => !x.Trashed)
