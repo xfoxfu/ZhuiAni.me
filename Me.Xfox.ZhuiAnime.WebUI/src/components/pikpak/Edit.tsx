@@ -1,6 +1,5 @@
 import api, { ApiError } from "../../api";
 import { promiseWithLog, toast } from "../../utils";
-import { ErrorTip } from "../utils/ErrorTip";
 import { NullULID } from "../utils/misc";
 import {
   Button,
@@ -43,7 +42,6 @@ type Inputs = {
 
 export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: task, error } = api.usePikPakGet(id ?? NullULID, {}, !!id);
   const {
     register,
     handleSubmit,
@@ -52,7 +50,19 @@ export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
     getValues,
     watch,
   } = useForm<Inputs>({
-    defaultValues: { enabled: true },
+    defaultValues: async (): Promise<Inputs> => {
+      if (!id) return { enabled: true, bangumi: "", target: "", regex: "", match_group_ep: 1 };
+      const res = await api.pikPakGet(id ?? NullULID);
+      if (res.error) console.error(res.error);
+      const job = res.data;
+      return {
+        bangumi: job?.bangumi.toString(),
+        target: job?.target,
+        regex: job?.regex,
+        match_group_ep: job?.match_group_ep,
+        enabled: job?.enabled,
+      };
+    },
   });
   const onSubmit: SubmitHandler<Inputs> = async (inputs) => {
     try {
@@ -90,15 +100,6 @@ export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
       });
     }
   };
-  useEffect(() => {
-    if (!isDirty && task) {
-      setValue("bangumi", task.bangumi.toString());
-      setValue("target", task.target);
-      setValue("regex", task.regex);
-      setValue("match_group_ep", task.match_group_ep);
-      setValue("enabled", task.enabled);
-    }
-  }, [isDirty, setValue, task]);
   const onEscapeRegex = () => {
     setValue("regex", escape(getValues("regex")), { shouldDirty: true });
   };
@@ -133,7 +134,6 @@ export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
           <ModalHeader>Edit PikPak Task</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <ErrorTip error={error} />
             <VStack spacing="2" alignItems="start">
               <FormControl isInvalid={!!formErrs.bangumi}>
                 <FormLabel>Bangumi ID</FormLabel>
