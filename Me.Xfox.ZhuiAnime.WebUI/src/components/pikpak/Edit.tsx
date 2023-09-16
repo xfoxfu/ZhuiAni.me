@@ -1,5 +1,6 @@
 import api, { ApiError } from "../../api";
 import { promiseWithLog, toast } from "../../utils";
+import { ErrorTip } from "../utils/ErrorTip";
 import { NullULID } from "../utils/misc";
 import {
   Button,
@@ -42,7 +43,7 @@ type Inputs = {
 
 export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data: task } = api.usePikPakGet(id ?? NullULID, {}, !!id);
+  const { data: task, error } = api.usePikPakGet(id ?? NullULID, {}, !!id);
   const {
     register,
     handleSubmit,
@@ -132,6 +133,7 @@ export const Edit: React.FunctionComponent<{ id?: string }> = ({ id }) => {
           <ModalHeader>Edit PikPak Task</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
+            <ErrorTip error={error} />
             <VStack spacing="2" alignItems="start">
               <FormControl isInvalid={!!formErrs.bangumi}>
                 <FormLabel>Bangumi ID</FormLabel>
