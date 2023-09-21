@@ -29,6 +29,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
+    <PackageReference Include="Elsa" Version="3.0.0-preview.727" />
     <PackageReference Include="Flurl.Http" Version="4.0.0-pre3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">
@@ -52,7 +53,6 @@
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     <PackageReference Include="Tomlyn" Version="0.16.2" />
     <PackageReference Include="Ulid" Version="1.3.0" />
-    <PackageReference Include="WorkflowCore" Version="3.9.0" />
 		<PackageReference Include="Yarp.ReverseProxy" Version="2.0.1" />
   </ItemGroup>
 

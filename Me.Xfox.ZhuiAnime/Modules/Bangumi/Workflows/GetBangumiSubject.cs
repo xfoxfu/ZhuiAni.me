@@ -1,27 +1,23 @@
+using Elsa.Extensions;
+using Elsa.Workflows.Core;
+using Elsa.Workflows.Core.Models;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
-using WorkflowCore.Interface;
-using WorkflowCore.Models;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
 
-public class GetBangumiSubject : StepBodyAsync
+public class GetBangumiSubject : CodeActivity
 {
-    protected BangumiService _bangumiService;
+    public required Input<int> InSubjectId { get; set; }
 
-    public GetBangumiSubject(BangumiService bangumiService)
+    public Output<Subject>? OutSubject { get; set; }
+    public Output<IEnumerable<Episode>>? OutEpisodes { get; set; }
+
+    protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
-        _bangumiService = bangumiService;
-    }
+        var _bangumiService = context.GetRequiredService<BangumiService>();
+        var SubjectId = InSubjectId.Get(context);
 
-    public int SubjectId { get; set; }
-
-    public Subject Subject { get; set; } = null!;
-    public IEnumerable<Episode> Episodes { get; set; } = null!;
-
-    public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
-    {
-        Subject = await _bangumiService.GetSubject(SubjectId);
-        Episodes = await _bangumiService.GetEpisodes(SubjectId);
-        return ExecutionResult.Next();
+        OutSubject.Set(context, await _bangumiService.GetSubject(SubjectId));
+        OutEpisodes.Set(context, await _bangumiService.GetEpisodes(SubjectId));
     }
 }

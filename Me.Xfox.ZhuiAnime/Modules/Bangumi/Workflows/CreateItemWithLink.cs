@@ -1,34 +1,37 @@
+using Elsa.Extensions;
+using Elsa.Workflows.Core;
+using Elsa.Workflows.Core.Models;
 using Me.Xfox.ZhuiAnime.Models;
-using WorkflowCore.Interface;
-using WorkflowCore.Models;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
 
-public class CreateItemWithLink : StepBodyAsync
+public class CreateItemWithLink : CodeActivity
 {
-    protected ZAContext Db { get; set; }
+    public required Input<string> InTitle { get; set; }
+    public required Input<Ulid> InCategoryId { get; set; }
+    public Input<Ulid?>? InParentItemId { get; set; }
+    public Input<IDictionary<string, string>>? InAnnotations { get; set; }
+    public Input<string>? InImageUrl { get; set; }
+    public required Input<Uri> InLinkAddress { get; set; }
+    public required Input<string> InLinkMimeType { get; set; }
 
-    public string Name { get; set; } = string.Empty;
-    public Ulid CategoryId { get; set; }
-    public Ulid? ParentItemId { get; set; }
-    public IDictionary<string, string> Annotations = new Dictionary<string, string>();
-    public string? ImageUrl { get; set; }
-    public Uri LinkAddress { get; set; } = new("invalid://");
-    public string LinkMimeType { get; set; } = string.Empty;
+    public Output<Item>? OutItem { get; set; }
+    public Output<Link>? OutLink { get; set; }
 
-    public Item Item { get; protected set; } = null!;
-    public Link Link { get; protected set; } = null!;
-
-    public CreateItemWithLink(ZAContext db)
+    protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
-        Db = db;
-    }
+        var Db = context.GetRequiredService<ZAContext>();
+        var Title = InTitle.Get(context);
+        var CategoryId = InCategoryId.Get(context);
+        var ParentItemId = InParentItemId.GetOrDefault(context);
+        var Annotations = InAnnotations.GetOrDefault(context) ?? new Dictionary<string, string>();
+        var ImageUrl = InImageUrl.GetOrDefault(context);
+        var LinkAddress = InLinkAddress.Get(context);
+        var LinkMimeType = InLinkMimeType.Get(context);
 
-    public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
-    {
         using var tx = Db.Database.BeginTransaction();
 
-        var item = await Db.Item.Where(a => a.Title == Name).FirstOrDefaultAsync()
+        var item = await Db.Item.Where(a => a.Title == Title).FirstOrDefaultAsync()
             ?? await Db.Link.Where(l => l.Address == LinkAddress).Select(l => l.Item).FirstOrDefaultAsync();
         if (item == null)
         {
@@ -36,7 +39,7 @@ public class CreateItemWithLink : StepBodyAsync
             Db.Item.Add(item);
         }
 
-        item.Title = Name;
+        item.Title = Title;
         item.CategoryId = CategoryId;
         item.ImageUrl = ImageUrl;
         item.Annotations = Annotations;
@@ -58,8 +61,7 @@ public class CreateItemWithLink : StepBodyAsync
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
 
-        Item = item;
-        Link = link;
-        return ExecutionResult.Next();
+        OutItem.Set(context, item);
+        OutLink.Set(context, link);
     }
 }

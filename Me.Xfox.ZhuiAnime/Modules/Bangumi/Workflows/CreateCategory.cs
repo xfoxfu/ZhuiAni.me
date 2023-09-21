@@ -1,37 +1,32 @@
 using Me.Xfox.ZhuiAnime.Models;
-using WorkflowCore.Interface;
-using WorkflowCore.Models;
+using Elsa.Extensions;
+using Elsa.Workflows.Core.Models;
+using Elsa.Workflows.Core;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
 
-public class CreateCategory : StepBodyAsync
+public class CreateCategory : CodeActivity<Category>
 {
-    protected ZAContext Db;
+    public required Input<string> InTitle { get; set; }
 
-    public CreateCategory(ZAContext db)
+    protected override async ValueTask ExecuteAsync(ActivityExecutionContext context)
     {
-        Db = db;
-    }
+        var Db = context.GetRequiredService<ZAContext>();
+        var name = InTitle.Get(context);
 
-    public string Title { get; set; } = string.Empty;
-    public Category Category { get; set; } = null!;
-
-    public override async Task<ExecutionResult> RunAsync(IStepExecutionContext context)
-    {
         using var tx = await Db.Database.BeginTransactionAsync();
-        var anime = await Db.Category.Where(a => a.Title == Title).FirstOrDefaultAsync();
+        var anime = await Db.Category.Where(a => a.Title == name).FirstOrDefaultAsync();
         if (anime == null)
         {
             anime = new();
             Db.Category.Add(anime);
         }
 
-        anime.Title = Title;
+        anime.Title = name;
 
         await Db.SaveChangesAsync();
         await tx.CommitAsync();
 
-        Category = anime;
-        return ExecutionResult.Next();
+        context.SetResult(anime);
     }
 }

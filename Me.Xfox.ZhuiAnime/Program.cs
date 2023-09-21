@@ -1,6 +1,7 @@
 global using Microsoft.EntityFrameworkCore;
 using System.CommandLine;
 using System.Text.Json.Serialization;
+using Elsa.Extensions;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using WorkflowCore.Interface;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 Log.Logger = new LoggerConfiguration()
@@ -180,7 +180,10 @@ builder.Services.AddAuthentication(opts =>
     opts.Events = new AuthenticationEventHandler();
 });
 builder.Services.AddAuthorization();
-builder.Services.AddWorkflow();
+builder.Services.AddElsa(opts =>
+{
+    opts.AddActivitiesFrom<ZhuiAnime.Modules.Bangumi.BangumiService>();
+});
 
 var app = builder.Build();
 
@@ -225,10 +228,6 @@ app.MapFallbackToFile("index.html");
 var rootCommand = new RootCommand("Start ZhuiAni.me");
 rootCommand.SetHandler(async () =>
 {
-    var host = app.Services.GetRequiredService<IWorkflowHost>();
-    host.RegisterWorkflow<BangumiImportWorkflow, BangumiImportWorkflow.Data>();
-    host.Start();
-
     await app.RunAsync();
 });
 rootCommand.TreatUnmatchedTokensAsErrors = false;
