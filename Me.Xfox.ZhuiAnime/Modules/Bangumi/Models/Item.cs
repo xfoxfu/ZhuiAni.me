@@ -80,7 +80,22 @@ public record Item
 
         public override void Write(Utf8JsonWriter writer, ItemValue value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            if (value is StringItemValue s)
+            {
+                writer.WriteStringValue(s.Value);
+            }
+            else if (value is KVListItemValue l)
+            {
+                writer.WriteStartArray();
+                foreach (var item in l.Value)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("k", item.Key);
+                    writer.WriteString("v", item.Value);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+            }
         }
     }
 }

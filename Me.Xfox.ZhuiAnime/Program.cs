@@ -2,6 +2,8 @@ global using Microsoft.EntityFrameworkCore;
 using System.CommandLine;
 using System.Text.Json.Serialization;
 using Elsa.Extensions;
+using Elsa.Workflows.Runtime.Features;
+using Elsa.Workflows.Runtime.Stores;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
@@ -183,6 +185,16 @@ builder.Services.AddAuthorization();
 builder.Services.AddElsa(opts =>
 {
     opts.AddActivitiesFrom<ZhuiAnime.Modules.Bangumi.BangumiService>();
+    opts.AddWorkflowsFrom<ZhuiAnime.Modules.Bangumi.BangumiService>();
+    opts.UseWorkflowRuntime(x =>
+    {
+        x.TriggerStore = sp => sp.GetRequiredService<MemoryTriggerStore>();
+        x.BookmarkStore = sp => sp.GetRequiredService<MemoryBookmarkStore>();
+        x.WorkflowInboxStore = sp => sp.GetRequiredService<MemoryWorkflowInboxMessageStore>();
+        x.WorkflowExecutionLogStore = sp => sp.GetRequiredService<MemoryWorkflowExecutionLogStore>();
+        x.ActivityExecutionLogStore = sp => sp.GetRequiredService<MemoryActivityExecutionStore>();
+    });
+    opts.Configure<DefaultWorkflowRuntimeFeature>();
 });
 
 var app = builder.Build();
