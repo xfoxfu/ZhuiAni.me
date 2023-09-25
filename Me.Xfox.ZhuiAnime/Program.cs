@@ -21,7 +21,9 @@ using ZhuiAnime = Me.Xfox.ZhuiAnime;
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithCorrelationId()
-    .WriteTo.Console()
+    .WriteTo.Console(
+        outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message} (at {SourceContext}){NewLine}{Exception}"
+    )
     .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
