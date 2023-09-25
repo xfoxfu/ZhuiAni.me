@@ -149,7 +149,11 @@ builder.Services.AddSwaggerGen(opts =>
 foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
                 .Where(t => t.GetInterfaces().Contains(typeof(IModule))))
 {
-    Log.Logger.Information("Loading module {@Module}", type.FullName);
+    // If not executed by dotnet-ef
+    if (AppDomain.CurrentDomain.FriendlyName != "ef")
+    {
+        Log.Logger.Information("Loading module {@Module}", type.FullName);
+    }
     type.GetMethod("ConfigureOn", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
         ?.Invoke(null, new object[] { builder });
 }
