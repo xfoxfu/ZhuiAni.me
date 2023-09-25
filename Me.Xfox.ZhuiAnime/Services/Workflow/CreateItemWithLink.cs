@@ -3,7 +3,7 @@ using Elsa.Workflows.Core;
 using Elsa.Workflows.Core.Models;
 using Me.Xfox.ZhuiAnime.Models;
 
-namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
+namespace Me.Xfox.ZhuiAnime.Services.Workflow;
 
 public class CreateItemWithLink : CodeActivity
 {
