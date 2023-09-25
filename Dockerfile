@@ -10,6 +10,7 @@ RUN apt update && \
     npm install -g pnpm
 
 COPY "Me.Xfox.ZhuiAnime.sln" "/src/"
+COPY "NuGet.config" "/src/"
 COPY "Me.Xfox.ZhuiAnime/Me.Xfox.ZhuiAnime.csproj" "/src/Me.Xfox.ZhuiAnime/"
 COPY "Me.Xfox.ZhuiAnime/packages.lock.json" "/src/Me.Xfox.ZhuiAnime/"
 COPY "Me.Xfox.ZhuiAnime.WebUI/package.json" "/src/Me.Xfox.ZhuiAnime.WebUI/"
