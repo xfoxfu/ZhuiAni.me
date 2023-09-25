@@ -29,7 +29,10 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
     <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
-    <PackageReference Include="Elsa" Version="3.0.0-preview.727" />
+    <PackageReference Include="Elsa" Version="3.0.0-preview.749" />
+    <PackageReference Include="Elsa.Hangfire" Version="3.0.0-preview.749" />
+    <PackageReference Include="Elsa.Quartz" Version="3.0.0-preview.749" />
+    <PackageReference Include="Elsa.Scheduling" Version="3.0.0-preview.749" />
     <PackageReference Include="Flurl.Http" Version="4.0.0-pre3" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.5">

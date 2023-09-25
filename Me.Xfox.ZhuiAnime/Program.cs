@@ -2,11 +2,10 @@ global using Microsoft.EntityFrameworkCore;
 using System.CommandLine;
 using System.Text.Json.Serialization;
 using Elsa.Extensions;
-using Elsa.Workflows.Runtime.Features;
+using Elsa.Workflows.Management.Services;
 using Elsa.Workflows.Runtime.Stores;
 using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
-using Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
 using Me.Xfox.ZhuiAnime.Services;
 using Me.Xfox.ZhuiAnime.Utils;
 using Me.Xfox.ZhuiAnime.Utils.Toml;
@@ -188,11 +187,22 @@ builder.Services.AddAuthentication(opts =>
     opts.Events = new AuthenticationEventHandler();
 });
 builder.Services.AddAuthorization();
-builder.Services.AddElsa(opts =>
+builder.Services.AddElsa(elsa =>
 {
-    opts.AddActivitiesFrom<ZhuiAnime.Modules.Bangumi.BangumiService>();
-    opts.AddWorkflowsFrom<ZhuiAnime.Modules.Bangumi.BangumiService>();
-    opts.UseWorkflowRuntime(x =>
+    elsa.AddActivitiesFrom<Program>();
+    elsa.AddWorkflowsFrom<Program>();
+    elsa.UseWorkflowManagement(x =>
+    {
+        x.UseWorkflowDefinitions(x =>
+        {
+            x.WorkflowDefinitionStore = sp => sp.GetRequiredService<MemoryWorkflowDefinitionStore>();
+        });
+        x.UseWorkflowInstances(x =>
+        {
+            x.WorkflowInstanceStore = sp => sp.GetRequiredService<MemoryWorkflowInstanceStore>();
+        });
+    });
+    elsa.UseWorkflowRuntime(x =>
     {
         x.TriggerStore = sp => sp.GetRequiredService<MemoryTriggerStore>();
         x.BookmarkStore = sp => sp.GetRequiredService<MemoryBookmarkStore>();
@@ -200,7 +210,8 @@ builder.Services.AddElsa(opts =>
         x.WorkflowExecutionLogStore = sp => sp.GetRequiredService<MemoryWorkflowExecutionLogStore>();
         x.ActivityExecutionLogStore = sp => sp.GetRequiredService<MemoryActivityExecutionStore>();
     });
-    opts.Configure<DefaultWorkflowRuntimeFeature>();
+    elsa.UseQuartz();
+    elsa.UseScheduling(scheduling => scheduling.UseQuartzScheduler());
 });
 
 var app = builder.Build();
