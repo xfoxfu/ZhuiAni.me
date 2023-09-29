@@ -78,10 +78,11 @@ public class PikPakWorker : IHostedService, IDisposable
             {
                 var uri = new Uri($"https://bgm.tv/subject/{config.Bangumi}");
                 var existing = await db.Link
-                        .Include(l => l.Item)
-                        .FirstOrDefaultAsync(l => l.Address == uri);
+                    .Include(l => l.Item)
+                    .FirstOrDefaultAsync(l => l.Address == uri);
+                var subject = await bangumiService.ImportSubject((int)config.Bangumi);
                 bangumi = existing?.Item ??
-                    (await db.Item.FindAsync(await bangumiService.ImportSubject((int)config.Bangumi)))!;
+                    (await db.Item.FindAsync(subject.Id))!;
             }
 
             List<Models.Link> links = new();
