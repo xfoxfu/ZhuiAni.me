@@ -87,6 +87,7 @@ jobs:
             --no-build \
             --configuration Release \
             --output Me.Xfox.ZhuiAnime/bin/Release/net8.0/publish/migrations.sql
+        if: ${{ false }}
       - name: upload
         uses: actions/upload-artifact@v3
         with:
