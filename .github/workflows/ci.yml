@@ -60,7 +60,7 @@ jobs:
           cache-dependency-path: "Me.Xfox.ZhuiAnime.WebUI/pnpm-lock.yaml"
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "8.0.x"
           cache: true
           cache-dependency-path: "Me.Xfox.ZhuiAnime/packages.lock.json"
 
@@ -86,12 +86,12 @@ jobs:
             --idempotent \
             --no-build \
             --configuration Release \
-            --output Me.Xfox.ZhuiAnime/bin/Release/net7.0/publish/migrations.sql
+            --output Me.Xfox.ZhuiAnime/bin/Release/net8.0/publish/migrations.sql
       - name: upload
         uses: actions/upload-artifact@v3
         with:
           name: Me.Xfox.ZhuiAnime
-          path: Me.Xfox.ZhuiAnime/bin/Release/net7.0/publish/
+          path: Me.Xfox.ZhuiAnime/bin/Release/net8.0/publish/
 
   webui:
     runs-on: ubuntu-latest

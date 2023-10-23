@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 
 ARG TARGETARCH
 
@@ -22,7 +22,7 @@ COPY "." "/src/"
 RUN dotnet build "Me.Xfox.ZhuiAnime" -c Release --no-self-contained --no-restore -a $TARGETARCH
 RUN dotnet publish "Me.Xfox.ZhuiAnime" -c Release -o /app/publish --no-self-contained  --no-restore -a $TARGETARCH
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 5000
 COPY --from=build /app/publish .

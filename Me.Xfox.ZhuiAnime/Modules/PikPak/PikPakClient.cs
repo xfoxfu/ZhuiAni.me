@@ -219,7 +219,7 @@ public class PikPakClient
             }
             catch (PikPakException e)
             {
-                if (e.Error?.Error != "file_not_found") throw e;
+                if (e.Error?.Error != "file_not_found") throw;
             }
         }
 
@@ -249,7 +249,7 @@ public class PikPakClient
             }
             catch (PikPakException e)
             {
-                if (e.Error?.Error != "file_not_found") throw e;
+                if (e.Error?.Error != "file_not_found") throw;
             }
         }
 

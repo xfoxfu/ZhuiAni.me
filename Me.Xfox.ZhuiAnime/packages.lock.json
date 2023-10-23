@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "net7.0": {
+    "net8.0": {
       "BCrypt.Net-Next": {
         "type": "Direct",
         "requested": "[4.0.3, )",
@@ -1322,7 +1322,7 @@
         "contentHash": "tBt8K+korVfrjH9wyDEhiLKxbs8qoLCLIFwvYgkSUuMC9//w3z0cFQ8LQAI/5MCKq+BMil0cfRTRvPeE7eXhQw=="
       }
     },
-    "net7.0/linux-arm64": {
+    "net8.0/linux-arm64": {
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "4.4.0",
@@ -1417,7 +1417,7 @@
         }
       }
     },
-    "net7.0/linux-x64": {
+    "net8.0/linux-x64": {
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "4.4.0",
@@ -1512,7 +1512,7 @@
         }
       }
     },
-    "net7.0/osx-arm64": {
+    "net8.0/osx-arm64": {
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "4.4.0",
@@ -1607,7 +1607,7 @@
         }
       }
     },
-    "net7.0/osx-x64": {
+    "net8.0/osx-x64": {
       "Microsoft.Win32.Registry": {
         "type": "Transitive",
         "resolved": "4.4.0",
