@@ -28,23 +28,23 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="CodeHollow.FeedReader" Version="1.2.6" />
-    <PackageReference Include="EFCore.NamingConventions" Version="7.0.2" />
-    <PackageReference Include="Elsa" Version="3.0.0-preview.749" />
-    <PackageReference Include="Elsa.Hangfire" Version="3.0.0-preview.749" />
-    <PackageReference Include="Elsa.Quartz" Version="3.0.0-preview.749" />
-    <PackageReference Include="Elsa.Scheduling" Version="3.0.0-preview.749" />
+    <PackageReference Include="EFCore.NamingConventions" Version="8.0.0-rc.2" />
+    <PackageReference Include="Elsa" Version="3.0.0-preview.899" />
+    <PackageReference Include="Elsa.Hangfire" Version="3.0.0-preview-preview-3.0.0-740-hotfix-1.771" />
+    <PackageReference Include="Elsa.Quartz" Version="3.0.0-preview-preview-3.0.0-740-hotfix-1.771" />
+    <PackageReference Include="Elsa.Scheduling" Version="3.0.0-preview-preview-3.0.0-740-hotfix-1.771" />
     <PackageReference Include="Flurl.Http" Version="4.0.0-pre4" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0-rc.2.23480.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0-rc.2.23480.1">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0-rc.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
     <PackageReference Include="NSwag.Annotations" Version="13.20.0" />
     <PackageReference Include="Sentry.AspNetCore" Version="3.40.1" />
     <PackageReference Include="Sentry.Serilog" Version="3.40.1" />
     <PackageReference Include="Serilog" Version="3.1.1" />
-    <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Enrichers.CorrelationId" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Console" Version="5.0.0" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" Version="8.2.0" />
