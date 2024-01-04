@@ -14,10 +14,10 @@ const sessionStore = getDefaultStore();
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const defaultStorage = createJSONStorage<any>(() => localStorage);
 export const accessTokenAtom = atomWithStorage<IAccessToken | null>("access_token", null, defaultStorage, {
-  unstable_getOnInit: true,
+  getOnInit: true,
 });
 export const refreshTokenAtom = atomWithStorage<string | null>("refresh_token", null, defaultStorage, {
-  unstable_getOnInit: true,
+  getOnInit: true,
 });
 export const isRefreshingAtom = atom(false);
 export const hasAuthenticatedAtom = atom(
