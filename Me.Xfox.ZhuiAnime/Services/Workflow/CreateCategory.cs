@@ -1,7 +1,7 @@
 using Me.Xfox.ZhuiAnime.Models;
 using Elsa.Extensions;
-using Elsa.Workflows.Core.Models;
-using Elsa.Workflows.Core;
+using Elsa.Workflows.Models;
+using Elsa.Workflows;
 
 namespace Me.Xfox.ZhuiAnime.Modules.Bangumi.Workflows;
 

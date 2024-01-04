@@ -1,9 +1,9 @@
 using Elsa.Extensions;
-using Elsa.Workflows.Core;
-using Elsa.Workflows.Core.Activities;
-using Elsa.Workflows.Core.Contracts;
+using Elsa.Workflows;
+using Elsa.Workflows.Activities;
+using Elsa.Workflows.Contracts;
 using Elsa.Workflows.Management.Activities.SetOutput;
-using Elsa.Workflows.Core.Memory;
+using Elsa.Workflows.Memory;
 using Me.Xfox.ZhuiAnime.Models;
 using Me.Xfox.ZhuiAnime.Modules.Bangumi.Models;
 using Me.Xfox.ZhuiAnime.Services.Workflow;

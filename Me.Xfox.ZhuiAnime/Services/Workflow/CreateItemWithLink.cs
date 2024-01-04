@@ -1,6 +1,6 @@
 using Elsa.Extensions;
-using Elsa.Workflows.Core;
-using Elsa.Workflows.Core.Models;
+using Elsa.Workflows;
+using Elsa.Workflows.Models;
 using Me.Xfox.ZhuiAnime.Models;
 
 namespace Me.Xfox.ZhuiAnime.Services.Workflow;
