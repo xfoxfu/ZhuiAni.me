@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Serilog;
 using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
@@ -82,7 +83,9 @@ builder.Services.AddDbContext<ZAContext>(opt =>
 {
     var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext)) ??
         throw new Exception("Connection string for ZAContext cannot be null");
-    opt.UseNpgsql(connectionString);
+    opt.UseNpgsql(new NpgsqlDataSourceBuilder(connectionString)
+        .EnableDynamicJson()
+        .Build());
     opt.UseSnakeCaseNamingConvention();
 });
 
