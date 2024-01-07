@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          echo '{"zhuianime":"'"${RELEASE_VERSION}"'"}' >> green-sg/release.json
+          echo '{"zhuianime":"'"${RELEASE_VERSION}"'"}' >> release.json
       - name: push update
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
@@ -130,7 +130,7 @@ jobs:
         with:
           source_file: "release.json"
           destination_repo: "xfoxfu/infra"
-          destination_folder: ""
+          destination_folder: "green-sg"
           user_email: "gitops@noha.dev"
           user_name: "Noha GitOps"
           commit_message: "Upgrade ZhuiAni.me to ${{ env.RELEASE_VERSION }}"
