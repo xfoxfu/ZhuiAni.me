@@ -122,7 +122,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: |
-          echo '{"zhuianime":"'"${RELEASE_VERSION}"'"}' >> release.json
+          echo '{"zhuianime":"'"${RELEASE_VERSION}"'"}' >> green-sg/release.json
       - name: push update
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
