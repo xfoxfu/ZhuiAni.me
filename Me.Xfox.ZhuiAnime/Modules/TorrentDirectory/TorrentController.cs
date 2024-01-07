@@ -25,13 +25,26 @@ public class TorrentController : ControllerBase
         DateTimeOffset PublishedAt,
         string? LinkTorrent,
         string? LinkMagnet
-    );
+    )
+    {
+        public TorrentDto(Torrent t) : this(
+            t.Id,
+            t.OriginSite,
+            t.OriginId,
+            t.Title,
+            t.PublishedAt,
+            t.LinkTorrent,
+            t.LinkMagnet
+        )
+        { }
+    };
 
     [HttpGet("torrents")]
     public async Task<ActionResult<IEnumerable<TorrentDto>>> ListAsync(
         [FromQuery] string? query,
         [FromQuery] int? count,
-        [FromQuery] DateTimeOffset? until)
+        [FromQuery] DateTimeOffset? until,
+        [FromQuery] string? source)
     {
         var linq = DbContext.Set<Torrent>().AsQueryable();
         if (!string.IsNullOrWhiteSpace(query))
@@ -44,19 +57,15 @@ public class TorrentController : ControllerBase
             var untilUtc = until?.ToUniversalTime();
             linq = linq.Where(t => t.PublishedAt < untilUtc);
         }
+        if (source != null)
+        {
+            linq = linq.Where(t => t.OriginSite == source);
+        }
 
         return await linq
             .OrderByDescending(t => t.PublishedAt)
             .Take(Math.Min(count ?? 20, 100))
-            .Select(t => new TorrentDto(
-                t.Id,
-                t.OriginSite,
-                t.OriginId,
-                t.Title,
-                t.PublishedAt,
-                t.LinkTorrent,
-                t.LinkMagnet
-            ))
+            .Select(t => new TorrentDto(t))
             .ToListAsync();
     }
 
