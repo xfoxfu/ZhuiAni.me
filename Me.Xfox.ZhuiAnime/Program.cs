@@ -79,13 +79,14 @@ builder.Services
             throw new ZAError.BadRequest(context.ModelState);
     });
 
+var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext)) ??
+    throw new Exception("Connection string for ZAContext cannot be null");
+var dataSource = new NpgsqlDataSourceBuilder(connectionString)
+    .EnableDynamicJson()
+    .Build();
 builder.Services.AddDbContext<ZAContext>(opt =>
 {
-    var connectionString = builder.Configuration.GetConnectionString(nameof(ZAContext)) ??
-        throw new Exception("Connection string for ZAContext cannot be null");
-    opt.UseNpgsql(new NpgsqlDataSourceBuilder(connectionString)
-        .EnableDynamicJson()
-        .Build());
+    opt.UseNpgsql(dataSource);
     opt.UseSnakeCaseNamingConvention();
 });
 
