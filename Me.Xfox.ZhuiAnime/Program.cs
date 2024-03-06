@@ -1,10 +1,22 @@
 global using Microsoft.EntityFrameworkCore;
+global using i32 = int;
+global using u32 = uint;
+global using i64 = long;
+global using u64 = ulong;
+global using i8 = char;
+global using u8 = byte;
+global using i16 = short;
+global using u16 = ushort;
+global using f32 = float;
+global using f64 = double;
+global using Me.Xfox.ZhuiAnime;
+global using ZhuiAnime = Me.Xfox.ZhuiAnime;
+
 using System.CommandLine;
 using System.Text.Json.Serialization;
 using Elsa.Extensions;
 using Elsa.Workflows.Management.Services;
 using Elsa.Workflows.Runtime.Stores;
-using Me.Xfox.ZhuiAnime;
 using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Services;
 using Me.Xfox.ZhuiAnime.Utils;
@@ -16,7 +28,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using Serilog;
-using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
