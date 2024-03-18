@@ -121,16 +121,19 @@ jobs:
       RELEASE_VERSION: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v3
-      - run: |
-          echo '{"zhuianime":"'"${RELEASE_VERSION}"'"}' >> release.json
-      - name: push update
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.GH_TOKEN_INFRA }}
         with:
-          source_file: "release.json"
-          destination_repo: "xfoxfu/infra"
-          destination_folder: "green-sg"
-          user_email: "gitops@noha.dev"
-          user_name: "Noha GitOps"
-          commit_message: "Upgrade ZhuiAni.me to ${{ env.RELEASE_VERSION }}"
+          repository: "xfoxfu/infra"
+          token: ${{ secrets.GH_TOKEN_INFRA }}
+      - name: Install jq and moreutils (sponge)
+        run: |
+          sudo apt-get update
+          sudo apt-get install jq moreutils
+      - run: |
+          jq '.["zhuianime"]="${{ github.ref_name }}"' green-sg/release.json | sponge green-sg/release.json
+      - name: Push update
+        run: |
+          git config --global user.email gitops@noha.dev
+          git config --global user.name 'Noha GitOps'
+          git add .
+          git commit --message 'feat: upgrade zhuianime to ${{ github.ref_name }}'
+          git push -u origin HEAD:main
