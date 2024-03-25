@@ -14,9 +14,6 @@ global using ZhuiAnime = Me.Xfox.ZhuiAnime;
 
 using System.CommandLine;
 using System.Text.Json.Serialization;
-using Elsa.Extensions;
-using Elsa.Workflows.Management.Services;
-using Elsa.Workflows.Runtime.Stores;
 using Me.Xfox.ZhuiAnime.Modules;
 using Me.Xfox.ZhuiAnime.Services;
 using Me.Xfox.ZhuiAnime.Utils;
@@ -204,32 +201,6 @@ builder.Services.AddAuthentication(opts =>
     opts.Events = new AuthenticationEventHandler();
 });
 builder.Services.AddAuthorization();
-builder.Services.AddElsa(elsa =>
-{
-    elsa.AddActivitiesFrom<Program>();
-    elsa.AddWorkflowsFrom<Program>();
-    elsa.UseWorkflowManagement(x =>
-    {
-        x.UseWorkflowDefinitions(x =>
-        {
-            x.WorkflowDefinitionStore = sp => sp.GetRequiredService<MemoryWorkflowDefinitionStore>();
-        });
-        x.UseWorkflowInstances(x =>
-        {
-            x.WorkflowInstanceStore = sp => sp.GetRequiredService<MemoryWorkflowInstanceStore>();
-        });
-    });
-    elsa.UseWorkflowRuntime(x =>
-    {
-        x.TriggerStore = sp => sp.GetRequiredService<MemoryTriggerStore>();
-        x.BookmarkStore = sp => sp.GetRequiredService<MemoryBookmarkStore>();
-        x.WorkflowInboxStore = sp => sp.GetRequiredService<MemoryWorkflowInboxMessageStore>();
-        x.WorkflowExecutionLogStore = sp => sp.GetRequiredService<MemoryWorkflowExecutionLogStore>();
-        x.ActivityExecutionLogStore = sp => sp.GetRequiredService<MemoryActivityExecutionStore>();
-    });
-    elsa.UseQuartz();
-    elsa.UseScheduling(scheduling => scheduling.UseQuartzScheduler());
-});
 
 var app = builder.Build();
 
