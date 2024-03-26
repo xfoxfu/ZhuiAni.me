@@ -10,6 +10,7 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
+  Progress,
   Stack,
   Tag,
   TagLeftIcon,
@@ -70,6 +71,7 @@ export const TorrentsList: React.FunctionComponent = () => {
           </InputLeftElement>
           <Input placeholder="Query (regexp)" onChange={(e) => setQuery(e.target.value)} />
         </InputGroup>
+        {isLoading && <Progress isIndeterminate />}
         {torrents?.flat()?.map((a) => (
           <>
             <HStack key={a.id} px="3" py="2" borderWidth="1px" rounded="md" bg="white" gap="2">
