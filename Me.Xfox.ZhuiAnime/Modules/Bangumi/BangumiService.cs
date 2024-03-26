@@ -109,9 +109,6 @@ public class BangumiService
                 Episode.EpisodeType.ED => "ED",
                 _ => throw new NotImplementedException(),
             }) + (bgmEpisode.Sort ?? 0).ToString(episodeNameFormat);
-            if (bgmEpisode.Type == Episode.EpisodeType.SP) name = $"SP{name}";
-            else if (bgmEpisode.Type == Episode.EpisodeType.OP) name = $"OP{name}";
-            else if (bgmEpisode.Type == Episode.EpisodeType.ED) name = $"ED{name}";
 
             using var tx = DbContext.Database.BeginTransaction();
 
