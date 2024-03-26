@@ -172,6 +172,7 @@ foreach (Type type in System.Reflection.Assembly.GetExecutingAssembly().GetTypes
 }
 TurnstileService.ConfigureOn(builder);
 TokenService.ConfigureOn(builder);
+PaseaniService.ConfigureOn(builder);
 
 // FIXME: This will raise "No XML encryptor configured. Key {GUID} may be
 // persisted to storage in unencrypted form." on start, but I think it is ok
