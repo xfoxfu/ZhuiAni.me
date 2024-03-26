@@ -64,7 +64,7 @@ public class PikPakWorker : IHostedService, IDisposable
             var torrents = await db.Set<Torrent>()
                 .Where(t => t.OriginSite == "https://bangumi.moe")
                 .Where(t => t.PublishedAt > config.LastFetchedAt)
-                .Where(t => Regex.IsMatch(t.Title, config.Regex))
+                .Where(t => Regex.IsMatch(t.Title, config.Regex, RegexOptions.IgnoreCase | RegexOptions.NonBacktracking))
                 .OrderByDescending(t => t.PublishedAt)
                 .ToListAsync();
 
