@@ -101,8 +101,17 @@ public class BangumiService
             }
 
             var address = new Uri($"https://bgm.tv/ep/{bgmEpisode.Id}");
-            var name = (bgmEpisode.Sort ?? 0).ToString(episodeNameFormat);
+            var name = (bgmEpisode.Type switch
+            {
+                Episode.EpisodeType.Origin => "",
+                Episode.EpisodeType.SP => "SP",
+                Episode.EpisodeType.OP => "OP",
+                Episode.EpisodeType.ED => "ED",
+                _ => throw new NotImplementedException(),
+            }) + (bgmEpisode.Sort ?? 0).ToString(episodeNameFormat);
             if (bgmEpisode.Type == Episode.EpisodeType.SP) name = $"SP{name}";
+            else if (bgmEpisode.Type == Episode.EpisodeType.OP) name = $"OP{name}";
+            else if (bgmEpisode.Type == Episode.EpisodeType.ED) name = $"ED{name}";
 
             using var tx = DbContext.Database.BeginTransaction();
 
@@ -119,8 +128,14 @@ public class BangumiService
             episode.ParentItem = item;
             episode.Annotations = new Dictionary<string, string>(episode.Annotations)
             {
-                ["https://bgm.tv/ep/:id/type"] =
-                bgmEpisode.Type == Episode.EpisodeType.SP ? "SP" : "Origin",
+                ["https://bgm.tv/ep/:id/type"] = bgmEpisode.Type switch
+                {
+                    Episode.EpisodeType.Origin => "Origin",
+                    Episode.EpisodeType.SP => "SP",
+                    Episode.EpisodeType.OP => "OP",
+                    Episode.EpisodeType.ED => "ED",
+                    _ => throw new NotImplementedException(),
+                },
                 ["https://bgm.tv/ep/:id/sort"] =
                 bgmEpisode.Sort?.ToString() ?? ""
             };
