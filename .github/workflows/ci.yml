@@ -129,7 +129,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install jq moreutils
       - run: |
-          jq '.["zhuianime"]="${{ github.ref_name }}"' green-sg/release.json | sponge green-sg/release.json
+          jq '.["zhuianime"]="${{ github.ref_name }}"' release.json | sponge release.json
       - name: Push update
         run: |
           git config --global user.email gitops@noha.dev
