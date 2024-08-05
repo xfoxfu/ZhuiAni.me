@@ -45,6 +45,7 @@ public class Worker<S> : IHostedService, IDisposable where S : ISource
         }
         catch (Exception e)
         {
+            SentrySdk.CaptureException(e);
             Logger.LogError(e, "Error while updating data.");
         }
     }

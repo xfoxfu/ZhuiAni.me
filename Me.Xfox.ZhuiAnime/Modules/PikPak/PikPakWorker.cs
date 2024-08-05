@@ -47,6 +47,7 @@ public class PikPakWorker : IHostedService, IDisposable
         }
         catch (Exception e)
         {
+            SentrySdk.CaptureException(e);
             Logger.LogError(e, "Error while updating data.");
         }
     }
